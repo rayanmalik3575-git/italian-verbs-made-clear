@@ -114,7 +114,7 @@ type Seed = [inf: string, en: string, base: string, third: string, level: Level,
 function conjugateAre(inf: string): string[] {
   const stem = inf.slice(0, -3);
   const hard = /[cg]$/.test(stem) ? stem + "h" : stem; // pagare → paghi
-  const soft = /i$/.test(stem) && !/(sciare|inviare)$/.test(inf) ? stem.slice(0, -1) : hard; // studiare → studi
+  const soft = /i$/.test(stem) ? stem.slice(0, -1) : hard; // studiare → studi
   return [stem + "o", soft + "i", stem + "a", soft + "iamo", stem + "ate", stem + "ano"];
 }
 function conjugateRegular(inf: string, type: "-ere" | "-ire", isc = false): string[] {
