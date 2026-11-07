@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Check, X, ArrowLeft, Volume2 } from "lucide-react";
-import { PRONOUNS, VERBS, LEVEL, GROUP_INFO, type Verb, type Level } from "@/data/verbs";
+import { PRONOUNS, VERBS, LEVEL, RANK, GROUP_INFO, type Verb, type Level } from "@/data/verbs";
 
 export const Route = createFileRoute("/verbs")({
   head: () => ({
