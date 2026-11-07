@@ -41,7 +41,7 @@ function PathPage() {
             <li key={s.title}>
               <Panel>
                 <div className="flex flex-wrap items-center gap-4">
-                  <IconTile icon={BookA} color={(["blue", "lavender", "pink"] as const)[idx]} />
+                  <IconTile icon={BookA} color={(["blue", "lavender", "pink"] as const)[idx] ?? "blue"} />
                   <div className="min-w-0 flex-1">
                     <h2 className="font-bold">{s.title}</h2>
                     <p className="text-sm text-muted-foreground">{done} of {verbs.length} mastered</p>

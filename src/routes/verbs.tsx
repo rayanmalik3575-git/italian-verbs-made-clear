@@ -9,9 +9,9 @@ import { Chip, Panel, PageHeader, ProgressBar, btn } from "@/components/app-shel
 
 type Mode = "learn" | "practice";
 export const Route = createFileRoute("/verbs")({
-  validateSearch: (s: Record<string, unknown>): { verb?: string; mode?: Mode } => ({
-    verb: typeof s.verb === "string" ? s.verb : undefined,
-    mode: s.mode === "practice" ? "practice" : s.mode === "learn" ? "learn" : undefined,
+  validateSearch: (s: Record<string, unknown>): { verb?: string | undefined; mode?: Mode | undefined } => ({
+    verb: typeof s["verb"] === "string" ? s["verb"] : undefined,
+    mode: s["mode"] === "practice" ? "practice" : s["mode"] === "learn" ? "learn" : undefined,
   }),
   head: () => ({
     meta: [
