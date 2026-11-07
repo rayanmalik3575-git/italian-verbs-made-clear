@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info } from "lucide-react";
 import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verbs";
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/verbs")({
   component: VerbsPage,
 });
 
-export function speak(text: string) {
+function speak(text: string) {
   if (typeof window === "undefined" || !window.speechSynthesis) return false;
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
@@ -345,4 +345,3 @@ function Feedback({ result, answer, expected, meaning }: { result: Grade; answer
   );
 }
 
-export { Link };
