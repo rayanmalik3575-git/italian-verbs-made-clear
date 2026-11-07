@@ -136,10 +136,10 @@ function Practice({ verb }: { verb: Verb }) {
     if (result !== null) {
       setStep(step + 1); setAnswer(""); setResult(null); return;
     }
-    const ok = norm(answer) === norm(verb.forms[i]);
+    const ok = norm(answer) === norm(verb.forms[i] ?? "");
     setResult(ok);
     if (ok) setScore(score + 1);
-    speak(verb.forms[i]);
+    speak(verb.forms[i] ?? "");
   };
 
   return (
