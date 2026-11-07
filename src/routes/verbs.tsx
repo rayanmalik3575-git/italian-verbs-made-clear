@@ -208,7 +208,7 @@ function Learn({ verb, onPractice }: { verb: Verb; onPractice: () => void }) {
                 <td className="px-4 py-3 text-sm font-semibold text-muted-foreground">{p.it}</td>
                 <td className="px-4 py-3">
                   <button onClick={() => speak(`${p.it === "lui/lei" ? "lui" : p.it} ${verb.forms[i]}`)} className="inline-flex items-center gap-2 rounded-md text-left text-lg font-bold" aria-label={`Listen: ${p.it} ${verb.forms[i]}`}>
-                    <Form verb={verb} form={verb.forms[i] ?? ""} /><Volume2 className="h-4 w-4 text-muted-foreground" aria-hidden />
+                    <span><Form verb={verb} form={verb.forms[i] ?? ""} /></span><Volume2 className="h-4 w-4 text-muted-foreground" aria-hidden />
                   </button>
                   <div className="text-sm text-muted-foreground sm:hidden">{verb.en[i]}</div>
                 </td>
