@@ -199,9 +199,7 @@ const OTHER: { inf: string; en: string; base: string; third: string; level: Leve
   { inf: "mettere", en: "to put", base: "put", third: "puts", level: "A1", type: "-ere", ex: ["Metto il latte nel caffè.", "I put milk in my coffee."] },
   { inf: "chiudere", en: "to close", base: "close", third: "closes", level: "A1", type: "-ere", ex: ["Chiudo la porta.", "I close the door."] },
   { inf: "rispondere", en: "to answer", base: "answer", third: "answers", level: "A1", type: "-ere", ex: ["Rispondo al telefono.", "I answer the phone."] },
-  { inf: "aprire_", en: "", base: "", third: "", level: "A1", type: "-ire", ex: ["", ""] },
   { inf: "offrire", en: "to offer", base: "offer", third: "offers", level: "A1", type: "-ire", ex: ["Ti offro un caffè.", "I'll buy you a coffee."] },
-  { inf: "pulire_", en: "", base: "", third: "", level: "A2", type: "-ire", ex: ["", ""] },
   { inf: "decidere", en: "to decide", base: "decide", third: "decides", level: "A2", type: "-ere", ex: ["Decidiamo domani.", "We'll decide tomorrow."] },
   { inf: "perdere", en: "to lose / miss", base: "lose", third: "loses", level: "A2", type: "-ere", ex: ["Perdo sempre il treno.", "I always miss the train."] },
   { inf: "vendere", en: "to sell", base: "sell", third: "sells", level: "A2", type: "-ere", ex: ["Vendo la bici.", "I'm selling my bike."] },
@@ -211,12 +209,11 @@ const OTHER: { inf: string; en: string; base: string; third: string; level: Leve
   { inf: "servire", en: "to serve / be needed", base: "serve", third: "serves", level: "A2", type: "-ire", ex: ["Ti serve aiuto?", "Do you need help?"] },
   { inf: "seguire", en: "to follow", base: "follow", third: "follows", level: "A2", type: "-ire", ex: ["Seguo il corso.", "I follow the course."] },
   { inf: "spedire", en: "to send (post)", base: "send", third: "sends", level: "A2", type: "-ire", isc: true, ex: ["Spedisco un pacco.", "I send a parcel."] },
-].filter((o) => !o.inf.endsWith("_")) as typeof OTHER_T;
-type OTHER_T = { inf: string; en: string; base: string; third: string; level: Level; type: "-ere" | "-ire"; isc?: boolean; ex: [string, string] }[];
+];
 
 // Extra irregulars: [inf, english, level, forms, base, third, exIt, exEn, meaning]
 const IRR: [string, string, Level, string, string, string, string, string, string][] = [
-  ["stare", "to stay / to be (feel)", "A1", "sto sta stai stiamo state stanno", "stay", "stays", "Come stai? Sto bene.", "How are you? I'm well.", "Used for how you feel (sto bene) and where you stay."],
+  ["stare", "to stay / to be (feel)", "A1", "sto stai sta stiamo state stanno", "stay", "stays", "Come stai? Sto bene.", "How are you? I'm well.", "Used for how you feel (sto bene) and where you stay."],
   ["venire", "to come", "A1", "vengo vieni viene veniamo venite vengono", "come", "comes", "Vieni con me?", "Are you coming with me?", "Irregular: movement towards the speaker."],
   ["potere", "can / to be able", "A1", "posso puoi può possiamo potete possono", "can", "can", "Posso entrare?", "May I come in?", "Modal verb: followed by an infinitive (posso parlare)."],
   ["dovere", "must / to have to", "A1", "devo devi deve dobbiamo dovete devono", "must", "must", "Devo andare.", "I have to go.", "Modal verb for obligation, followed by an infinitive."],
@@ -233,7 +230,6 @@ const IRR: [string, string, Level, string, string, string, string, string, strin
 ];
 for (const [infinitive, english, , f, base, third, it, en, meaning] of IRR) {
   const forms = f.split(" ");
-  if (infinitive === "stare") forms.splice(1, 2, "stai", "sta");
   VERBS.push({ infinitive, english, type: "irregular", meaning, forms, en: enLines(base, third), examples: [{ it, en }] });
 }
 
@@ -254,3 +250,26 @@ export const GROUP_INFO: Record<string, { title: string; endings: string; note: 
   "-ire": { title: "-IRE verbs", endings: "-o · -i · -e · -iamo · -ite · -ono", note: "Some add -isc- (finisco, capisco) in io, tu, lui/lei, loro." },
   irregular: { title: "Irregular", endings: "Memorise each form", note: "The most used verbs — they follow their own rules." },
 };
+
+// Recommended learning order (most important first), based on CEFR A1/A2 syllabi and frequency.
+export const PRIORITY: string[] = [
+  "essere", "avere", "stare", "fare", "andare", "venire", "volere", "potere", "dovere", "sapere",
+  "parlare", "capire", "dire", "mangiare", "bere", "prendere", "abitare", "lavorare", "studiare", "chiamare",
+  "conoscere", "vedere", "uscire", "dare", "comprare", "pagare", "costare", "cercare", "trovare", "arrivare",
+  "partire", "tornare", "aspettare", "dormire", "leggere", "scrivere", "chiedere", "ascoltare", "guardare", "vivere",
+  "mettere", "aprire", "chiudere", "sentire", "finire", "preferire", "pensare", "amare", "cucinare", "ordinare",
+  "rispondere", "entrare", "cominciare", "giocare", "imparare", "telefonare", "salutare", "viaggiare", "lavare", "offrire",
+  "suonare", "cantare", "ballare",
+  // A2
+  "rimanere", "ricordare", "dimenticare", "credere", "decidere", "aiutare", "incontrare", "portare", "lasciare", "passare",
+  "provare", "usare", "preparare", "spiegare", "mandare", "prenotare", "visitare", "scegliere", "perdere", "tenere",
+  "servire", "sperare", "continuare", "camminare", "cambiare", "raccontare", "mostrare", "seguire", "salire", "guidare",
+  "vendere", "ricevere", "correre", "vincere", "pulire", "nuotare", "affittare", "noleggiare", "parcheggiare", "festeggiare",
+  "abbracciare", "spedire", "morire",
+];
+export const RANK: Record<string, number> = {};
+VERBS.sort((a, b) => {
+  const ia = PRIORITY.indexOf(a.infinitive), ib = PRIORITY.indexOf(b.infinitive);
+  return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+});
+VERBS.forEach((v, i) => (RANK[v.infinitive] = i + 1));
