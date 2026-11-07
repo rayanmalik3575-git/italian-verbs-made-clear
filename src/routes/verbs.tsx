@@ -130,8 +130,8 @@ function Practice({ verb }: { verb: Verb }) {
     );
   }
 
-  const i = order[step];
-  const p = PRONOUNS[i];
+  const i = order[step] ?? 0;
+  const p = PRONOUNS[i]!;
   const check = () => {
     if (result !== null) {
       setStep(step + 1); setAnswer(""); setResult(null); return;
