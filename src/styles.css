@@ -36,26 +36,35 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.975 0.015 85);
+  --background: oklch(0.985 0.006 90);
   --foreground: oklch(0.22 0.03 40);
   --card: oklch(0.99 0.008 85);
   --card-foreground: oklch(0.22 0.03 40);
   --popover: oklch(0.99 0.008 85);
   --popover-foreground: oklch(0.22 0.03 40);
-  --primary: oklch(0.58 0.15 38);
+  --primary: oklch(0.52 0.19 27);
   --primary-foreground: oklch(0.98 0.01 85);
-  --secondary: oklch(0.45 0.07 130);
+  --secondary: oklch(0.48 0.12 152);
   --secondary-foreground: oklch(0.98 0.01 85);
   --muted: oklch(0.93 0.02 80);
   --muted-foreground: oklch(0.48 0.03 50);
-  --accent: oklch(0.9 0.05 75);
-  --accent-foreground: oklch(0.3 0.05 40);
+  --accent: oklch(0.94 0.04 152);
+  --accent-foreground: oklch(0.35 0.1 152);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
   --success: oklch(0.55 0.12 145);
-  --border: oklch(0.88 0.025 75);
+  --border: oklch(0.9 0.012 85);
   --input: oklch(0.88 0.025 75);
-  --ring: oklch(0.58 0.15 38);
+  --ring: oklch(0.52 0.19 27);
+  --tricolore: linear-gradient(90deg, var(--secondary) 0 33.3%, var(--card) 33.3% 66.6%, var(--primary) 66.6%);
+  --shadow-elegant: 0 20px 50px -24px color-mix(in oklab, var(--foreground) 25%, transparent);
+}
+
+@utility tricolore {
+  background: var(--tricolore);
+}
+@utility shadow-elegant {
+  box-shadow: var(--shadow-elegant);
 }
 
 @layer base {
