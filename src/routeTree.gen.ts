@@ -10,11 +10,41 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as PathRouteImport } from './routes/path'
+import { Route as PracticeRouteImport } from './routes/practice'
+import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as VerbsRouteImport } from './routes/verbs'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PathRoute = PathRouteImport.update({
+  id: '/path',
+  path: '/path',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticeRoute = PracticeRouteImport.update({
+  id: '/practice',
+  path: '/practice',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerbsRoute = VerbsRouteImport.update({
@@ -25,27 +55,57 @@ const VerbsRoute = VerbsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
+  '/path': typeof PathRoute
+  '/practice': typeof PracticeRoute
+  '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/verbs': typeof VerbsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
+  '/path': typeof PathRoute
+  '/practice': typeof PracticeRoute
+  '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/verbs': typeof VerbsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
+  '/path': typeof PathRoute
+  '/practice': typeof PracticeRoute
+  '/progress': typeof ProgressRoute
+  '/settings': typeof SettingsRoute
   '/verbs': typeof VerbsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/verbs'
+  fullPaths:
+    '/' | '/help' | '/path' | '/practice' | '/progress' | '/settings' | '/verbs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/verbs'
-  id: '__root__' | '/' | '/verbs'
+  to:
+    '/' | '/help' | '/path' | '/practice' | '/progress' | '/settings' | '/verbs'
+  id:
+    | '__root__'
+    | '/'
+    | '/help'
+    | '/path'
+    | '/practice'
+    | '/progress'
+    | '/settings'
+    | '/verbs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HelpRoute: typeof HelpRoute
+  PathRoute: typeof PathRoute
+  PracticeRoute: typeof PracticeRoute
+  ProgressRoute: typeof ProgressRoute
+  SettingsRoute: typeof SettingsRoute
   VerbsRoute: typeof VerbsRoute
 }
 
@@ -56,6 +116,41 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/path': {
+      id: '/path'
+      path: '/path'
+      fullPath: '/path'
+      preLoaderRoute: typeof PathRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice': {
+      id: '/practice'
+      path: '/practice'
+      fullPath: '/practice'
+      preLoaderRoute: typeof PracticeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verbs': {
@@ -70,6 +165,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HelpRoute: HelpRoute,
+  PathRoute: PathRoute,
+  PracticeRoute: PracticeRoute,
+  ProgressRoute: ProgressRoute,
+  SettingsRoute: SettingsRoute,
   VerbsRoute: VerbsRoute,
 }
 export const routeTree = rootRouteImport
