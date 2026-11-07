@@ -28,7 +28,7 @@ function speak(text: string) {
 }
 
 function VerbsPage() {
-  const [selected, setSelected] = useState<Verb>(VERBS[0]);
+  const [selected, setSelected] = useState<Verb>(VERBS[0]!);
   const [mode, setMode] = useState<"learn" | "practice">("learn");
   const [query, setQuery] = useState("");
   const list = VERBS.filter((v) => (v.infinitive + v.english).toLowerCase().includes(query.toLowerCase()));
