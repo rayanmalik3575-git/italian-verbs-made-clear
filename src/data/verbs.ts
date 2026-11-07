@@ -203,34 +203,3 @@ export const GROUP_INFO: Record<string, { title: string; endings: string; note: 
   "-ire": { title: "-IRE verbs", endings: "-o · -i · -e · -iamo · -ite · -ono", note: "Some add -isc- (finisco, capisco) in io, tu, lui/lei, loro." },
   irregular: { title: "Irregular", endings: "Memorise each form", note: "The most used verbs — they follow their own rules." },
 };
-
-// ---- Full English meaning of each Italian present-tense form ----
-const SUBJ = ["I", "you", "he/she", "we", "you all", "they"];
-const BE = ["am", "are", "is", "are", "are", "are"];
-// Verbs that describe states: English doesn't use "-ing" for them.
-const STATIVE = new Set(["be", "have", "want", "know", "understand", "like", "love", "prefer", "need", "can", "must", "believe", "seem", "own", "mean", "hate", "belong", "remember", "forget", "recognize", "cost"]);
-const DOUBLE = new Set(["sit", "run", "swim", "stop", "get", "put", "shop", "plan", "begin", "cut", "let", "set", "win", "chat", "jog", "travel"]);
-
-function ing(w: string): string {
-  if (w.endsWith("ie")) return w.slice(0, -2) + "ying";
-  if (DOUBLE.has(w)) return w === "travel" ? "travelling" : w + w.slice(-1) + "ing";
-  if (w.endsWith("e") && !w.endsWith("ee") && w !== "be") return w.slice(0, -1) + "ing";
-  return w + "ing";
-}
-
-export type Meaning = { label: string; text: string };
-
-/** All the real English meanings of one Italian form (e.g. mangio = I eat / I am eating / I'll eat). */
-export function meaningsOf(verb: Verb, i: number): Meaning[] {
-  const present = verb.en[i] ?? "";
-  const base = (verb.en[0] ?? "").replace(/^I\s+/, "");
-  if (base === "am") {
-    return [{ label: "Present", text: present }, { label: "Future", text: `${SUBJ[i]} will be` }];
-  }
-  const [word = "", ...rest] = base.split(" ");
-  const tail = rest.length ? " " + rest.join(" ") : "";
-  const out: Meaning[] = [{ label: "Present", text: present }];
-  if (!STATIVE.has(word)) out.push({ label: "Right now", text: `${SUBJ[i]} ${BE[i]} ${ing(word)}${tail}` });
-  out.push({ label: "Future", text: `${SUBJ[i]} will ${base}` });
-  return out;
-}

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Check, X, ArrowLeft, Volume2 } from "lucide-react";
-import { PRONOUNS, VERBS, LEVEL, GROUP_INFO, meaningsOf, type Verb, type Level } from "@/data/verbs";
+import { PRONOUNS, VERBS, LEVEL, GROUP_INFO, type Verb, type Level } from "@/data/verbs";
 
 export const Route = createFileRoute("/verbs")({
   head: () => ({
@@ -142,10 +142,7 @@ function Form({ verb, form }: { verb: Verb; form: string }) {
 function Learn({ verb }: { verb: Verb }) {
   return (
     <>
-      <p className="mt-8 rounded-2xl bg-muted/60 p-4 text-sm">
-        <strong>One Italian form = several English meanings.</strong> <em>Mangio</em> means “I eat”, “I am eating” and also “I'll eat” (e.g. <em>Domani mangio da Marco</em> = Tomorrow I'll eat at Marco's).
-      </p>
-      <div className="mt-4 divide-y overflow-hidden rounded-2xl border">
+      <div className="mt-8 divide-y overflow-hidden rounded-2xl border">
         {PRONOUNS.map((p, i) => (
           <div key={p.it} className="grid grid-cols-[90px_1fr] items-center gap-4 p-4 transition hover:bg-muted/50 md:grid-cols-[100px_200px_1fr]">
             <div className="text-sm font-semibold uppercase tracking-wider text-secondary">{p.it}</div>
@@ -153,14 +150,7 @@ function Learn({ verb }: { verb: Verb }) {
               <span><Form verb={verb} form={verb.forms[i] ?? ""} /></span> <Volume2 className="h-4 w-4 text-muted-foreground opacity-50" />
             </button>
             <div className="col-span-2 md:col-span-1">
-              <div className="flex flex-wrap gap-1.5">
-                {meaningsOf(verb, i).map((m) => (
-                  <span key={m.label} className="rounded-full border bg-background px-2.5 py-1 text-sm">
-                    <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{m.label}</span>
-                    <span className="font-medium">{m.text}</span>
-                  </span>
-                ))}
-              </div>
+              <div className="font-medium">{verb.en[i]}</div>
               <div className="text-xs text-muted-foreground">{p.note}</div>
             </div>
           </div>
@@ -214,7 +204,7 @@ function Practice({ verb }: { verb: Verb }) {
         <div className="h-full bg-primary transition-all" style={{ width: `${(step / 6) * 100}%` }} />
       </div>
       <p className="text-sm text-muted-foreground">Question {step + 1} of 6 · How do you say:</p>
-      <p className="mt-2 text-3xl font-display font-semibold">“{meaningsOf(verb, i).map((m) => m.text).join(" / ")}”</p>
+      <p className="mt-2 text-3xl font-display font-semibold">“{verb.en[i]}”</p>
       <form onSubmit={(e) => { e.preventDefault(); check(); }} className="mt-6 flex items-center gap-3">
         <span className="font-semibold text-secondary">{p.it}</span>
         <input
@@ -227,7 +217,7 @@ function Practice({ verb }: { verb: Verb }) {
       {result !== null && (
         <div className={`mt-4 flex items-center gap-2 rounded-xl p-4 ${result ? "bg-success/15 text-success" : "bg-destructive/10 text-destructive"}`}>
           {result ? <Check className="h-5 w-5" /> : <X className="h-5 w-5" />}
-          {result ? "Corretto!" : <>The answer is <strong>{p.it} {verb.forms[i]}</strong> — “{meaningsOf(verb, i).map((m) => m.text).join(" / ")}”</>}
+          {result ? "Corretto!" : <>The answer is <strong>{p.it} {verb.forms[i]}</strong> — “{verb.en[i]}”</>}
         </div>
       )}
     </div>
