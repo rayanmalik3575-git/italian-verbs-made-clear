@@ -33,11 +33,11 @@ const GROUPS: { id: Group; label: string }[] = [
 ];
 
 function VerbsPage() {
-  const [group, setGroup] = useState<Group>("-are");
+  const [group, setGroup] = useState<Group>("all");
   const [level, setLevel] = useState<"all" | Level>("all");
   const [query, setQuery] = useState("");
   const list = VERBS.filter((v) => (group === "all" || v.type === group) && (level === "all" || LEVEL[v.infinitive] === level) && (v.infinitive + v.english).toLowerCase().includes(query.toLowerCase()));
-  const [selectedName, setSelectedName] = useState("parlare");
+  const [selectedName, setSelectedName] = useState("essere");
   const selected = list.find((v) => v.infinitive === selectedName) ?? list[0] ?? VERBS[0]!;
   const [mode, setMode] = useState<"learn" | "practice">("learn");
   const count = (g: Group) => VERBS.filter((v) => (g === "all" || v.type === g) && (level === "all" || LEVEL[v.infinitive] === level)).length;
@@ -85,16 +85,17 @@ function VerbsPage() {
               <button key={l} onClick={() => setLevel(l)} className={`flex-1 rounded-full py-1.5 font-medium ${level === l ? "bg-card shadow-sm" : "text-muted-foreground"}`}>{l === "all" ? "All levels" : l}</button>
             ))}
           </div>
+          <p className="mb-2 px-1 text-[11px] uppercase tracking-wider text-muted-foreground">Ordered: most important first</p>
           <ul className="max-h-[60vh] space-y-1 overflow-y-auto pr-1">
             {list.map((v) => {
               const on = selected.infinitive === v.infinitive;
               return (
                 <li key={v.infinitive}>
                   <button onClick={() => { setSelectedName(v.infinitive); setMode("learn"); }} className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition ${on ? "bg-foreground text-background" : "hover:bg-muted"}`}>
-                    <span>
+                    <span className="flex items-center gap-3"><span className={`w-6 text-right font-mono text-xs ${on ? "opacity-60" : "text-muted-foreground"}`}>{RANK[v.infinitive]}</span><span>
                       <span className="block font-medium">{v.infinitive}</span>
                       <span className={`block text-xs ${on ? "opacity-70" : "text-muted-foreground"}`}>{v.english}</span>
-                    </span>
+                    </span></span>
                     <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${LEVEL[v.infinitive] === "A1" ? "bg-accent text-accent-foreground" : "bg-primary/10 text-primary"}`}>{LEVEL[v.infinitive]}</span>
                   </button>
                 </li>
