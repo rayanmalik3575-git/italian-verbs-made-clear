@@ -63,7 +63,7 @@ function VerbsPage() {
             return (
               <button key={g.id} onClick={() => setGroup(g.id)} className={`rounded-2xl border p-4 text-left transition ${active ? "border-primary bg-primary text-primary-foreground shadow-elegant" : "bg-card hover:border-foreground/30"}`}>
                 <div className="font-display text-2xl font-semibold">{g.label}</div>
-                <div className={`mt-1 text-xs ${active ? "opacity-85" : "text-muted-foreground"}`}>{count(g.id)} verbs{info ? ` · ${info.endings.split(" · ")[0]}…` : ""}</div>
+                <div className={`mt-1 text-xs ${active ? "opacity-85" : "text-muted-foreground"}`}>{count(g.id)} verbs{info ? "" : " · every family"}</div>
               </button>
             );
           })}
@@ -147,7 +147,7 @@ function Learn({ verb }: { verb: Verb }) {
           <div key={p.it} className="grid grid-cols-[90px_1fr] items-center gap-4 p-4 transition hover:bg-muted/50 md:grid-cols-[100px_200px_1fr]">
             <div className="text-sm font-semibold uppercase tracking-wider text-secondary">{p.it}</div>
             <button onClick={() => speak(`${p.it === "lui/lei" ? "lui" : p.it} ${verb.forms[i]}`)} className="flex items-center gap-2 text-left font-display text-2xl font-semibold">
-              <Form verb={verb} form={verb.forms[i] ?? ""} /> <Volume2 className="h-4 w-4 text-muted-foreground opacity-50" />
+              <span><Form verb={verb} form={verb.forms[i] ?? ""} /></span> <Volume2 className="h-4 w-4 text-muted-foreground opacity-50" />
             </button>
             <div className="col-span-2 md:col-span-1">
               <div className="font-medium">{verb.en[i]}</div>
