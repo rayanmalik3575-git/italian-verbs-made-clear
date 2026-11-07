@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+# Project rules
+- All pages render inside `AppShell` (src/components/app-shell.tsx), which also exports shared UI pieces (Panel, IconTile, Chip, btn, ProgressBar) — reuse them so styling stays consistent.
+- Learner progress lives in src/lib/progress.ts (browser localStorage) until accounts exist — keep all status logic there so it can move to a backend later.
+- Verb family/regularity is derived in src/lib/verb-meta.ts from data, not stored — keeps verb data simple.
