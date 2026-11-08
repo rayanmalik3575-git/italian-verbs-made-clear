@@ -1,7 +1,7 @@
 import { PRONOUNS, type Verb } from "./verbs";
 
 /** One in-context practice item. `it` contains "_" where the verb form goes. */
-export type ContextItem = { situation: string; it: string; en: string; tip?: string };
+export type ContextItem = { situation: string; it: string; en: string; tip?: string | undefined };
 
 // Situations per person, used to train "the ending tells you who" without saying the pronoun.
 export const WHO: string[] = [
