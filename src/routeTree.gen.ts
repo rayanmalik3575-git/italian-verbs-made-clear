@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GreetingsRouteImport } from './routes/greetings'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as PathRouteImport } from './routes/path'
 import { Route as PracticeRouteImport } from './routes/practice'
@@ -21,6 +22,11 @@ import { Route as VerbsRouteImport } from './routes/verbs'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GreetingsRoute = GreetingsRouteImport.update({
+  id: '/greetings',
+  path: '/greetings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HelpRoute = HelpRouteImport.update({
@@ -61,6 +67,7 @@ const VerbsRoute = VerbsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/path': typeof PathRoute
   '/practice': typeof PracticeRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/path': typeof PathRoute
   '/practice': typeof PracticeRoute
@@ -82,6 +90,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/path': typeof PathRoute
   '/practice': typeof PracticeRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/greetings'
     | '/help'
     | '/path'
     | '/practice'
@@ -104,6 +114,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/greetings'
     | '/help'
     | '/path'
     | '/practice'
@@ -114,6 +125,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/greetings'
     | '/help'
     | '/path'
     | '/practice'
@@ -125,6 +137,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GreetingsRoute: typeof GreetingsRoute
   HelpRoute: typeof HelpRoute
   PathRoute: typeof PathRoute
   PracticeRoute: typeof PracticeRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/greetings': {
+      id: '/greetings'
+      path: '/greetings'
+      fullPath: '/greetings'
+      preLoaderRoute: typeof GreetingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/help': {
@@ -197,6 +217,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GreetingsRoute: GreetingsRoute,
   HelpRoute: HelpRoute,
   PathRoute: PathRoute,
   PracticeRoute: PracticeRoute,
