@@ -4,6 +4,7 @@ import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info }
 import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verbs";
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
 import { grade, type Grade } from "@/lib/grading";
+import { contextFor, fill } from "@/data/verb-sentences";
 import { recordAttempt, useProgress, statusOf, STATUS_LABEL } from "@/lib/progress";
 import { Chip, Panel, PageHeader, ProgressBar, btn } from "@/components/app-shell";
 
@@ -268,6 +269,9 @@ function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
   const i = order[step] ?? 0;
   const p = PRONOUNS[i]!;
   const expected = verb.forms[i] ?? "";
+  const ctx = contextFor(verb)[i]!;
+  const [before = "", after = ""] = ctx.it.split("_");
+  const full = fill(ctx.it, expected);
   const submit = () => {
     if (result !== null) {
       const nextStep = step + 1;
@@ -277,10 +281,10 @@ function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
       return;
     }
     if (!answer.trim()) return;
-    const g = grade(answer, expected);
+    const g = grade(answer.trim().toLowerCase(), expected);
     setResult(g);
     if (g === "correct") setScore((s) => s + 1);
-    speak(expected);
+    speak(full);
   };
   const insert = (ch: string) => {
     const el = input.current;
@@ -294,11 +298,15 @@ function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
       <div>
         <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Question {step + 1} of 6</span><span>Score {score}</span></div>
         <div className="mt-2"><ProgressBar value={(step / 6) * 100} label="Practice progress" /></div>
-        <p className="mt-6 text-sm font-semibold text-muted-foreground">Write this in Italian:</p>
-        <p className="mt-1 text-2xl font-bold">“{verb.en[i]}”</p>
+        <p className="mt-6 inline-flex rounded-full bg-tile-blue px-3 py-1 text-xs font-semibold text-tile-blue-ink">{ctx.situation}</p>
+        <p className="mt-3 text-sm font-semibold text-muted-foreground">Say this the Italian way:</p>
+        <p className="mt-1 text-xl font-bold">“{ctx.en}”</p>
+        <p className="mt-4 text-2xl font-semibold leading-relaxed" aria-label="Italian sentence with a blank">
+          {before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}
+        </p>
 
         <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
-          <label htmlFor="answer" className="text-sm font-semibold">{p.it} …</label>
+          <label htmlFor="answer" className="text-sm font-semibold">Fill the blank with {verb.infinitive}</label>
           <input id="answer" ref={input} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
             value={answer} onChange={(e) => setAnswer(e.target.value)} readOnly={result !== null}
             placeholder={`form of ${verb.infinitive}`}
@@ -307,7 +315,13 @@ function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
             {ACCENTS.map((a) => <button type="button" key={a} disabled={result !== null} onClick={() => insert(a)} aria-label={`Insert ${a}`} className="h-10 w-10 rounded-lg border bg-card text-lg font-semibold hover:bg-muted disabled:opacity-40">{a}</button>)}
           </div>
 
-          {result && <Feedback result={result} answer={answer} expected={`${p.it} ${expected}`} meaning={verb.en[i] ?? ""} />}
+          {result && <Feedback result={result} answer={answer} expected={full} meaning={ctx.en} />}
+          {result && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">Why “{expected}”?</span> {ctx.tip ?? `The ending already says who: “${expected}” = ${p.en}. Italians usually drop “${p.it}”.`}
+              <button type="button" onClick={() => speak(full)} className="ml-2 inline-flex items-center gap-1 font-semibold text-primary"><Volume2 className="h-4 w-4" aria-hidden /> Hear again</button>
+            </p>
+          )}
 
           <button className={`${btn.primary} mt-5 w-full sm:w-auto`} disabled={result === null && !answer.trim()}>
             {result === null ? "Check answer" : step === 5 ? "See result" : "Continue"} {result !== null && <ArrowRight className="h-4 w-4" />}
