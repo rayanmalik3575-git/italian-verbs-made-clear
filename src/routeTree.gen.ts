@@ -14,6 +14,7 @@ import { Route as GreetingsRouteImport } from './routes/greetings'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as NationalitiesRouteImport } from './routes/nationalities'
 import { Route as PathRouteImport } from './routes/path'
+import { Route as PluralsRouteImport } from './routes/plurals'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as SentencesRouteImport } from './routes/sentences'
@@ -43,6 +44,11 @@ const NationalitiesRoute = NationalitiesRouteImport.update({
 const PathRoute = PathRouteImport.update({
   id: '/path',
   path: '/path',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PluralsRoute = PluralsRouteImport.update({
+  id: '/plurals',
+  path: '/plurals',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PracticeRoute = PracticeRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
   '/path': typeof PathRoute
+  '/plurals': typeof PluralsRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/sentences': typeof SentencesRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
   '/path': typeof PathRoute
+  '/plurals': typeof PluralsRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/sentences': typeof SentencesRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
   '/path': typeof PathRoute
+  '/plurals': typeof PluralsRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/sentences': typeof SentencesRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/nationalities'
     | '/path'
+    | '/plurals'
     | '/practice'
     | '/progress'
     | '/sentences'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/nationalities'
     | '/path'
+    | '/plurals'
     | '/practice'
     | '/progress'
     | '/sentences'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/nationalities'
     | '/path'
+    | '/plurals'
     | '/practice'
     | '/progress'
     | '/sentences'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   NationalitiesRoute: typeof NationalitiesRoute
   PathRoute: typeof PathRoute
+  PluralsRoute: typeof PluralsRoute
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
   SentencesRoute: typeof SentencesRoute
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/path'
       fullPath: '/path'
       preLoaderRoute: typeof PathRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plurals': {
+      id: '/plurals'
+      path: '/plurals'
+      fullPath: '/plurals'
+      preLoaderRoute: typeof PluralsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/practice': {
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   NationalitiesRoute: NationalitiesRoute,
   PathRoute: PathRoute,
+  PluralsRoute: PluralsRoute,
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
   SentencesRoute: SentencesRoute,

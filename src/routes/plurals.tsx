@@ -33,7 +33,7 @@ const art = (a: string, w: string) => (a.endsWith("'") ? a + w : `${a} ${w}`);
 function Ending({ word, base }: { word: string; base: string }) {
   let i = 0;
   while (i < word.length && i < base.length && word[i] === base[i]) i++;
-  return <><span>{word.slice(0, i)}</span><span className="text-accent-foreground font-bold text-[--color-pink,#ED2B78]" style={{ color: "var(--pink, #ED2B78)" }}>{word.slice(i)}</span></>;
+  return <><span>{word.slice(0, i)}</span><span className="font-bold text-primary">{word.slice(i)}</span></>;
 }
 
 function WordRow({ n }: { n: Noun }) {
