@@ -144,7 +144,16 @@ function VerbsPage() {
             </div>
             {mode === "learn"
               ? <Learn verb={selected} onPractice={() => select(selected.infinitive, "practice")} />
-              : <Practice key={selected.infinitive} verb={selected} onLearn={() => select(selected.infinitive, "learn")} />}
+              : <div>
+                  <h3 className="mt-6 text-lg font-bold">Practice 1 · Verb forms</h3>
+                  <p className="text-sm text-muted-foreground">Write the form for each person (io, tu, lui/lei…).</p>
+                  <Practice key={selected.infinitive + "-d"} kind="drill" verb={selected} onLearn={() => select(selected.infinitive, "learn")} />
+                  <div className="mt-10 border-t pt-6">
+                    <h3 className="text-lg font-bold">Practice 2 · In real sentences</h3>
+                    <p className="text-sm text-muted-foreground">Now use the verb inside everyday Italian, the way people really speak.</p>
+                    <Practice key={selected.infinitive + "-s"} kind="sentence" verb={selected} onLearn={() => select(selected.infinitive, "learn")} />
+                  </div>
+                </div>}
           </Panel>
         </div>
       </div>
@@ -243,7 +252,8 @@ function Learn({ verb, onPractice }: { verb: Verb; onPractice: () => void }) {
 
 const ACCENTS = ["à", "è", "é", "ì", "ò", "ù"];
 
-function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
+function Practice({ verb, onLearn, kind }: { verb: Verb; onLearn: () => void; kind: "drill" | "sentence" }) {
+  const S = kind === "sentence";
   const order = useMemo(() => [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5), []);
   const [step, setStep] = useState(0);
   const [answer, setAnswer] = useState("");
@@ -271,7 +281,7 @@ function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
   const expected = verb.forms[i] ?? "";
   const ctx = contextFor(verb)[i]!;
   const [before = "", after = ""] = ctx.it.split("_");
-  const full = fill(ctx.it, expected);
+  const full = S ? fill(ctx.it, expected) : `${p.it} ${expected}`;
   const submit = () => {
     if (result !== null) {
       const nextStep = step + 1;
@@ -298,16 +308,22 @@ function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
       <div>
         <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Question {step + 1} of 6</span><span>Score {score}</span></div>
         <div className="mt-2"><ProgressBar value={(step / 6) * 100} label="Practice progress" /></div>
+        {!S && <>
+        <p className="mt-6 text-sm font-semibold text-muted-foreground">Write this in Italian:</p>
+        <p className="mt-1 text-2xl font-bold">“{verb.en[i]}”</p>
+        </>}
+        {S && <>
         <p className="mt-6 inline-flex rounded-full bg-tile-blue px-3 py-1 text-xs font-semibold text-tile-blue-ink">{ctx.situation}</p>
         <p className="mt-3 text-sm font-semibold text-muted-foreground">Say this the Italian way:</p>
         <p className="mt-1 text-xl font-bold">“{ctx.en}”</p>
         <p className="mt-4 text-2xl font-semibold leading-relaxed" aria-label="Italian sentence with a blank">
           {before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}
         </p>
+        </>}
 
         <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
-          <label htmlFor="answer" className="text-sm font-semibold">Fill the blank with {verb.infinitive}</label>
-          <input id="answer" ref={input} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
+          <label htmlFor={`answer-${kind}`} className="text-sm font-semibold">{S ? `Fill the blank with ${verb.infinitive}` : `${p.it} …`}</label>
+          <input id={`answer-${kind}`} ref={input} autoFocus={!S} autoComplete="off" autoCapitalize="off" spellCheck={false}
             value={answer} onChange={(e) => setAnswer(e.target.value)} readOnly={result !== null}
             placeholder={`form of ${verb.infinitive}`}
             className="mt-1.5 min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none focus:ring-2 focus:ring-ring read-only:bg-muted" />
@@ -315,8 +331,8 @@ function Practice({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
             {ACCENTS.map((a) => <button type="button" key={a} disabled={result !== null} onClick={() => insert(a)} aria-label={`Insert ${a}`} className="h-10 w-10 rounded-lg border bg-card text-lg font-semibold hover:bg-muted disabled:opacity-40">{a}</button>)}
           </div>
 
-          {result && <Feedback result={result} answer={answer} expected={full} meaning={ctx.en} />}
-          {result && (
+          {result && <Feedback result={result} answer={answer} expected={full} meaning={S ? ctx.en : verb.en[i] ?? ""} />}
+          {result && S && (
             <p className="mt-3 text-sm text-muted-foreground">
               <span className="font-semibold text-foreground">Why “{expected}”?</span> {ctx.tip ?? `The ending already says who: “${expected}” = ${p.en}. Italians usually drop “${p.it}”.`}
               <button type="button" onClick={() => speak(full)} className="ml-2 inline-flex items-center gap-1 font-semibold text-primary"><Volume2 className="h-4 w-4" aria-hidden /> Hear again</button>
