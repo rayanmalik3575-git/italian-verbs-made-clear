@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GreetingsRouteImport } from './routes/greetings'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as NationalitiesRouteImport } from './routes/nationalities'
 import { Route as PathRouteImport } from './routes/path'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as ProgressRouteImport } from './routes/progress'
@@ -32,6 +33,11 @@ const GreetingsRoute = GreetingsRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NationalitiesRoute = NationalitiesRouteImport.update({
+  id: '/nationalities',
+  path: '/nationalities',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PathRoute = PathRouteImport.update({
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
+  '/nationalities': typeof NationalitiesRoute
   '/path': typeof PathRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
+  '/nationalities': typeof NationalitiesRoute
   '/path': typeof PathRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
+  '/nationalities': typeof NationalitiesRoute
   '/path': typeof PathRoute
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/greetings'
     | '/help'
+    | '/nationalities'
     | '/path'
     | '/practice'
     | '/progress'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/greetings'
     | '/help'
+    | '/nationalities'
     | '/path'
     | '/practice'
     | '/progress'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/greetings'
     | '/help'
+    | '/nationalities'
     | '/path'
     | '/practice'
     | '/progress'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GreetingsRoute: typeof GreetingsRoute
   HelpRoute: typeof HelpRoute
+  NationalitiesRoute: typeof NationalitiesRoute
   PathRoute: typeof PathRoute
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nationalities': {
+      id: '/nationalities'
+      path: '/nationalities'
+      fullPath: '/nationalities'
+      preLoaderRoute: typeof NationalitiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/path': {
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GreetingsRoute: GreetingsRoute,
   HelpRoute: HelpRoute,
+  NationalitiesRoute: NationalitiesRoute,
   PathRoute: PathRoute,
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
