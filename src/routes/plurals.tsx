@@ -75,7 +75,7 @@ function PluralsPage() {
   const [step, setStep] = useState(0);
   return (
     <div className="max-w-3xl">
-      <PageHeader title="Plurals" description="English adds an -s. Italian changes the last vowel — and once you hear the pattern, you'll do it without thinking." />
+      <PageHeader title="Plurals" description="How to talk about more than one thing in Italian, and why the words change the way they do." />
       <div role="tablist" aria-label="Lesson steps" className="mb-8 flex flex-wrap gap-2">
         {TABS.map((t, i) => (
           <button key={t} role="tab" aria-selected={step === i} onClick={() => setStep(i)}
@@ -101,16 +101,19 @@ function Switches() {
   return (
     <>
       <Lead>
-        Italian words almost always end in a vowel. To make a plural, you <strong className="text-foreground">swap that last vowel</strong>. There are only three swaps to know — and the little word in front (<strong className="text-foreground">il, la</strong>) changes too.
+        In English, we usually add an -s: one book, two books. Italian works differently. Almost every Italian noun ends in a vowel, and to make it plural you <strong className="text-foreground">replace that final vowel with another one</strong>.
+      </Lead>
+      <Lead>
+        Which vowel you use depends on how the word ends. There are three main patterns, and together they cover the large majority of nouns you'll meet at this level. Let's go through them one at a time.
       </Lead>
       {SWITCHES.map((s) => (
         <Section key={s.from} kicker={s.who} title={`-${s.from}  →  -${s.to}`}>
-          <p className="mb-2 text-[17px] text-foreground">{s.line}</p>
+          <p className="mb-3 max-w-2xl text-[17px] leading-relaxed text-foreground">{s.line}</p>
           <ul>{s.words.map((n) => <WordRow key={n.sg} n={n} />)}</ul>
         </Section>
       ))}
       <p className="mb-10 border-l-4 border-primary pl-4 text-[17px] leading-relaxed text-foreground">
-        <strong>Why it matters:</strong> in a café you'll hear <em>"due caffè"</em>, at the market <em>"tre pizze"</em>. The ending tells the listener "more than one" before they even see the number.
+        <strong>A tip from experience:</strong> don't learn nouns on their own. Learn them with their article — <em>il libro</em>, <em>la casa</em>, <em>il cane</em>. The article tells you the gender, and the gender tells you the plural. It's a small habit that saves you a lot of guessing later.
       </p>
     </>
   );
@@ -120,11 +123,14 @@ function Sounds() {
   return (
     <>
       <Lead>
-        Italian is written exactly as it sounds. So when a vowel change would <strong className="text-foreground">change the sound</strong>, the spelling adjusts to protect it. Say each pair out loud — your ear will remember better than your eyes.
+        Italian spelling is very faithful to pronunciation: the way a word is written tells you how to say it. Occasionally, though, changing the final vowel would also <strong className="text-foreground">change the sound</strong> of the letter before it — and Italian doesn't want that.
+      </Lead>
+      <Lead>
+        So the spelling makes a small adjustment to keep the word sounding the way it did in the singular. Read each pair aloud as you go; hearing the difference makes these rules much easier to remember than reading them.
       </Lead>
       {SOUND_RULES.map((r) => (
         <Section key={r.title} title={r.title}>
-          <p className="mb-2 text-[17px] leading-relaxed text-foreground">{r.why}</p>
+          <p className="mb-3 max-w-2xl text-[17px] leading-relaxed text-foreground">{r.why}</p>
           <ul>{r.words.map((n) => <WordRow key={n.sg} n={n} />)}</ul>
         </Section>
       ))}
@@ -136,11 +142,14 @@ function Rebels() {
   return (
     <>
       <Lead>
-        A few words don't play the vowel game. They look scary, but they fall into <strong className="text-foreground">four small families</strong> — spot the family and you know the plural.
+        Every language has words that don't follow the main rules, and Italian is no exception. The reassuring part is that most of these exceptions aren't random — they fall into <strong className="text-foreground">four small groups</strong>, each with a reason behind it.
+      </Lead>
+      <Lead>
+        Once you can recognise which group a word belongs to, you'll know how its plural behaves. You don't need to memorise long lists; just get familiar with the examples below.
       </Lead>
       {REBELS.map((r, i) => (
         <Section key={r.title} kicker={`Rebel family ${i + 1}`} title={r.title}>
-          <p className="mb-2 text-[17px] text-foreground">{r.line}</p>
+          <p className="mb-3 max-w-2xl text-[17px] leading-relaxed text-foreground">{r.line}</p>
           {r.groups.map((g) => (
             <div key={g.label} className="mt-3">
               <p className="text-sm font-semibold text-muted-foreground">{g.label}</p>
@@ -150,7 +159,7 @@ function Rebels() {
         </Section>
       ))}
       <p className="mb-10 border-l-4 border-primary pl-4 text-[17px] leading-relaxed text-foreground">
-        <strong>Quick check:</strong> if a word ends with an accent, a consonant, or is a shortened word — leave it alone and just change the article.
+        <strong>Before you practise:</strong> when you meet a new noun, ask yourself — does it end in an accented vowel, a consonant, or is it a shortened form of a longer word? If so, it won't change; only the article will. For everything else, go back to the three vowel patterns from step 1.
       </p>
     </>
   );

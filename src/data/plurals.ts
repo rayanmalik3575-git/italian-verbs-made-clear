@@ -6,7 +6,7 @@ export type Noun = { sg: string; pl: string; en: string; enPl: string; article: 
 export const SWITCHES = [
   {
     from: "o", to: "i", who: "Masculine words",
-    line: "Most words ending in -o are masculine. Swap the -o for -i.",
+    line: "Most nouns that end in -o are masculine. To talk about more than one, take off the -o and put -i in its place. Notice that the article changes with it: il becomes i. Think of the word and its article as a pair that always travels together.",
     words: [
       { sg: "libro", pl: "libri", en: "book", enPl: "books", article: ["il", "i"] },
       { sg: "ragazzo", pl: "ragazzi", en: "boy", enPl: "boys", article: ["il", "i"] },
@@ -15,7 +15,7 @@ export const SWITCHES = [
   },
   {
     from: "a", to: "e", who: "Feminine words",
-    line: "Most words ending in -a are feminine. Swap the -a for -e.",
+    line: "Most nouns that end in -a are feminine. Here the -a becomes -e, and la becomes le. When you read le at the start of a phrase, you already know two things before the noun arrives: it's feminine, and there's more than one.",
     words: [
       { sg: "pizza", pl: "pizze", en: "pizza", enPl: "pizzas", article: ["la", "le"] },
       { sg: "casa", pl: "case", en: "house", enPl: "houses", article: ["la", "le"] },
@@ -24,7 +24,7 @@ export const SWITCHES = [
   },
   {
     from: "e", to: "i", who: "Masculine or feminine",
-    line: "Words ending in -e can be either gender, but the plural is always -i. You don't need to know the gender to make it plural.",
+    line: "Nouns in -e are the ones students worry about, because they can be masculine (il cane) or feminine (la notte). Here is the good news: for the plural, the gender doesn't matter. Every -e becomes -i. You only need the gender to choose the article — i cani, but le notti.",
     words: [
       { sg: "cane", pl: "cani", en: "dog", enPl: "dogs", article: ["il", "i"] },
       { sg: "notte", pl: "notti", en: "night", enPl: "nights", article: ["la", "le"] },
@@ -37,7 +37,7 @@ export const SWITCHES = [
 export const SOUND_RULES = [
   {
     title: "-ca / -ga → -che / -ghe",
-    why: "Italian 'ce' sounds like 'che' in 'cheese'. To keep the hard K sound of amica, Italian slips in an h.",
+    why: "In Italian, the letters ce are pronounced like the \"che\" in \"cheque\". So if amica simply became amice, the word would suddenly sound different. To keep the hard K sound you hear in the singular, Italian writes an h before the -e. The h is silent; its only job is to protect the sound.",
     words: [
       { sg: "amica", pl: "amiche", en: "female friend", enPl: "female friends", article: ["l'", "le"] },
       { sg: "banca", pl: "banche", en: "bank", enPl: "banks", article: ["la", "le"] },
@@ -46,7 +46,7 @@ export const SOUND_RULES = [
   },
   {
     title: "-co / -go → usually -chi / -ghi",
-    why: "Short words, stressed near the end, keep the hard sound with an h. Longer words stressed earlier (médico, amíco) often go soft: -ci. Learn the soft ones as you meet them.",
+    why: "Masculine words follow the same idea, but with one honest caveat: this rule is not perfectly regular. Most words keep the hard sound and add an h (parchi, laghi). A few very common ones go soft instead (amici, medici). There's no shortcut I can give you here that always works — the practical approach is to learn the soft ones as you meet them. At A1 level, amico and medico are the two that matter most.",
     words: [
       { sg: "parco", pl: "parchi", en: "park", enPl: "parks", article: ["il", "i"] },
       { sg: "lago", pl: "laghi", en: "lake", enPl: "lakes", article: ["il", "i"] },
@@ -56,7 +56,7 @@ export const SOUND_RULES = [
   },
   {
     title: "-cia / -gia → -cie or -ce",
-    why: "Look at the letter before -cia. A vowel before it? Keep the i (camicie). A consonant before it? Drop the i (arance). The sound is the same either way, so this only matters when writing.",
+    why: "This one only affects spelling — you pronounce the plural the same either way, so don't let it slow you down when speaking. When writing, look at the letter just before -cia or -gia. If it's a vowel, keep the i (camicia → camicie). If it's a consonant, drop the i (arancia → arance).",
     words: [
       { sg: "camicia", pl: "camicie", en: "shirt", enPl: "shirts", article: ["la", "le"] },
       { sg: "valigia", pl: "valigie", en: "suitcase", enPl: "suitcases", article: ["la", "le"] },
@@ -70,7 +70,7 @@ export const SOUND_RULES = [
 export const REBELS = [
   {
     title: "They never change",
-    line: "The article does all the work. Only il/la → i/le tells you it's plural.",
+    line: "Some nouns keep exactly the same form in the plural. In these cases the article carries the meaning: il caffè is one coffee, i caffè is several. That's why it's worth always learning nouns together with their article — without it, you couldn't tell one from many.",
     groups: [
       { label: "Ends with an accent", words: [
         { sg: "città", pl: "città", en: "city", enPl: "cities", article: ["la", "le"] },
@@ -91,7 +91,7 @@ export const REBELS = [
   },
   {
     title: "Masculine words in -a",
-    line: "Many words ending in -ma come from Greek. They are masculine, so the plural is -i, not -e.",
+    line: "These look feminine because they end in -a, but they're actually masculine — most came into Italian from Greek. Since they're masculine, they take the masculine plural -i. You'll use problema constantly, so it's a good one to remember as your model.",
     groups: [
       { label: "-ma → -mi", words: [
         { sg: "problema", pl: "problemi", en: "problem", enPl: "problems", article: ["il", "i"], note: "Italians say 'nessun problema' — no problem." },
@@ -102,7 +102,7 @@ export const REBELS = [
   },
   {
     title: "Body parts that switch gender",
-    line: "A leftover from Latin: some body parts are masculine in the singular but feminine in the plural, ending in -a.",
+    line: "A small group, mostly body parts that come in pairs or sets, inherited an old Latin plural ending in -a. The singular is masculine, but the plural becomes feminine — so the article changes from il to le. There are only a handful at this level, so they're easy to collect.",
     groups: [
       { label: "il … → le …a", words: [
         { sg: "braccio", pl: "braccia", en: "arm", enPl: "arms", article: ["il", "le"] },
@@ -114,7 +114,7 @@ export const REBELS = [
   },
   {
     title: "Totally irregular",
-    line: "Just a handful. Learn them as whole words.",
+    line: "Finally, a couple of words simply have their own plural. There's no rule to apply, but there are very few of them — learn each one as a complete pair, the same way you learned \"man → men\" in English.",
     groups: [
       { label: "One of a kind", words: [
         { sg: "uomo", pl: "uomini", en: "man", enPl: "men", article: ["l'", "gli"] },
