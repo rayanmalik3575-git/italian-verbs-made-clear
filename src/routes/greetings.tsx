@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { AlertTriangle, ArrowRight, Check, Hand, RotateCcw, Volume2, X } from "lucide-react";
-import { PageHeader, Panel, IconTile, ProgressBar, btn } from "@/components/app-shell";
+import { AlertTriangle, ArrowRight, Check, Lightbulb, MessageCircle, Zap, RotateCcw, Volume2, X } from "lucide-react";
+import { PageHeader, Panel, ProgressBar, btn } from "@/components/app-shell";
 import { GROUPS, SCENARIOS, isCorrectScenario, type Register } from "@/data/greetings";
 
 export const Route = createFileRoute("/greetings")({
@@ -58,38 +58,76 @@ function GreetingsPage() {
   );
 }
 
+function Rich({ text }: { text: string }) {
+  const parts = text.split(/\*\*(.+?)\*\*/g);
+  return <>{parts.map((t, i) => (i % 2 ? <strong key={i} className="font-semibold text-foreground">{t}</strong> : <span key={i}>{t}</span>))}</>;
+}
+
 function Group({ index }: { index: number }) {
   const g = GROUPS[index]!;
   return (
-    <div className="space-y-4">
-      <Panel>
-        <div className="flex items-start gap-4">
-          <IconTile icon={Hand} color="pink" />
-          <div>
-            <h2 className="text-lg font-bold">{g.title}</h2>
-            <p className="mt-1 text-muted-foreground">{g.intro}</p>
-          </div>
-        </div>
-      </Panel>
+    <div className="space-y-5">
+      <section className="rounded-3xl border bg-tile-blue/60 p-6 sm:p-8">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary">Step {index + 1} · The big idea</p>
+        <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">{g.title}</h2>
+        <p className="mt-1 text-muted-foreground">{g.intro}</p>
+        <p className="mt-4 flex gap-3 text-[17px] leading-relaxed text-muted-foreground">
+          <Lightbulb className="mt-1 h-5 w-5 shrink-0 text-primary" aria-hidden />
+          <span><Rich text={g.bigIdea} /></span>
+        </p>
+      </section>
       {g.phrases.map((p) => (
-        <Panel key={p.it}>
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
+        <Panel key={p.it} className="overflow-hidden p-0">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b p-5 sm:p-6">
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-xl font-bold">{p.it}</h3>
+                <h3 className="text-2xl font-bold tracking-tight sm:text-[28px]">{p.it}</h3>
                 <span className={`rounded-md px-2 py-0.5 text-xs font-semibold ${REG[p.register].cls}`}>{REG[p.register].label}</span>
               </div>
-              <p className="mt-1 text-[17px] font-medium">{p.en}</p>
-              <p className="text-sm text-muted-foreground">Sounds like: <span className="font-semibold text-foreground">{p.say}</span>{p.literal && <> · Literally: “{p.literal}”</>}</p>
+              <p className="mt-1 text-lg font-medium text-muted-foreground">{p.en}{p.literal && <span className="text-sm"> · literally “{p.literal}”</span>}</p>
+              <div className="mt-3 flex flex-wrap items-center gap-1" aria-label={`Sounds like ${p.syllables.join("-")}`}>
+                {p.syllables.map((syl, i) => (
+                  <span key={i} className={`rounded-lg px-2 py-1 font-mono text-sm ${i === p.stress ? "bg-primary text-primary-foreground font-bold" : "bg-muted text-muted-foreground"}`}>{syl}</span>
+                ))}
+                <span className="ml-1 text-xs text-muted-foreground">stress on the blue beat</span>
+              </div>
             </div>
             <button className={btn.outline} onClick={() => speak(p.it)} aria-label={`Listen to ${p.it}`}><Volume2 className="h-4 w-4" /> Listen</button>
           </div>
-          <p className="mt-3"><span className="font-semibold">When: </span><span className="text-muted-foreground">{p.when}</span></p>
-          {p.watch && (
-            <p className="mt-3 flex gap-2 rounded-xl bg-tile-amber p-3 text-sm text-tile-amber-ink">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" /> <span>{p.watch}</span>
-            </p>
-          )}
+          <div className="space-y-4 p-5 sm:p-6">
+            <p className="text-lg font-semibold leading-snug"><Rich text={p.hook} /></p>
+            <p className="text-[17px] leading-relaxed text-muted-foreground"><Rich text={p.insight} /></p>
+            {p.shortcut && (
+              <div className="rounded-2xl border border-accent/30 bg-tile-pink p-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Zap className="h-4 w-4 text-tile-pink-ink" aria-hidden />
+                  <span className="text-xs font-bold uppercase tracking-wider text-tile-pink-ink">What natives actually say</span>
+                  <button onClick={() => speak(p.shortcut!.say)} className="ml-auto inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-semibold text-tile-pink-ink hover:bg-card" aria-label={`Listen to ${p.shortcut.say}`}><Volume2 className="h-4 w-4" /> Listen</button>
+                </div>
+                <p className="mt-1 text-2xl font-bold text-foreground">{p.shortcut.say}</p>
+                <p className="mt-1 leading-relaxed text-muted-foreground"><Rich text={p.shortcut.note} /></p>
+              </div>
+            )}
+            {p.scene && (
+              <div className="rounded-2xl border bg-background p-4">
+                <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"><MessageCircle className="h-4 w-4" aria-hidden /> In real life</p>
+                <div className="space-y-3">
+                  {p.scene.map((l, i) => (
+                    <div key={i} className={i % 2 ? "sm:pl-10" : ""}>
+                      <p className="text-xs font-semibold text-muted-foreground">{l.who}</p>
+                      <button onClick={() => speak(l.it)} className="text-left text-lg font-semibold text-foreground hover:text-primary">{l.it}</button>
+                      <p className="text-sm text-muted-foreground">{l.en}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {p.trap && (
+              <p className="flex gap-2 rounded-xl bg-tile-amber p-3 text-tile-amber-ink">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden /> <span><span className="font-bold">Watch out: </span><Rich text={p.trap} /></span>
+              </p>
+            )}
+          </div>
         </Panel>
       ))}
     </div>
