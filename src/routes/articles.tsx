@@ -101,7 +101,7 @@ function ArticlesPage() {
       {step === 2 && <FullMap />}
       {step === 3 && <Practice />}
       <div className="mt-8 flex justify-between gap-3">
-        {step > 0 ? <button className={btn.secondary} onClick={() => setStep(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
+        {step > 0 ? <button className={btn.outline} onClick={() => setStep(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
         {step < 3 && <button className={btn.primary} onClick={() => setStep(step + 1)}>Next: {TABS[step + 1]} <ArrowRight className="h-4 w-4" /></button>}
       </div>
     </div>
