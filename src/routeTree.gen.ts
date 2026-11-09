@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as GreetingsRouteImport } from './routes/greetings'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as NationalitiesRouteImport } from './routes/nationalities'
@@ -24,6 +25,11 @@ import { Route as VerbsRouteImport } from './routes/verbs'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticlesRoute = ArticlesRouteImport.update({
+  id: '/articles',
+  path: '/articles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GreetingsRoute = GreetingsRouteImport.update({
@@ -79,6 +85,7 @@ const VerbsRoute = VerbsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/articles': typeof ArticlesRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/articles': typeof ArticlesRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/articles': typeof ArticlesRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/articles'
     | '/greetings'
     | '/help'
     | '/nationalities'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/articles'
     | '/greetings'
     | '/help'
     | '/nationalities'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/articles'
     | '/greetings'
     | '/help'
     | '/nationalities'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ArticlesRoute: typeof ArticlesRoute
   GreetingsRoute: typeof GreetingsRoute
   HelpRoute: typeof HelpRoute
   NationalitiesRoute: typeof NationalitiesRoute
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/articles': {
+      id: '/articles'
+      path: '/articles'
+      fullPath: '/articles'
+      preLoaderRoute: typeof ArticlesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/greetings': {
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ArticlesRoute: ArticlesRoute,
   GreetingsRoute: GreetingsRoute,
   HelpRoute: HelpRoute,
   NationalitiesRoute: NationalitiesRoute,
