@@ -196,7 +196,7 @@ function Sounds() {
         <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">So the silent <strong className="text-foreground">h</strong> is a shield: it keeps C and G hard in front of e and i.</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {[["amiche", "with h — hard"], ["amice", "without h — wrong sound"]].map(([w, l]) => (
-            <button key={w} onClick={() => speak(w)} className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-accent">
+            <button key={w} onClick={() => speak(w ?? "")} className="inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-accent">
               <Volume2 className="h-4 w-4 text-primary" /><strong>{w}</strong><span className="text-muted-foreground">{l}</span>
             </button>
           ))}
