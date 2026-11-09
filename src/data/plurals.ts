@@ -158,3 +158,66 @@ export function isCorrectPlural(task: PluralTask, input: string): boolean {
   const a = norm(input), b = norm(task.answer);
   return a === b || a === b.split(" ").slice(1).join(" ");
 }
+
+// ---------- Smart plural explainer (logic upgrade) ----------
+
+export type RuleId = "o-i" | "a-e" | "e-i" | "hard" | "soft" | "cia" | "io" | "same" | "ma" | "body" | "irregular";
+
+export type Explained = { sg: string; pl: string; rule: RuleId; reason: string };
+
+const IRREGULAR: Record<string, string> = { uomo: "uomini", mano: "mani", dio: "dei", bue: "buoi" };
+const BODY: Record<string, string> = { braccio: "braccia", dito: "dita", ginocchio: "ginocchia", uovo: "uova", labbro: "labbra", osso: "ossa", lenzuolo: "lenzuola", paio: "paia" };
+/** Common -co/-go words that go soft (-ci/-gi). */
+const SOFT = new Set(["amico", "medico", "greco", "nemico", "porco", "meccanico", "politico", "psicologo", "biologo", "asparago", "tecnico", "magico"]);
+/** Shortened / invariable words ending in a plain vowel. */
+const SAME = new Set(["foto", "moto", "auto", "radio", "cinema", "bici", "serie", "specie", "re", "gru", "virus", "crisi", "analisi", "tesi", "sport"]);
+/** Masculine -a words. */
+const MASC_A = new Set(["problema", "programma", "tema", "sistema", "clima", "dramma", "poeta", "pianeta", "papa", "telegramma", "diploma", "panorama"]);
+
+const REASON: Record<RuleId, string> = {
+  "o-i": "Masculine -o becomes -i.",
+  "a-e": "Feminine -a becomes -e.",
+  "e-i": "Every -e becomes -i, masculine or feminine.",
+  hard: "An h is added to keep the hard K / G sound.",
+  soft: "One of the common words that turn soft: -ci / -gi.",
+  cia: "-cia / -gia: keep the i after a vowel, drop it after a consonant.",
+  io: "-io loses the o and keeps one i (figlio → figli).",
+  same: "Accented, borrowed or shortened words don't change — only the article does.",
+  ma: "Looks feminine but it's masculine, so it takes -i.",
+  body: "Old Latin plural in -a: masculine singular, feminine plural.",
+  irregular: "Its own unique plural — learn it as a pair.",
+};
+
+/** Turns any singular noun into its plural and names the rule used. */
+export function explainPlural(raw: string): Explained | null {
+  const sg = raw.trim().toLowerCase().replace(/^(il|lo|la|l'|l’|un|una|uno)\s*/, "");
+  if (!/^[a-zàèéìòù]+$/.test(sg)) return null;
+  const out = (pl: string, rule: RuleId): Explained => ({ sg, pl, rule, reason: REASON[rule] });
+  if (IRREGULAR[sg]) return out(IRREGULAR[sg], "irregular");
+  if (BODY[sg]) return out(BODY[sg], "body");
+  if (SAME.has(sg) || /[àèéìòù]$/.test(sg) || /[^aeiou]$/.test(sg)) return out(sg, "same");
+  if (MASC_A.has(sg)) return out(sg.slice(0, -1) + "i", "ma");
+  if (/[cg]o$/.test(sg)) return SOFT.has(sg) ? out(sg.slice(0, -1) + "i", "soft") : out(sg.slice(0, -1) + "hi", "hard");
+  if (/[cg]a$/.test(sg)) return out(sg.slice(0, -1) + "he", "hard");
+  if (/[cg]ia$/.test(sg)) return out(regularPlural(sg), "cia");
+  if (sg.endsWith("io")) return out(sg.slice(0, -1), "io");
+  if (sg.endsWith("o")) return out(sg.slice(0, -1) + "i", "o-i");
+  if (sg.endsWith("e")) return out(sg.slice(0, -1) + "i", "e-i");
+  if (sg.endsWith("a")) return out(sg.slice(0, -1) + "e", "a-e");
+  return null;
+}
+
+/** Targeted hint when the learner applied the wrong rule. */
+export function mistakeHint(task: PluralTask, input: string): string | null {
+  const word = norm(input).split(" ").pop() ?? "";
+  const sg = task.sg.split(/\s|'/).pop() ?? "";
+  const target = task.answer.split(" ").pop() ?? "";
+  const [art] = norm(input).split(" ");
+  const wantArt = task.answer.split(" ")[0];
+  if (word === target && norm(input).includes(" ") && art !== wantArt) return `The word is right — just change the article to "${wantArt}".`;
+  if (word === sg && target !== sg) return "This word does change in the plural — look at its ending again.";
+  if (target === sg && word !== sg) return "Trick question: this word never changes. Only the article moves.";
+  if (/[cg]a$/.test(sg) && /[cg]e$/.test(word)) return "Without the h the sound would turn soft. Add an h before -e.";
+  if (/[cg]o$/.test(sg) && /[cg]i$/.test(word) && !/h/.test(word.slice(-2))) return "Most -co / -go words keep the hard sound with -chi / -ghi.";
+  return null;
+}
