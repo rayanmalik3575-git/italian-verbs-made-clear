@@ -312,7 +312,7 @@ function FullMap() {
 
 function shuffle<T>(a: T[]) {
   const b = [...a];
-  for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+  for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = b[i] as T; b[i] = b[j] as T; b[j] = t; }
   return b;
 }
 
@@ -327,7 +327,7 @@ function Practice() {
   const [typed, setTyped] = useState("");
   const [checked, setChecked] = useState<null | boolean>(null);
   const [score, setScore] = useState(0);
-  const n = deck[i];
+  const n = deck[i] ?? DECK[0]!;
 
   function reset() { setRound(round + 1); setI(0); setStage("pick"); setPicked(null); setTyped(""); setChecked(null); setScore(0); }
   function next() {
