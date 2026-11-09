@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   LayoutDashboard, Route as RouteIcon, BookA, PenLine, BarChart3, Settings, LifeBuoy,
-  PanelLeftClose, Blocks, PanelLeftOpen, Menu, ChevronDown, UserRound, Hand, Globe, Copy, Type,
+  PanelLeftClose, Blocks, PanelLeftOpen, Menu, ChevronDown, UserRound, Hand, Globe, Copy, Type, Ban,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -18,6 +18,7 @@ const MAIN = [
   { to: "/nationalities", label: "Nationalities", icon: Globe },
   { to: "/plurals", label: "Plurals", icon: Copy },
   { to: "/articles", label: "Articles", icon: Type },
+  { to: "/negatives", label: "Negatives", icon: Ban },
   { to: "/practice", label: "Practice", icon: PenLine },
   { to: "/progress", label: "Progress", icon: BarChart3 },
 ] as const;
