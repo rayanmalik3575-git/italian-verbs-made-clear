@@ -14,6 +14,7 @@ import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as GreetingsRouteImport } from './routes/greetings'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as NationalitiesRouteImport } from './routes/nationalities'
+import { Route as NegativesRouteImport } from './routes/negatives'
 import { Route as PathRouteImport } from './routes/path'
 import { Route as PluralsRouteImport } from './routes/plurals'
 import { Route as PracticeRouteImport } from './routes/practice'
@@ -45,6 +46,11 @@ const HelpRoute = HelpRouteImport.update({
 const NationalitiesRoute = NationalitiesRouteImport.update({
   id: '/nationalities',
   path: '/nationalities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NegativesRoute = NegativesRouteImport.update({
+  id: '/negatives',
+  path: '/negatives',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PathRoute = PathRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
+  '/negatives': typeof NegativesRoute
   '/path': typeof PathRoute
   '/plurals': typeof PluralsRoute
   '/practice': typeof PracticeRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
+  '/negatives': typeof NegativesRoute
   '/path': typeof PathRoute
   '/plurals': typeof PluralsRoute
   '/practice': typeof PracticeRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
   '/nationalities': typeof NationalitiesRoute
+  '/negatives': typeof NegativesRoute
   '/path': typeof PathRoute
   '/plurals': typeof PluralsRoute
   '/practice': typeof PracticeRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/greetings'
     | '/help'
     | '/nationalities'
+    | '/negatives'
     | '/path'
     | '/plurals'
     | '/practice'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/greetings'
     | '/help'
     | '/nationalities'
+    | '/negatives'
     | '/path'
     | '/plurals'
     | '/practice'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/greetings'
     | '/help'
     | '/nationalities'
+    | '/negatives'
     | '/path'
     | '/plurals'
     | '/practice'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   GreetingsRoute: typeof GreetingsRoute
   HelpRoute: typeof HelpRoute
   NationalitiesRoute: typeof NationalitiesRoute
+  NegativesRoute: typeof NegativesRoute
   PathRoute: typeof PathRoute
   PluralsRoute: typeof PluralsRoute
   PracticeRoute: typeof PracticeRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/nationalities'
       fullPath: '/nationalities'
       preLoaderRoute: typeof NationalitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/negatives': {
+      id: '/negatives'
+      path: '/negatives'
+      fullPath: '/negatives'
+      preLoaderRoute: typeof NegativesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/path': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   GreetingsRoute: GreetingsRoute,
   HelpRoute: HelpRoute,
   NationalitiesRoute: NationalitiesRoute,
+  NegativesRoute: NegativesRoute,
   PathRoute: PathRoute,
   PluralsRoute: PluralsRoute,
   PracticeRoute: PracticeRoute,
