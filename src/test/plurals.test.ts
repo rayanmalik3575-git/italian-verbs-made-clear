@@ -26,3 +26,21 @@ describe("plural quiz checking", () => {
   });
   it("rejects the regular-looking wrong form", () => expect(isCorrectPlural(t, "i bracci")).toBe(false));
 });
+
+import { explainPlural, mistakeHint } from "@/data/plurals";
+describe("smart plural explainer", () => {
+  it("handles articles, exceptions and sound rules", () => {
+    expect(explainPlural("il libro")?.pl).toBe("libri");
+    expect(explainPlural("amico")).toMatchObject({ pl: "amici", rule: "soft" });
+    expect(explainPlural("parco")).toMatchObject({ pl: "parchi", rule: "hard" });
+    expect(explainPlural("problema")).toMatchObject({ pl: "problemi", rule: "ma" });
+    expect(explainPlural("foto")).toMatchObject({ pl: "foto", rule: "same" });
+    expect(explainPlural("uomo")?.pl).toBe("uomini");
+    expect(explainPlural("figlio")?.pl).toBe("figli");
+    expect(explainPlural("123")).toBeNull();
+  });
+  it("gives a hint for a missing h", () => {
+    const t = PLURAL_TASKS.find((x) => x.sg === "l'amica")!;
+    expect(mistakeHint(t, "le amice")).toMatch(/h/);
+  });
+});
