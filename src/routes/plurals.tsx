@@ -143,7 +143,7 @@ function PluralsPage() {
       {step < 3 && (
         <div className="mt-2 flex justify-between">
           {step > 0 ? <button className={btn.outline} onClick={() => go(step - 1)}>Back</button> : <span />}
-          <button className={btn.primary} onClick={() => go(step + 1)}>Next: {TABS[step + 1].t} <ArrowRight className="h-4 w-4" /></button>
+          <button className={btn.primary} onClick={() => go(step + 1)}>Next: {TABS[step + 1]?.t} <ArrowRight className="h-4 w-4" /></button>
         </div>
       )}
     </div>
@@ -160,15 +160,15 @@ function Switches() {
       </Intro>
       <div className="mb-8 grid gap-3 sm:grid-cols-3">
         {SWITCHES.map((s, i) => (
-          <div key={s.from} className={`rounded-2xl p-4 ${TONE[SWITCH_TONE[i]]}`}>
+          <div key={s.from} className={`rounded-2xl p-4 ${TONE[(SWITCH_TONE[i] ?? "blue")]}`}>
             <p className="text-xs font-bold uppercase tracking-wider opacity-80">{s.who}</p>
             <p className="mt-1 text-3xl font-bold">-{s.from} → -{s.to}</p>
-            <p className="mt-1 text-sm">{art(s.words[0].article[0], s.words[0].sg)} → {art(s.words[0].article[1], s.words[0].pl)}</p>
+            <p className="mt-1 text-sm">{art(s.words[0]!.article[0], s.words[0]!.sg)} → {art(s.words[0]!.article[1], s.words[0]!.pl)}</p>
           </div>
         ))}
       </div>
       {SWITCHES.map((s, i) => (
-        <Block key={s.from} step={`Pattern ${i + 1} · ${s.who}`} title={`Words ending in -${s.from}`} formula={[`-${s.from}`, `-${s.to}`]} tone={SWITCH_TONE[i]} text={s.line} words={s.words} />
+        <Block key={s.from} step={`Pattern ${i + 1} · ${s.who}`} title={`Words ending in -${s.from}`} formula={[`-${s.from}`, `-${s.to}`]} tone={(SWITCH_TONE[i] ?? "blue")} text={s.line} words={s.words} />
       ))}
       <Tip title="Tip:">Learn every noun with its article — <em>il libro</em>, <em>la casa</em>. The article tells you the gender, and the gender tells you the plural. Tap any card to hear both forms.</Tip>
     </>
@@ -203,7 +203,7 @@ function Sounds() {
         </div>
       </section>
       {SOUND_RULES.map((r, i) => (
-        <Block key={r.title} step={`Rule ${i + 1}`} title={r.title} tone={(["green", "amber", "lavender"] as Tone[])[i]} text={r.why} words={r.words} />
+        <Block key={r.title} step={`Rule ${i + 1}`} title={r.title} tone={((["green", "amber", "lavender"] as Tone[])[i] ?? "green")} text={r.why} words={r.words} />
       ))}
     </>
   );
@@ -219,19 +219,19 @@ function Rebels() {
       </Intro>
       <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {REBELS.map((r, i) => (
-          <div key={r.title} className={`rounded-2xl p-4 ${TONE[REBEL_TONE[i]]}`}>
+          <div key={r.title} className={`rounded-2xl p-4 ${TONE[(REBEL_TONE[i] ?? "blue")]}`}>
             <p className="text-xs font-bold opacity-80">Family {i + 1}</p>
             <p className="mt-1 font-bold leading-snug">{r.title}</p>
-            <p className="mt-2 text-sm">{art(r.groups[0].words[0].article[0], r.groups[0].words[0].sg)} → {art(r.groups[0].words[0].article[1], r.groups[0].words[0].pl)}</p>
+            <p className="mt-2 text-sm">{art(r.groups[0]!.words[0]!.article[0], r.groups[0]!.words[0]!.sg)} → {art(r.groups[0]!.words[0]!.article[1], r.groups[0]!.words[0]!.pl)}</p>
           </div>
         ))}
       </div>
       {REBELS.map((r, i) => (
-        <Block key={r.title} step={`Family ${i + 1}`} title={r.title} tone={REBEL_TONE[i]} text={r.line}>
+        <Block key={r.title} step={`Family ${i + 1}`} title={r.title} tone={(REBEL_TONE[i] ?? "blue")} text={r.line}>
           {r.groups.map((g) => (
             <div key={g.label} className="mt-5">
               <p className="mb-2 text-sm font-semibold text-foreground">{g.label}</p>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{g.words.map((n) => <WordCard key={n.sg} n={n} tone={REBEL_TONE[i]} />)}</div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{g.words.map((n) => <WordCard key={n.sg} n={n} tone={(REBEL_TONE[i] ?? "blue")} />)}</div>
             </div>
           ))}
         </Block>
