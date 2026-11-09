@@ -64,7 +64,7 @@ function WordCard({ n, tone }: { n: Noun; tone: Tone }) {
       <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Many</p>
       <p className="mt-1 text-xl font-semibold text-foreground">
         <span className="text-primary">{n.article[1]}</span>{sp(n.article[1])}{stemP}
-        {endP ? <span className={`ml-0.5 rounded-md px-1 font-bold ${TONE[tone]}`}>{endP}</span> : <span className={`ml-2 rounded-md px-1.5 py-0.5 align-middle text-xs font-bold ${TONE[tone]}`}>no change</span>}
+        {endP ? <span className={`rounded px-px font-bold ${TONE[tone]}`}>{endP}</span> : <span className={`ml-2 rounded-md px-1.5 py-0.5 align-middle text-xs font-bold ${TONE[tone]}`}>no change</span>}
       </p>
       <p className="text-xs text-muted-foreground">{n.enPl}</p>
       {n.note && <p className="mt-3 border-t pt-2 text-xs leading-relaxed text-muted-foreground">{n.note}</p>}
