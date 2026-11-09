@@ -197,7 +197,7 @@ function Fixers() {
           <H>Fixer 2 — when consonants pile up</H>
         </div>
         <p className="mb-4 max-w-3xl leading-relaxed text-muted-foreground">
-          Italian loves the rhythm <strong className="text-foreground">consonant–vowel, consonant–vowel</strong> (<em>ba-na-na</em>, <em>pi-z-za</em>). Now try
+          Italian loves the rhythm <strong className="text-foreground">consonant–vowel, consonant–vowel</strong> (<em>ba-na-na</em>, <em>pa-ni-no</em>). Now try
           <em> il straniero</em>: that's <strong className="text-foreground">l-s-t-r</strong>, four consonants with no vowel to rest on. Swap <em>il</em> for <strong className="text-foreground">lo</strong> and
           you get a vowel cushion: <em>lo-stra-nie-ro</em>. That's the whole reason. Masculine words only.
         </p>
