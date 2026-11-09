@@ -48,8 +48,8 @@ function Art({ a }: { a: string }) {
 /** "il libro" with the article coloured. */
 function Phrase({ text, big }: { text: string; big?: boolean }) {
   const m = text.match(/^(l'|\S+\s)(.*)$/);
-  const a = m ? m[1] : "";
-  const rest = m ? m[2] : text;
+  const a = m?.[1] ?? "";
+  const rest = m?.[2] ?? text;
   return (
     <span className={big ? "text-xl font-semibold" : "font-semibold"}>
       <Art a={a} />{rest}
@@ -229,7 +229,7 @@ function Fixers() {
   );
 }
 
-const OPENINGS: { id: Opening; label: string; ex: { m: string; f: string } }[] = [
+const OPENINGS: { id: Opening; label: string; ex: Record<Gender, string> }[] = [
   { id: "consonant", label: "a normal consonant", ex: { m: "libro", f: "penna" } },
   { id: "vowel", label: "a vowel", ex: { m: "amico", f: "acqua" } },
   { id: "strong", label: "s+consonant, z, gn, ps, x, y", ex: { m: "zaino", f: "zanzara" } },
@@ -297,7 +297,7 @@ function FullMap() {
               ["Masculine, heavy sound", "lo zaino", "gli zaini"],
               ["Feminine, consonant (any)", "la zanzara", "le zanzare"],
               ["Feminine, vowel", "l'arancia", "le arance"],
-            ].map(([t, s, p]) => (
+            ].map(([t = "", s = "", p = ""]) => (
               <tr key={t} className="border-b last:border-0"><td className="p-3 text-muted-foreground">{t}</td><td className="p-3"><Phrase text={s} /></td><td className="p-3"><Phrase text={p} /></td></tr>
             ))}
           </tbody>
