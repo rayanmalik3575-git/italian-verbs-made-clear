@@ -36,11 +36,29 @@ function Listen({ text }: { text: string }) {
 function Lead({ children }: { children: React.ReactNode }) {
   return <p className="mb-6 max-w-3xl text-[17px] leading-relaxed text-foreground">{children}</p>;
 }
-function H({ children }: { children: React.ReactNode }) {
-  return <h2 className="mb-2 mt-10 text-xl font-bold text-foreground first:mt-0">{children}</h2>;
+/** Numbered section heading; alternates Italian green / red so each part reads as its own point. */
+function H({ n, children }: { n?: number; children: React.ReactNode }) {
+  const red = (n ?? 1) % 2 === 0;
+  return (
+    <h2 className="mb-3 mt-12 flex items-center gap-3 border-t pt-8 text-xl font-bold text-foreground first:mt-0">
+      {n !== undefined && (
+        <span className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${red ? "bg-it-red/10 text-it-red" : "bg-it-green/10 text-it-green"}`}>{n}</span>
+      )}
+      {children}
+    </h2>
+  );
+}
+/** Small coloured label that opens a step. */
+function Kicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-it-green">
+      <span className="flex h-1.5 w-6 overflow-hidden rounded-full"><span className="flex-1 bg-it-green" /><span className="flex-1 bg-border" /><span className="flex-1 bg-it-red" /></span>
+      {children}
+    </div>
+  );
 }
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="mb-4 max-w-3xl leading-relaxed text-muted-foreground">{children}</p>;
+  return <p className="mb-4 max-w-3xl leading-relaxed text-foreground/85">{children}</p>;
 }
 function Note({ tone = "blue", title, children }: { tone?: "blue" | "amber"; title: string; children: React.ReactNode }) {
   const c = tone === "blue" ? "border-primary/20 bg-primary/5 text-primary" : "border-amber-300/50 bg-amber-50 text-amber-700";
@@ -66,9 +84,9 @@ function Line({ it, en, lit }: { it: string; en: string; lit?: string }) {
 }
 /** Coloured block chip used to show word order. */
 const ROLE = {
-  q: "bg-pink/10 text-pink border-pink/20",
+  q: "bg-it-red/10 text-it-red border-it-red/20",
   v: "bg-primary/10 text-primary border-primary/20",
-  s: "bg-success/10 text-success border-success/20",
+  s: "bg-it-green/10 text-it-green border-it-green/20",
   x: "bg-muted text-muted-foreground border-border",
 } as const;
 function Chunk({ r, children }: { r: keyof typeof ROLE; children: React.ReactNode }) {
@@ -113,10 +131,12 @@ function StepVoice() {
   ];
   return (
     <div>
+      <Kicker>Step 1 · Yes/no questions</Kicker>
       <Lead>
         Here is the good news first. To ask a yes-or-no question in Italian, you take the normal sentence and <strong>say it like a question</strong>.
         Same words, same order. Nothing moves. Only your voice changes.
       </Lead>
+      <H n={1}>Same sentence, two voices</H>
       <Panel className="p-5 sm:p-6">
         <div className="mb-3 grid grid-cols-2 gap-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           <span>Statement · voice falls</span><span>Question · voice rises</span>
@@ -124,11 +144,11 @@ function StepVoice() {
         {pairs.map((p) => (
           <div key={p.q} className="grid grid-cols-2 gap-4 border-b py-3 last:border-0">
             <div className="flex items-center gap-2"><div className="flex-1"><div className="font-semibold">{p.s}</div><div className="text-sm text-muted-foreground">{p.es}</div></div><Listen text={p.s} /></div>
-            <div className="flex items-center gap-2"><div className="flex-1"><div className="font-semibold text-primary">{p.q}</div><div className="text-sm text-muted-foreground">{p.eq}</div></div><Listen text={p.q} /></div>
+            <div className="flex items-center gap-2"><div className="flex-1"><div className="font-semibold text-it-green">{p.q}</div><div className="text-sm text-muted-foreground">{p.eq}</div></div><Listen text={p.q} /></div>
           </div>
         ))}
       </Panel>
-      <H>Where the voice goes up</H>
+      <H n={2}>Where the voice goes up</H>
       <P>
         Lift your pitch on the last word or two, the way you would in English if you said in surprise “you're leaving?”. In a long sentence,
         Italians often lift slightly at the end of each chunk, so the question sounds like a little staircase.
@@ -153,17 +173,19 @@ function StepVoice() {
 function StepNoDo() {
   return (
     <div>
+      <Kicker>Step 2 · Unlearn one habit</Kicker>
       <Lead>
         The biggest obstacle for English speakers is a word Italian doesn't have. <strong>Do, does, are, is</strong> in English questions
         are helper words. Italian has no helper. The verb ending already says who is doing it, so you go straight to the verb.
       </Lead>
+      <H n={1}>Go straight to the verb</H>
       <Panel className="p-5 sm:p-6">
         <Line it="Lavori?" en="Do you work?" lit="you-work?" />
         <Line it="Mangiamo?" en="Are we eating? / Shall we eat?" lit="we-eat?" />
         <Line it="Capisce?" en="Do you understand? (formal)" lit="you-understand?" />
         <Line it="Arrivano stasera?" en="Are they arriving tonight?" lit="they-arrive tonight?" />
       </Panel>
-      <H>The habit to build</H>
+      <H n={2}>The habit to build</H>
       <P>
         When an English question forms in your head, strip it before you speak. “Do you work?” becomes “you work?”. “Are we eating?” becomes “we eat?”.
         That stripped version is exactly the Italian sentence. Italian present tense covers both “I eat” and “I am eating”, so you never need an extra word.
@@ -175,11 +197,11 @@ function StepNoDo() {
           ["Are you guys tired?", "you guys are tired?", "Siete stanchi?"],
         ].map(([a, b, c]) => (
           <div key={a} className="flex flex-wrap items-center gap-2 border-b py-3 last:border-0">
-            <span className="text-muted-foreground line-through decoration-muted-foreground/40">{a}</span>
+            <span className="text-muted-foreground line-through decoration-it-red/60">{a}</span>
             <ArrowRight className="h-4 w-4 text-muted-foreground" />
             <span className="italic text-muted-foreground">{b}</span>
             <ArrowRight className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold text-foreground">{c}</span>
+            <span className="font-semibold text-it-green">{c}</span>
             <span className="ml-auto"><Listen text={c!} /></span>
           </div>
         ))}
@@ -194,10 +216,12 @@ function StepNoDo() {
 function StepOrder() {
   return (
     <div>
+      <Kicker>Step 3 · Word order</Kicker>
       <Lead>
         Now questions with a question word: where, when, what, who. English puts the person <em>before</em> the verb: where does <strong>Marco</strong> work?
         Italian puts the person <em>after</em> it. Every one of these questions follows the same three-part order.
       </Lead>
+      <H n={1}>The pattern</H>
       <Panel className="p-6 text-center">
         <div className="flex flex-wrap items-center justify-center gap-2 text-lg">
           <Chunk r="q">question word</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
@@ -217,7 +241,7 @@ function StepOrder() {
           ))}
         </div>
       </Panel>
-      <H>Why the subject goes last</H>
+      <H n={2}>Why the subject goes last</H>
       <P>
         Because it's optional. <em>Dove lavora?</em> is already a full question: “where does he/she work?”. The ending <strong>-a</strong> carries the person.
         You only add <em>Marco</em> when the listener wouldn't otherwise know who you mean, and extra information goes at the end.
@@ -226,7 +250,7 @@ function StepOrder() {
         A trick that works: think in deliberately bad English. <em>Where works Marco? When leaves the train?</em> It sounds wrong in English,
         but it's word-for-word Italian.
       </P>
-      <H>When to say the subject, and when not to</H>
+      <H n={3}>When to say the subject, and when not to</H>
       <Panel className="p-5 sm:p-6">
         <Line it="Dove abiti?" en="Where do you live? — no tu needed, -i already means you" />
         <Line it="Dove abita tuo fratello?" en="Where does your brother live? — needed, otherwise who?" />
@@ -242,10 +266,12 @@ function StepOrder() {
 function StepWords() {
   return (
     <div>
+      <Kicker>Step 4 · Question words</Kicker>
       <Lead>
         Seven question words cover almost everything. All of them sit at the very start and are followed by the verb. What changes is the
         small detail each one carries. Learn the detail, and you won't make the classic mistakes.
       </Lead>
+      <H n={1}>The seven words</H>
       <div className="grid gap-4 md:grid-cols-2">
         {QWORDS.map((w) => (
           <Panel key={w.it} className="p-5">
@@ -265,7 +291,7 @@ function StepWords() {
           </Panel>
         ))}
       </div>
-      <H>Cosa, che, or che cosa?</H>
+      <H n={2}>Cosa, che, or che cosa?</H>
       <P>
         Before a verb, all three are correct and mean the same. <em>Cosa</em> is the most common in everyday speech, <em>che</em> sounds quick and casual,
         <em> che cosa</em> is the full version. Before a noun, only <strong>che</strong> works, because then it means “what kind of / which”.
@@ -274,7 +300,7 @@ function StepWords() {
         <Line it="Cosa bevi?" en="What are you drinking? — verb follows: any of the three" />
         <Line it="Che vino bevi?" en="What wine are you drinking? — noun follows: only che" />
       </Panel>
-      <H>Perché non…? — the suggestion</H>
+      <H n={3}>Perché non…? — the suggestion</H>
       <P>
         <em>Perché non</em> + a verb sounds like a question but works as an invitation, exactly like “why don't we…?”. You'll hear it constantly.
       </P>
