@@ -265,7 +265,7 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
   );
 }
 
-function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => void; kind: "drill" | "sentence"; onNext?: () => void }) {
+function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => void; kind: "drill" | "sentence"; onNext?: (() => void) | undefined }) {
   const S = kind === "sentence";
   const order = useMemo(() => [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5), []);
   const [step, setStep] = useState(0);
