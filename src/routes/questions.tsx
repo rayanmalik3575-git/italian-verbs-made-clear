@@ -83,7 +83,7 @@ function QuestionsPage() {
   return (
     <div>
       <PageHeader title="Asking questions"
-        description="Two moves cover every question at this level: raise your voice, and put the verb first." />
+        description="English rebuilds a sentence to ask something: you work → do you work? Italian doesn't. Learn the two moves that cover every question you'll ask at this level." />
       <div role="tablist" aria-label="Lesson steps" className="mb-6 flex flex-wrap gap-2">
         {TABS.map((t, i) => (
           <button key={t} role="tab" aria-selected={step === i} onClick={() => go(i)}
@@ -105,117 +105,136 @@ function QuestionsPage() {
   );
 }
 
-function Rule({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="mb-6 flex max-w-3xl items-center gap-3 rounded-2xl bg-tile-blue px-4 py-3 text-tile-blue-ink">
-      <Lightbulb className="h-5 w-5 shrink-0" /><p className="text-[16px] font-semibold">{children}</p>
-    </div>
-  );
-}
-function Trap({ bad, good }: { bad: string; good: string }) {
-  return (
-    <div className="mt-6 grid max-w-3xl gap-3 sm:grid-cols-2">
-      <div className="flex items-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-4">
-        <X className="h-5 w-5 shrink-0 text-destructive" /><span className="text-lg font-semibold text-muted-foreground line-through decoration-destructive/40">{bad}</span>
-      </div>
-      <div className="flex items-center gap-3 rounded-2xl border border-success/25 bg-success/5 p-4">
-        <Check className="h-5 w-5 shrink-0 text-success" /><span className="flex-1 text-lg font-semibold text-foreground">{good}</span><Listen text={good} />
-      </div>
-    </div>
-  );
-}
-
 function StepVoice() {
   const pairs = [
-    { s: "Parli inglese.", q: "Parli inglese?", eq: "Do you speak English?" },
-    { s: "Il museo è chiuso.", q: "Il museo è chiuso?", eq: "Is the museum closed?" },
-    { s: "Prendete un caffè.", q: "Prendete un caffè?", eq: "Are you guys having a coffee?" },
+    { s: "Parli inglese.", q: "Parli inglese?", es: "You speak English.", eq: "Do you speak English?" },
+    { s: "Il museo è chiuso.", q: "Il museo è chiuso?", es: "The museum is closed.", eq: "Is the museum closed?" },
+    { s: "Prendete un caffè.", q: "Prendete un caffè?", es: "You're having a coffee.", eq: "Are you guys having a coffee?" },
   ];
   return (
     <div>
-      <Rule>Same words. Same order. Only your voice rises at the end.</Rule>
-      <div className="grid max-w-4xl gap-3">
+      <Lead>
+        Here is the good news first. To ask a yes-or-no question in Italian, you take the normal sentence and <strong>say it like a question</strong>.
+        Same words, same order. Nothing moves. Only your voice changes.
+      </Lead>
+      <Panel className="p-5 sm:p-6">
+        <div className="mb-3 grid grid-cols-2 gap-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <span>Statement · voice falls</span><span>Question · voice rises</span>
+        </div>
         {pairs.map((p) => (
-          <div key={p.q} className="grid items-center gap-3 rounded-2xl border bg-card p-4 sm:grid-cols-[1fr_auto_1fr]">
-            <button type="button" onClick={() => speak(p.s)} className="flex items-center gap-3 rounded-xl px-2 py-1 text-left hover:bg-muted/60">
-              <span className="text-lg text-muted-foreground">{p.s}</span><Volume2 className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <TrendingUp className="hidden h-5 w-5 text-primary sm:block" />
-            <button type="button" onClick={() => speak(p.q)} className="flex items-center gap-3 rounded-xl px-2 py-1 text-left hover:bg-primary/5">
-              <span><span className="block text-xl font-bold text-primary">{p.q}</span><span className="text-sm text-muted-foreground">{p.eq}</span></span>
-              <Volume2 className="ml-auto h-4 w-4 text-primary" />
-            </button>
+          <div key={p.q} className="grid grid-cols-2 gap-4 border-b py-3 last:border-0">
+            <div className="flex items-center gap-2"><div className="flex-1"><div className="font-semibold">{p.s}</div><div className="text-sm text-muted-foreground">{p.es}</div></div><Listen text={p.s} /></div>
+            <div className="flex items-center gap-2"><div className="flex-1"><div className="font-semibold text-primary">{p.q}</div><div className="text-sm text-muted-foreground">{p.eq}</div></div><Listen text={p.q} /></div>
           </div>
         ))}
-      </div>
-      <H>Rise on the last chunk</H>
+      </Panel>
+      <H>Where the voice goes up</H>
+      <P>
+        Lift your pitch on the last word or two, the way you would in English if you said in surprise “you're leaving?”. In a long sentence,
+        Italians often lift slightly at the end of each chunk, so the question sounds like a little staircase.
+      </P>
       <div className="flex max-w-3xl flex-wrap items-end gap-2">
         {["Prenotate", "una camera", "per tre notti?"].map((c, i) => (
-          <span key={c} className={`rounded-xl border px-3 py-2 font-semibold ${i === 2 ? "border-primary/30 bg-primary/10 text-primary" : "bg-card text-foreground"}`} style={{ marginBottom: i * 12 }}>{c}</span>
+          <span key={c} className="rounded-xl border bg-card px-3 py-2 font-semibold text-foreground" style={{ marginBottom: i * 10 }}>{c}</span>
         ))}
-        <TrendingUp className="mb-8 h-5 w-5 text-primary" />
+        <TrendingUp className="mb-6 h-5 w-5 text-primary" />
         <Listen text="Prenotate una camera per tre notti?" />
       </div>
-      <p className="mt-6 max-w-3xl text-sm text-muted-foreground">Texting? The <strong className="text-foreground">?</strong> is your voice. Never drop it.</p>
+      <Note title="What this means for you">
+        Every sentence you learn from now on is also a question you already know. Learn <em>Hai fame.</em> (you're hungry) and you own <em>Hai fame?</em> for free.
+      </Note>
+      <Note tone="amber" title="When you're writing">
+        In a text message there's no voice, so the <strong>?</strong> is the only thing that tells the reader it's a question. Never drop it.
+      </Note>
     </div>
   );
 }
 
 function StepNoDo() {
-  const rows = [
-    ["Do you live here?", "Do", "Abiti qui?"],
-    ["Is she coming?", "Is", "Viene?"],
-    ["Are you guys tired?", "Are", "Siete stanchi?"],
-    ["Do you work?", "Do", "Lavori?"],
-  ];
   return (
     <div>
-      <Rule>Italian has no “do / does / is” helper. Go straight to the verb.</Rule>
-      <div className="grid max-w-4xl gap-3">
-        {rows.map(([en, helper, it]) => (
-          <div key={en} className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
-            <span className="text-muted-foreground"><span className="rounded bg-destructive/10 px-1 text-destructive line-through">{helper}</span>{en!.slice(helper!.length)}</span>
-            <ArrowRight className="h-4 w-4 text-primary" />
-            <span className="text-xl font-bold text-foreground">{it}</span>
-            <span className="ml-auto"><Listen text={it!} /></span>
+      <Lead>
+        The biggest obstacle for English speakers is a word Italian doesn't have. <strong>Do, does, are, is</strong> in English questions
+        are helper words. Italian has no helper. The verb ending already says who is doing it, so you go straight to the verb.
+      </Lead>
+      <Panel className="p-5 sm:p-6">
+        <Line it="Lavori?" en="Do you work?" lit="you-work?" />
+        <Line it="Mangiamo?" en="Are we eating? / Shall we eat?" lit="we-eat?" />
+        <Line it="Capisce?" en="Do you understand? (formal)" lit="you-understand?" />
+        <Line it="Arrivano stasera?" en="Are they arriving tonight?" lit="they-arrive tonight?" />
+      </Panel>
+      <H>The habit to build</H>
+      <P>
+        When an English question forms in your head, strip it before you speak. “Do you work?” becomes “you work?”. “Are we eating?” becomes “we eat?”.
+        That stripped version is exactly the Italian sentence. Italian present tense covers both “I eat” and “I am eating”, so you never need an extra word.
+      </P>
+      <div className="max-w-3xl rounded-2xl border bg-card p-5">
+        {[
+          ["Do you live here?", "you live here?", "Abiti qui?"],
+          ["Is she coming?", "she comes?", "Viene?"],
+          ["Are you guys tired?", "you guys are tired?", "Siete stanchi?"],
+        ].map(([a, b, c]) => (
+          <div key={a} className="flex flex-wrap items-center gap-2 border-b py-3 last:border-0">
+            <span className="text-muted-foreground line-through decoration-muted-foreground/40">{a}</span>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            <span className="italic text-muted-foreground">{b}</span>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+            <span className="font-semibold text-foreground">{c}</span>
+            <span className="ml-auto"><Listen text={c!} /></span>
           </div>
         ))}
       </div>
-      <Trap bad="Fai lavori?" good="Lavori?" />
+      <Note tone="amber" title="The mistake to avoid">
+        Don't hunt for a word that means “do”. <em>Fai lavori?</em> is not Italian. <em>Fare</em> means “to do” as an action (fare la spesa), never as a question helper.
+      </Note>
     </div>
   );
 }
 
 function StepOrder() {
-  const rows = [
-    ["Dove", "lavora", "Marco", "Where does Marco work?"],
-    ["Quando", "parte", "il treno", "When does the train leave?"],
-    ["Cosa", "studia", "tua sorella", "What is your sister studying?"],
-  ];
   return (
     <div>
-      <Panel className="mb-6 p-6">
+      <Lead>
+        Now questions with a question word: where, when, what, who. English puts the person <em>before</em> the verb: where does <strong>Marco</strong> work?
+        Italian puts the person <em>after</em> it. Every one of these questions follows the same three-part order.
+      </Lead>
+      <Panel className="p-6 text-center">
         <div className="flex flex-wrap items-center justify-center gap-2 text-lg">
-          <Chunk r="q">1 · question word</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
-          <Chunk r="v">2 · verb</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
-          <Chunk r="s">3 · person (optional)</Chunk>
+          <Chunk r="q">question word</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
+          <Chunk r="v">verb</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
+          <Chunk r="s">subject (if needed)</Chunk>
+        </div>
+        <div className="mt-6 space-y-3">
+          {[
+            ["Dove", "lavora", "Marco", "Where does Marco work?", "Dove lavora Marco?"],
+            ["Quando", "parte", "il treno", "When does the train leave?", "Quando parte il treno?"],
+            ["Cosa", "studia", "tua sorella", "What is your sister studying?", "Cosa studia tua sorella?"],
+          ].map(([q, v, s, en, full]) => (
+            <div key={full} className="flex flex-wrap items-center justify-center gap-2">
+              <Chunk r="q">{q}</Chunk><Chunk r="v">{v}</Chunk><Chunk r="s">{s}</Chunk>
+              <span className="text-sm text-muted-foreground">{en}</span><Listen text={full!} />
+            </div>
+          ))}
         </div>
       </Panel>
-      <div className="grid max-w-4xl gap-3">
-        {rows.map(([q, v, s, en]) => (
-          <div key={en} className="flex flex-wrap items-center gap-2 rounded-2xl border bg-card p-4">
-            <Chunk r="q">{q}</Chunk><Chunk r="v">{v}</Chunk><Chunk r="s">{s}</Chunk>
-            <span className="ml-2 text-sm text-muted-foreground">{en}</span>
-            <span className="ml-auto"><Listen text={`${q} ${v} ${s}?`} /></span>
-          </div>
-        ))}
-      </div>
-      <H>Person already in the ending? Drop it.</H>
-      <div className="flex max-w-3xl flex-wrap items-center gap-2 rounded-2xl border bg-card p-4">
-        <Chunk r="q">Dove</Chunk><Chunk r="v">abit<u>i</u></Chunk><span className="text-sm text-muted-foreground">-i already means “you” · Where do you live?</span>
-        <span className="ml-auto"><Listen text="Dove abiti?" /></span>
-      </div>
-      <Trap bad="Dove Marco lavora?" good="Dove lavora Marco?" />
+      <H>Why the subject goes last</H>
+      <P>
+        Because it's optional. <em>Dove lavora?</em> is already a full question: “where does he/she work?”. The ending <strong>-a</strong> carries the person.
+        You only add <em>Marco</em> when the listener wouldn't otherwise know who you mean, and extra information goes at the end.
+      </P>
+      <P>
+        A trick that works: think in deliberately bad English. <em>Where works Marco? When leaves the train?</em> It sounds wrong in English,
+        but it's word-for-word Italian.
+      </P>
+      <H>When to say the subject, and when not to</H>
+      <Panel className="p-5 sm:p-6">
+        <Line it="Dove abiti?" en="Where do you live? — no tu needed, -i already means you" />
+        <Line it="Dove abita tuo fratello?" en="Where does your brother live? — needed, otherwise who?" />
+        <Line it="Io prendo un caffè. Cosa prendi tu?" en="I'm having a coffee. What are YOU having? — tu for contrast" />
+      </Panel>
+      <Note tone="amber" title="Don't put the subject first">
+        <em>Dove Marco lavora?</em> is the English order wearing Italian words. Italians will understand you, but it immediately sounds foreign.
+      </Note>
     </div>
   );
 }
