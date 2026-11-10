@@ -5,6 +5,7 @@ import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verb
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
 import { grade, type Grade } from "@/lib/grading";
 import { contextFor, fill } from "@/data/verb-sentences";
+import { blueprintOf, chunksFor, roundsFor, fillBlank, EAR } from "@/data/verb-reflex";
 import { recordAttempt, useProgress, statusOf, STATUS_LABEL } from "@/lib/progress";
 import { Chip, Panel, PageHeader, ProgressBar, btn } from "@/components/app-shell";
 
@@ -244,14 +245,19 @@ function Learn({ verb, onPractice }: { verb: Verb; onPractice: () => void }) {
 const ACCENTS = ["à", "è", "é", "ì", "ò", "ù"];
 
 function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
-  const [kind, setKind] = useState<"drill" | "sentence">("drill");
+  type K = "understand" | "drill" | "reflex" | "sentence";
+  const [kind, setKind] = useState<K>("understand");
   const modes = [
-    { id: "drill" as const, n: 1, title: "Verb forms", sub: "Lock in the six endings" },
-    { id: "sentence" as const, n: 2, title: "Real sentences", sub: "Use it the way Italians speak" },
+    { id: "understand" as const, n: 1, title: "How it works", sub: "Stem, sound and chunks" },
+    { id: "drill" as const, n: 2, title: "Verb forms", sub: "Lock in the six endings" },
+    { id: "reflex" as const, n: 3, title: "Reply reflex", sub: "Hear a question, answer" },
+    { id: "sentence" as const, n: 4, title: "Real sentences", sub: "Use it like Italians do" },
   ];
+  const next: Record<K, K | undefined> = { understand: "drill", drill: "reflex", reflex: "sentence", sentence: undefined };
+  const go = next[kind] ? () => setKind(next[kind]!) : undefined;
   return (
     <div className="mt-6">
-      <div role="tablist" aria-label="Practice type" className="grid gap-2 sm:grid-cols-2">
+      <div role="tablist" aria-label="Practice type" className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {modes.map((m) => (
           <button key={m.id} role="tab" aria-selected={kind === m.id} onClick={() => setKind(m.id)}
             className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${kind === m.id ? "border-primary bg-accent" : "bg-card hover:bg-muted"}`}>
@@ -260,7 +266,126 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
           </button>
         ))}
       </div>
-      <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={kind === "drill" ? () => setKind("sentence") : undefined} />
+      {kind === "understand" && <HowItWorks key={verb.infinitive} verb={verb} onNext={go!} />}
+      {kind === "reflex" && <Reflex key={verb.infinitive} verb={verb} onNext={go} />}
+      {(kind === "drill" || kind === "sentence") && <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={go} />}
+    </div>
+  );
+}
+
+function HowItWorks({ verb, onNext }: { verb: Verb; onNext: () => void }) {
+  const b = blueprintOf(verb);
+  const chunks = chunksFor(verb);
+  return (
+    <div className="mt-5 rounded-[20px] border bg-card p-5 sm:p-7">
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">The engine of {verb.infinitive}</p>
+      <h3 className="mt-1 text-2xl font-bold">Stem: <span className="text-primary">{b.stem}</span></h3>
+      <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">{b.idea}</p>
+
+      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        {[["One person", b.singular, "io · tu · lui/lei"], ["More people", b.plural, "noi · voi · loro"]].map(([t, forms, who]) => (
+          <button key={t} type="button" onClick={() => speak(forms!)} className="rounded-2xl border p-4 text-left hover:bg-muted">
+            <span className="flex items-center justify-between text-xs font-semibold text-muted-foreground">{t} <Volume2 className="h-4 w-4" aria-hidden /></span>
+            <span className="mt-1 block text-xl font-bold">{forms}</span>
+            <span className="text-xs text-muted-foreground">{who}</span>
+          </button>
+        ))}
+      </div>
+
+      <h4 className="mt-8 font-bold">Train your ear: the ending tells you who</h4>
+      <p className="mt-1 text-sm text-muted-foreground">Italians drop io, tu, lui. You don't hear "who" — you hear the ending.</p>
+      <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+        {verb.forms.map((f, i) => (
+          <li key={i} className="flex items-baseline justify-between gap-2 rounded-xl bg-muted px-3 py-2">
+            <span className="font-bold">{f}</span><span className="text-xs text-muted-foreground">{EAR[i]!.who}</span>
+          </li>
+        ))}
+      </ul>
+
+      <h4 className="mt-8 font-bold">Say it in chunks</h4>
+      <p className="mt-1 text-sm text-muted-foreground">Natives store these as one piece. Tap to hear, repeat out loud.</p>
+      <ul className="mt-3 divide-y rounded-2xl border">
+        {chunks.map((c) => (
+          <li key={c.it}>
+            <button type="button" onClick={() => speak(c.it)} className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted">
+              <Volume2 className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+              <span className="font-semibold">{c.it}</span>
+              <span className="ml-auto text-sm text-muted-foreground">{c.en}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <button onClick={onNext} className={`${btn.primary} mt-6`}>Start practising <ArrowRight className="h-4 w-4" /></button>
+    </div>
+  );
+}
+
+function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefined }) {
+  const rounds = useMemo(() => roundsFor(verb), [verb]);
+  const [step, setStep] = useState(0);
+  const [answer, setAnswer] = useState("");
+  const [result, setResult] = useState<Grade | null>(null);
+  const [score, setScore] = useState(0);
+  const [showEn, setShowEn] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
+
+  if (step >= rounds.length) {
+    return (
+      <div className="mt-8 rounded-[18px] border bg-gradient-feature p-6 text-center sm:p-10">
+        <p className="text-sm font-semibold text-muted-foreground">Reply reflex · {verb.infinitive}</p>
+        <p className="mt-1 text-5xl font-bold">{score}<span className="text-muted-foreground">/{rounds.length}</span></p>
+        <p className="mt-2 text-muted-foreground">{score === rounds.length ? "You answered like a native. Do it again faster." : "Repeat until you answer without thinking."}</p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button onClick={() => { setStep(0); setScore(0); setResult(null); setAnswer(""); }} className={btn.primary}><RotateCcw className="h-4 w-4" /> Again</button>
+          {onNext && <button onClick={onNext} className={btn.outline}>Next step <ArrowRight className="h-4 w-4" /></button>}
+        </div>
+      </div>
+    );
+  }
+  const r = rounds[step]!;
+  const expected = verb.forms[r.idx] ?? "";
+  const full = fillBlank(r.a, expected);
+  const [before = "", after = ""] = r.a.split("_");
+  const submit = () => {
+    if (result !== null) { setStep(step + 1); setAnswer(""); setResult(null); setShowEn(false); setTimeout(() => input.current?.focus(), 0); return; }
+    if (!answer.trim()) return;
+    const g = grade(answer.trim().toLowerCase(), expected);
+    setResult(g); if (g === "correct") setScore((s) => s + 1);
+    speak(full);
+  };
+  return (
+    <div className="mt-5 rounded-[20px] border bg-card p-5 sm:p-7">
+      <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Round {step + 1} of {rounds.length}</span><span>Score {score}</span></div>
+      <div className="mt-2"><ProgressBar value={(step / rounds.length) * 100} label="Reflex progress" /></div>
+
+      <div className="mt-6 flex items-start gap-3">
+        <button type="button" onClick={() => speak(r.q)} aria-label="Hear the question" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Volume2 className="h-5 w-5" /></button>
+        <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
+          <p className="text-xl font-bold sm:text-2xl">{r.q}</p>
+          {(showEn || result) && <p className="mt-1 text-sm text-muted-foreground">{r.qEn}</p>}
+        </div>
+      </div>
+      <div className="mt-4 flex justify-end">
+        <div className="rounded-2xl rounded-tr-sm border-2 border-primary/30 px-4 py-3 text-right">
+          <p className="text-xl font-bold sm:text-2xl">{before}<span className="mx-1 inline-block min-w-16 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}</p>
+          {result && <p className="mt-1 text-sm text-muted-foreground">{r.aEn}</p>}
+        </div>
+      </div>
+
+      <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
+        <label htmlFor="reflex-answer" className="text-sm font-semibold">Your reply · form of {verb.infinitive}</label>
+        <input id="reflex-answer" ref={input} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
+          value={answer} onChange={(e) => setAnswer(e.target.value)} readOnly={result !== null}
+          className="mt-1.5 min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none focus:ring-2 focus:ring-ring read-only:bg-muted" />
+        {result && <Feedback result={result} answer={answer} expected={full} meaning={r.aEn} />}
+        {result && <p className="mt-3 text-sm text-muted-foreground"><span className="font-semibold text-foreground">The reflex:</span> {r.why}</p>}
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+          <button className={`${btn.primary} w-full sm:w-auto`} disabled={result === null && !answer.trim()}>
+            {result === null ? "Reply" : step === rounds.length - 1 ? "See result" : "Next round"} {result !== null && <ArrowRight className="h-4 w-4" />}
+          </button>
+          {!showEn && result === null && <button type="button" onClick={() => setShowEn(true)} className="text-sm font-semibold text-accent-foreground underline">I don't understand the question</button>}
+        </div>
+      </form>
     </div>
   );
 }
@@ -283,7 +408,7 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
         <p className="mt-2 text-muted-foreground">{score === 6 ? "Perfetto! Marked as mastered." : "Saved. Score 6/6 to master this verb."}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button onClick={() => { setStep(0); setScore(0); setResult(null); setAnswer(""); }} className={btn.primary}><RotateCcw className="h-4 w-4" /> Try again</button>
-          {onNext && <button onClick={onNext} className={btn.outline}>Next: real sentences <ArrowRight className="h-4 w-4" /></button>}
+          {onNext && <button onClick={onNext} className={btn.outline}>Next step <ArrowRight className="h-4 w-4" /></button>}
           <button onClick={onLearn} className={btn.outline}>Review the table</button>
         </div>
       </div>
