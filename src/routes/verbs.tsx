@@ -257,7 +257,7 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
   const go = next[kind] ? () => setKind(next[kind]!) : undefined;
   return (
     <div className="mt-6">
-      <div role="tablist" aria-label="Practice type" className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+      <div role="tablist" aria-label="Practice type" className="grid grid-cols-2 gap-2 2xl:grid-cols-4">
         {modes.map((m) => (
           <button key={m.id} role="tab" aria-selected={kind === m.id} onClick={() => setKind(m.id)}
             className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${kind === m.id ? "border-primary bg-accent" : "bg-card hover:bg-muted"}`}>
