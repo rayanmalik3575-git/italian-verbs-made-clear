@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info } from "lucide-react";
+import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info, Lightbulb } from "lucide-react";
 import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verbs";
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
 import { grade, type Grade } from "@/lib/grading";
@@ -329,12 +329,12 @@ function HowItWorks({ verb }: { verb: Verb }) {
 }
 
 const GUIDE: string[] = [
-  "Your friend is asking about you, so you answer for yourself. Use the “I” form, which usually ends in -o.",
-  "Now you're turning the question back to your friend. Use the “you” form for one person, which ends in -i.",
-  "You're talking about one other person (he, she, or polite “you”). Use the lui/lei form.",
-  "They asked you and the people with you, so you answer for the group. Use the “we” form, which ends in -iamo.",
-  "You're speaking to a group of people. Use the “you all” form, which ends in -ate, -ete or -ite.",
-  "You're talking about other people, not you. Use the “they” form, which ends in -ano or -ono.",
+  "They're asking about you → answer with io · ends in -o",
+  "Turn it back to your friend → use tu · ends in -i",
+  "About one other person → use lui / lei",
+  "They asked your group → answer with noi · ends in -iamo",
+  "Talking to a group → use voi · -ate / -ete / -ite",
+  "About other people → use loro · -ano / -ono",
 ];
 
 function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefined }) {
@@ -376,30 +376,31 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
       <div className="mt-2"><ProgressBar value={(step / rounds.length) * 100} label="Reflex progress" /></div>
 
       <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Someone says to you</p>
-      <div className="mt-2 flex items-start gap-3">
-        <button type="button" onClick={() => speak(r.q)} aria-label="Hear the question" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Volume2 className="h-5 w-5" /></button>
-        <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
-          <p className="text-xl font-bold sm:text-2xl">{r.q}</p>
-          {(showEn || result) && <p className="mt-1 text-sm text-muted-foreground">{r.qEn}</p>}
+      <div className="mt-2 flex items-start">
+        <div className="flex items-center gap-3 rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
+          <div>
+            <p className="text-xl font-bold sm:text-2xl">{r.q}</p>
+            {(showEn || result) && <p className="mt-1 text-sm text-muted-foreground">{r.qEn}</p>}
+          </div>
+          <button type="button" onClick={() => speak(r.q)} aria-label="Hear the question" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground hover:opacity-90"><Volume2 className="h-4 w-4" /></button>
         </div>
       </div>
-      <div className="mt-5 rounded-2xl bg-secondary/60 px-4 py-3 text-[15px] leading-relaxed text-foreground">
-        <span className="font-semibold">How to answer: </span>{GUIDE[r.idx]}
-      </div>
+      <p className="mt-5 flex items-center gap-2 truncate whitespace-nowrap rounded-full bg-secondary/60 px-4 py-2 text-sm font-medium text-foreground" title={GUIDE[r.idx]}>
+        <Lightbulb className="h-4 w-4 shrink-0 text-primary" /><span className="truncate">{GUIDE[r.idx]}</span>
+      </p>
 
       <div className="mt-4 flex flex-col items-end">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">You reply</p>
         <div className="rounded-2xl rounded-tr-sm border-2 border-primary/30 px-4 py-3 text-right">
           <p className="text-xl font-bold sm:text-2xl">{before}<span className="mx-1 inline-block min-w-16 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}</p>
-          <p className="mt-1 text-sm font-medium text-foreground/80">You mean: “{r.aEn}”</p>
+          <p className="mt-1 text-sm font-medium text-muted-foreground">“{r.aEn}”</p>
         </div>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
-        <label htmlFor="reflex-answer" className="text-sm font-semibold">Your reply · form of {verb.infinitive}</label>
-        <input id="reflex-answer" ref={input} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
+        <input id="reflex-answer" aria-label={`Form of ${verb.infinitive}`} placeholder={`form of ${verb.infinitive}`} ref={input} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
           value={answer} onChange={(e) => setAnswer(e.target.value)} readOnly={result !== null}
-          className="mt-1.5 min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none focus:ring-2 focus:ring-ring read-only:bg-muted" />
+          className="min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-ring read-only:bg-muted" />
         {result === null && (
           <div className="mt-2 flex flex-wrap gap-1.5">
             {["à", "è", "é", "ì", "ò", "ù"].map((c) => (
