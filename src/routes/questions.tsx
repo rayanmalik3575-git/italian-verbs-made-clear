@@ -330,7 +330,7 @@ function Builder({ onDone }: { onDone: () => void }) {
   return (
     <Panel className="p-5 sm:p-7">
       <div className="mb-5 flex items-center gap-3 text-sm text-muted-foreground">
-        <span>{i + 1} / {ORDER_TASKS.length}</span><div className="flex-1"><ProgressBar value={((i + (result !== null ? 1 : 0)) / ORDER_TASKS.length) * 100} /></div><span>{score} correct</span>
+        <span>{i + 1} / {ORDER_TASKS.length}</span><div className="flex-1"><ProgressBar label="Lesson progress" value={((i + (result !== null ? 1 : 0)) / ORDER_TASKS.length) * 100} /></div><span>{score} correct</span>
       </div>
       <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ask this in Italian</div>
       <div className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{t.en}</div>
@@ -397,7 +397,7 @@ function Picker() {
   return (
     <Panel className="p-5 sm:p-7">
       <div className="mb-5 flex items-center gap-3 text-sm text-muted-foreground">
-        <span>{i + 1} / {PICK_TASKS.length}</span><div className="flex-1"><ProgressBar value={((i + (choice ? 1 : 0)) / PICK_TASKS.length) * 100} /></div><span>{score} correct</span>
+        <span>{i + 1} / {PICK_TASKS.length}</span><div className="flex-1"><ProgressBar label="Lesson progress" value={((i + (choice ? 1 : 0)) / PICK_TASKS.length) * 100} /></div><span>{score} correct</span>
       </div>
       <div className="text-2xl font-bold text-foreground sm:text-3xl">{full}</div>
       <div className="mt-1 text-muted-foreground">{t.en}</div>
