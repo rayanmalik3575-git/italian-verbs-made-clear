@@ -144,16 +144,7 @@ function VerbsPage() {
             </div>
             {mode === "learn"
               ? <Learn verb={selected} onPractice={() => select(selected.infinitive, "practice")} />
-              : <div>
-                  <h3 className="mt-6 text-lg font-bold">Practice 1 · Verb forms</h3>
-                  <p className="text-sm text-muted-foreground">Write the form for each person (io, tu, lui/lei…).</p>
-                  <Practice key={selected.infinitive + "-d"} kind="drill" verb={selected} onLearn={() => select(selected.infinitive, "learn")} />
-                  <div className="mt-10 border-t pt-6">
-                    <h3 className="text-lg font-bold">Practice 2 · In real sentences</h3>
-                    <p className="text-sm text-muted-foreground">Now use the verb inside everyday Italian, the way people really speak.</p>
-                    <Practice key={selected.infinitive + "-s"} kind="sentence" verb={selected} onLearn={() => select(selected.infinitive, "learn")} />
-                  </div>
-                </div>}
+              : <PracticeModes verb={selected} onLearn={() => select(selected.infinitive, "learn")} />}
           </Panel>
         </div>
       </div>
@@ -252,7 +243,29 @@ function Learn({ verb, onPractice }: { verb: Verb; onPractice: () => void }) {
 
 const ACCENTS = ["à", "è", "é", "ì", "ò", "ù"];
 
-function Practice({ verb, onLearn, kind }: { verb: Verb; onLearn: () => void; kind: "drill" | "sentence" }) {
+function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
+  const [kind, setKind] = useState<"drill" | "sentence">("drill");
+  const modes = [
+    { id: "drill" as const, n: 1, title: "Verb forms", sub: "Lock in the six endings" },
+    { id: "sentence" as const, n: 2, title: "Real sentences", sub: "Use it the way Italians speak" },
+  ];
+  return (
+    <div className="mt-6">
+      <div role="tablist" aria-label="Practice type" className="grid gap-2 sm:grid-cols-2">
+        {modes.map((m) => (
+          <button key={m.id} role="tab" aria-selected={kind === m.id} onClick={() => setKind(m.id)}
+            className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${kind === m.id ? "border-primary bg-accent" : "bg-card hover:bg-muted"}`}>
+            <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-bold ${kind === m.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{m.n}</span>
+            <span><span className="block font-semibold">{m.title}</span><span className="block text-xs text-muted-foreground">{m.sub}</span></span>
+          </button>
+        ))}
+      </div>
+      <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={kind === "drill" ? () => setKind("sentence") : undefined} />
+    </div>
+  );
+}
+
+function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => void; kind: "drill" | "sentence" }) {
   const S = kind === "sentence";
   const order = useMemo(() => [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5), []);
   const [step, setStep] = useState(0);
