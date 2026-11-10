@@ -32,6 +32,8 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-it-green: var(--it-green);
+  --color-it-red: var(--it-red);
   --color-warning: var(--warning);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -69,12 +71,14 @@
   --secondary: oklch(0.96 0.012 250);
   --secondary-foreground: oklch(0.31 0.06 250);
   --muted: oklch(0.96 0.01 250);
-  --muted-foreground: oklch(0.49 0.04 245);        /* #52677C */
+  --muted-foreground: oklch(0.42 0.045 248);        /* #52677C */
   --accent: oklch(0.95 0.03 250);
   --accent-foreground: oklch(0.45 0.16 255);
   --destructive: oklch(0.52 0.2 25);
   --destructive-foreground: oklch(1 0 0);
   --success: oklch(0.48 0.12 155);
+  --it-green: oklch(0.5 0.13 155);           /* verde Italia */
+  --it-red: oklch(0.53 0.19 25);             /* rosso Italia */
   --warning: oklch(0.52 0.12 70);
   --border: oklch(0.93 0.012 250);                 /* #E3EAF1 */
   --input: oklch(0.89 0.018 250);
