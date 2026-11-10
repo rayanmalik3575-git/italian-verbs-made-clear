@@ -133,7 +133,7 @@ const ROUNDS: Record<string, R[]> = {
     ["Ragazzi, cosa fate stasera?", "Guys, what are you doing tonight?", "_ per l'esame di domani.", "We're studying for tomorrow's exam.", 3, "Group of you → studiamo."],
     ["Dove studia Marco?", "Where does Marco study?", "_ sempre in biblioteca.", "He always studies in the library.", 2, "Lui → studia."],
     ["Studio medicina a Padova.", "I study medicine in Padua.", "Davvero? E da quanto _ lì?", "Really? And how long have you been studying there?", 1, "Back to the person: studi."],
-    ["Le tue sorelle studiano?", "Do your sisters study?", "No, _ e lavorano.", "No, they... actually yes, they study and work.", 5, "Loro → studiano."],
+    ["Le tue sorelle studiano?", "Do your sisters study?", "Sì, _ e lavorano.", "Yes, they study and work.", 5, "Loro → studiano."],
     ["Studiamo insieme stasera.", "We're studying together tonight.", "Ah sì? A che ora _?", "Oh yes? What time are you all studying?", 4, "To the group: studiate."],
   ],
   parlare: [
@@ -152,12 +152,12 @@ export function roundsFor(v: Verb): Round[] {
   if (hand) return hand.map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
   // Generic ping-pong built from the forms: hear one person, answer as another.
   return [
-    { q: `${cap(f[1]!)} anche tu?`, qEn: `Do you ${v.english.replace(/^to /, "")} too?`, a: "Sì, anch'io _.", aEn: `Yes, ${v.en[0]} too.`, idx: 0, why: `You heard ${f[1]} (you) → you answer ${f[0]} (I).` },
-    { q: `${cap(f[4]!)} anche voi?`, qEn: `Do you all ${v.english.replace(/^to /, "")} too?`, a: "Sì, _ anche noi.", aEn: v.en[3] + " too.", idx: 3, why: `You heard ${f[4]} (you all) → you answer ${f[3]} (we).` },
-    { q: `Io ${f[0]}. E tu?`, qEn: v.en[0] + ". And you?", a: "Anch'io! Anche tu _?", aEn: "Me too! Do you too?", idx: 1, why: `Turning it to a friend: ${f[1]}.` },
-    { q: `E Marco?`, qEn: "And Marco?", a: "Anche lui _.", aEn: v.en[2] + " too.", idx: 2, why: `One other person → ${f[2]}.` },
-    { q: `E i tuoi amici?`, qEn: "And your friends?", a: "Anche loro _.", aEn: v.en[5] + " too.", idx: 5, why: `A group of others → ${f[5]}.` },
-    { q: `Noi ${f[3]}. E voi, ragazzi?`, qEn: v.en[3] + ". And you, guys?", a: "Anche voi _?", aEn: "Do you all too?", idx: 4, why: `Talking to the group → ${f[4]}.` },
+    { q: `Oggi ${f[1]}?`, qEn: `Are you going to ${v.english.replace(/^to /, "")} today?`, a: "Sì, oggi _.", aEn: `Yes, today ${v.en[0]}.`, idx: 0, why: `You heard ${f[1]} (you) → answer ${f[0]} (I).` },
+    { q: `Ragazzi, oggi ${f[4]}?`, qEn: `Guys, are you going to ${v.english.replace(/^to /, "")} today?`, a: "Sì, _ oggi.", aEn: `Yes, ${v.en[3]} today.`, idx: 3, why: `You heard ${f[4]} (you all) → answer ${f[3]} (we).` },
+    { q: `Domani ${f[0]}.`, qEn: `Tomorrow ${v.en[0]}.`, a: "E oggi _?", aEn: "And today, do you?", idx: 1, why: `Back to the person: ${f[1]}.` },
+    { q: `Marco ${f[2]} oggi?`, qEn: `Is Marco going to ${v.english.replace(/^to /, "")} today?`, a: "No, oggi non _.", aEn: "No, not today.", idx: 2, why: `One other person → ${f[2]}.` },
+    { q: `E i tuoi amici?`, qEn: "And your friends?", a: "Sì, _ domani.", aEn: `Yes, ${v.en[5]} tomorrow.`, idx: 5, why: `A group of others → ${f[5]}.` },
+    { q: `Domani ${f[3]}.`, qEn: `Tomorrow ${v.en[3]}.`, a: "Ah, e a che ora _?", aEn: "Oh, and what time?", idx: 4, why: `To the group → ${f[4]}.` },
   ];
 }
 
