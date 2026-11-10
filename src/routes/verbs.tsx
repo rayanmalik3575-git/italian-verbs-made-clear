@@ -486,9 +486,6 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
           <span className="inline-block min-w-28 border-b-2 border-primary text-3xl font-bold text-primary sm:text-4xl">{result ? expected : "…"}</span>
           {result && <button type="button" onClick={() => speak(expected)} className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><Volume2 className="h-4 w-4" aria-hidden /> Hear it</button>}
         </div>
-        <p className="mt-4 rounded-xl bg-tile-blue px-4 py-3 text-sm text-tile-blue-ink">
-          <span className="font-bold">Ear clue:</span> {ENDING_CLUE[i]} Italians usually drop “{p.it}” — the ending alone tells you who.
-        </p>
         </>}
         {S && <>
         <p className="mt-6 inline-flex rounded-full bg-tile-blue px-3 py-1 text-xs font-semibold text-tile-blue-ink">{ctx.situation}</p>
@@ -500,7 +497,7 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
         </>}
 
         <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
-          <label htmlFor={`answer-${kind}`} className="text-sm font-semibold">Your answer · form of {verb.infinitive}</label>
+          <label htmlFor={`answer-${kind}`} className="sr-only">Your answer · form of {verb.infinitive}</label>
           <input id={`answer-${kind}`} ref={input} autoFocus={!S} autoComplete="off" autoCapitalize="off" spellCheck={false}
             value={answer} onChange={(e) => setAnswer(e.target.value)} readOnly={result !== null}
             placeholder={`form of ${verb.infinitive}`}
@@ -517,7 +514,7 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
             </p>
           )}
 
-          {hint && result === null && <p className="mt-3 rounded-xl bg-muted px-4 py-2.5 text-sm text-muted-foreground">{isIrregular(verb) ? `Starts with “${expected.slice(0, 2)}…”` : ruleFor(verb)}</p>}
+          {hint && result === null && <p className="mt-3 rounded-xl bg-muted px-4 py-2.5 text-sm text-muted-foreground">{!S ? ENDING_CLUE[i] : isIrregular(verb) ? `Starts with “${expected.slice(0, 2)}…”` : ruleFor(verb)}</p>}
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
             <button className={`${btn.primary} w-full sm:w-auto`} disabled={result === null && !answer.trim()}>
               {result === null ? "Check answer" : step === 5 ? "See result" : "Continue"} {result !== null && <ArrowRight className="h-4 w-4" />}
