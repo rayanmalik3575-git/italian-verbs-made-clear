@@ -132,12 +132,7 @@ function VerbsPage() {
           <Panel>
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
-                <div className="flex flex-wrap gap-2 text-xs font-semibold">
-                  <span className="rounded-md bg-tile-blue px-2 py-1 text-tile-blue-ink">{LEVEL[selected.infinitive]}</span>
-                  <span className={`rounded-md px-2 py-1 ${isIrregular(selected) ? "bg-tile-pink text-tile-pink-ink" : "bg-tile-green text-tile-green-ink"}`}>{patternLabel(selected)}</span>
-                  <span className="rounded-md bg-muted px-2 py-1 text-muted-foreground">#{RANK[selected.infinitive]} · {STATUS_LABEL[statusOf(progress[selected.infinitive])]}</span>
-                </div>
-                <h2 className="mt-3 flex items-center gap-2 text-3xl font-bold sm:text-4xl">
+                <h2 className="flex items-center gap-2 text-3xl font-bold sm:text-4xl">
                   {selected.infinitive}
                   <button onClick={() => speak(selected.infinitive)} aria-label={`Listen to ${selected.infinitive}`} className="grid h-10 w-10 place-items-center rounded-xl border text-muted-foreground hover:bg-muted hover:text-foreground"><Volume2 className="h-5 w-5" /></button>
                 </h2>
