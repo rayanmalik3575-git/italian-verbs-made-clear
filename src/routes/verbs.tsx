@@ -5,6 +5,15 @@ import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verb
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
 import { grade, type Grade } from "@/lib/grading";
 import { contextFor, fill } from "@/data/verb-sentences";
+
+const ENDING_CLUE = [
+  "Ends in -o (or -go/-sco) → it's me, I.",
+  "Ends in -i → it's you (one friend).",
+  "Ends in -a or -e → he, she, or polite you.",
+  "Ends in -iamo → it's always WE, in every verb.",
+  "Ends in -te → you all.",
+  "Ends in -no → they.",
+];
 import { blueprintOf, chunksFor, roundsFor, fillBlank, EAR } from "@/data/verb-reflex";
 import { recordAttempt, useProgress, statusOf, STATUS_LABEL } from "@/lib/progress";
 import { Chip, Panel, PageHeader, ProgressBar, btn } from "@/components/app-shell";
@@ -447,18 +456,24 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
         <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Question {step + 1} of 6</span><span>Score {score}</span></div>
         <div className="mt-2"><ProgressBar value={(step / 6) * 100} label="Practice progress" /></div>
         {!S && <>
-        <p className="mt-7 text-4xl font-bold tracking-tight sm:text-5xl">
-          <span className="text-muted-foreground">{p.it}</span>{" "}
-          <span className="inline-block min-w-24 border-b-2 border-primary text-primary">{result ? expected : "…"}</span>
+        <p className="mt-7 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Say this in Italian</p>
+        <p className="mt-1 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">“{verb.en[i]}”</p>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <span className="rounded-full bg-muted px-3 py-1 text-sm font-semibold text-muted-foreground">({p.it})</span>
+          <span className="inline-block min-w-28 border-b-2 border-primary text-3xl font-bold text-primary sm:text-4xl">{result ? expected : "…"}</span>
+          {result && <button type="button" onClick={() => speak(expected)} className="inline-flex items-center gap-1 text-sm font-semibold text-primary"><Volume2 className="h-4 w-4" aria-hidden /> Hear it</button>}
+        </div>
+        <p className="mt-4 rounded-xl bg-tile-blue px-4 py-3 text-sm text-tile-blue-ink">
+          <span className="font-bold">Ear clue:</span> {ENDING_CLUE[i]} Italians usually drop “{p.it}” — the ending alone tells you who.
         </p>
-        <p className="mt-3 text-sm text-muted-foreground">meaning: {verb.en[i]}</p>
         </>}
         {S && <>
         <p className="mt-6 inline-flex rounded-full bg-tile-blue px-3 py-1 text-xs font-semibold text-tile-blue-ink">{ctx.situation}</p>
         <p className="mt-4 text-3xl font-bold leading-snug sm:text-4xl" aria-label="Italian sentence with a blank">
           {before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}
         </p>
-        <p className="mt-3 text-sm text-muted-foreground">meaning: {ctx.en}</p>
+        <p className="mt-3 text-lg font-semibold text-foreground"><span className="text-sm font-medium text-muted-foreground">Meaning · </span>{ctx.en}</p>
+        <button type="button" onClick={() => speak(result ? full : ctx.it.replace("_", "…"))} className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary"><Volume2 className="h-4 w-4" aria-hidden /> Listen first</button>
         </>}
 
         <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
