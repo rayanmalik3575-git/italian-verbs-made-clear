@@ -328,6 +328,15 @@ function HowItWorks({ verb }: { verb: Verb }) {
   );
 }
 
+const GUIDE: string[] = [
+  "Your friend is asking about you, so you answer for yourself. Use the “I” form, which usually ends in -o.",
+  "Now you're turning the question back to your friend. Use the “you” form for one person, which ends in -i.",
+  "You're talking about one other person (he, she, or polite “you”). Use the lui/lei form.",
+  "They asked you and the people with you, so you answer for the group. Use the “we” form, which ends in -iamo.",
+  "You're speaking to a group of people. Use the “you all” form, which ends in -ate, -ete or -ite.",
+  "You're talking about other people, not you. Use the “they” form, which ends in -ano or -ono.",
+];
+
 function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefined }) {
   const rounds = useMemo(() => roundsFor(verb), [verb]);
   const [step, setStep] = useState(0);
@@ -366,17 +375,23 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
       <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Round {step + 1} of {rounds.length}</span><span>Score {score}</span></div>
       <div className="mt-2"><ProgressBar value={(step / rounds.length) * 100} label="Reflex progress" /></div>
 
-      <div className="mt-6 flex items-start gap-3">
+      <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Someone says to you</p>
+      <div className="mt-2 flex items-start gap-3">
         <button type="button" onClick={() => speak(r.q)} aria-label="Hear the question" className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Volume2 className="h-5 w-5" /></button>
         <div className="rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
           <p className="text-xl font-bold sm:text-2xl">{r.q}</p>
           {(showEn || result) && <p className="mt-1 text-sm text-muted-foreground">{r.qEn}</p>}
         </div>
       </div>
-      <div className="mt-4 flex justify-end">
+      <div className="mt-5 rounded-2xl bg-secondary/60 px-4 py-3 text-[15px] leading-relaxed text-foreground">
+        <span className="font-semibold">How to answer: </span>{GUIDE[r.idx]}
+      </div>
+
+      <div className="mt-4 flex flex-col items-end">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">You reply</p>
         <div className="rounded-2xl rounded-tr-sm border-2 border-primary/30 px-4 py-3 text-right">
           <p className="text-xl font-bold sm:text-2xl">{before}<span className="mx-1 inline-block min-w-16 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}</p>
-          {result && <p className="mt-1 text-sm text-muted-foreground">{r.aEn}</p>}
+          <p className="mt-1 text-sm font-medium text-foreground/80">You mean: “{r.aEn}”</p>
         </div>
       </div>
 
@@ -385,6 +400,13 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
         <input id="reflex-answer" ref={input} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
           value={answer} onChange={(e) => setAnswer(e.target.value)} readOnly={result !== null}
           className="mt-1.5 min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none focus:ring-2 focus:ring-ring read-only:bg-muted" />
+        {result === null && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {["à", "è", "é", "ì", "ò", "ù"].map((c) => (
+              <button key={c} type="button" onClick={() => { setAnswer((a) => a + c); input.current?.focus(); }} className="h-9 w-9 rounded-lg border bg-card text-base font-semibold hover:bg-muted">{c}</button>
+            ))}
+          </div>
+        )}
         {result && <Feedback result={result} answer={answer} expected={full} meaning={r.aEn} />}
         {result && <p className="mt-3 text-sm text-muted-foreground"><span className="font-semibold text-foreground">The reflex:</span> {r.why}</p>}
         <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
