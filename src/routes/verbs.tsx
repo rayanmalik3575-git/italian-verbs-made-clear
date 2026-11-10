@@ -328,6 +328,15 @@ function HowItWorks({ verb }: { verb: Verb }) {
   );
 }
 
+const GUIDE: string[] = [
+  "Your friend is asking about you, so you answer for yourself. Use the “I” form, which usually ends in -o.",
+  "Now you're turning the question back to your friend. Use the “you” form for one person, which ends in -i.",
+  "You're talking about one other person (he, she, or polite “you”). Use the lui/lei form.",
+  "They asked you and the people with you, so you answer for the group. Use the “we” form, which ends in -iamo.",
+  "You're speaking to a group of people. Use the “you all” form, which ends in -ate, -ete or -ite.",
+  "You're talking about other people, not you. Use the “they” form, which ends in -ano or -ono.",
+];
+
 function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefined }) {
   const rounds = useMemo(() => roundsFor(verb), [verb]);
   const [step, setStep] = useState(0);
