@@ -128,6 +128,14 @@ const ROUNDS: Record<string, R[]> = {
     ["I tuoi genitori abitano qui?", "Do your parents live here?", "No, _ a Napoli.", "No, they live in Naples.", 5, "Loro → abitano."],
     ["Abitiamo vicino all'università.", "We live near the university.", "Ragazzi, anche voi _ lì?", "Guys, do you live there too?", 4, "To the group: abitate."],
   ],
+  studiare: [
+    ["Cosa studi all'università?", "What are you studying at university?", "_ economia a Bologna.", "I study economics in Bologna.", 0, "Studi → studio."],
+    ["Ragazzi, cosa fate stasera?", "Guys, what are you doing tonight?", "_ per l'esame di domani.", "We're studying for tomorrow's exam.", 3, "Group of you → studiamo."],
+    ["Dove studia Marco?", "Where does Marco study?", "_ sempre in biblioteca.", "He always studies in the library.", 2, "Lui → studia."],
+    ["Studio medicina a Padova.", "I study medicine in Padua.", "Davvero? E da quanto _ lì?", "Really? And how long have you been studying there?", 1, "Back to the person: studi."],
+    ["Le tue sorelle studiano?", "Do your sisters study?", "No, _ e lavorano.", "No, they... actually yes, they study and work.", 5, "Loro → studiano."],
+    ["Studiamo insieme stasera.", "We're studying together tonight.", "Ah sì? A che ora _?", "Oh yes? What time are you all studying?", 4, "To the group: studiate."],
+  ],
   parlare: [
     ["Parli italiano?", "Do you speak Italian?", "Sì, _ un po' di italiano.", "Yes, I speak a little Italian.", 0, "Parli → parlo. Just swap -i for -o."],
     ["Parlate inglese?", "Do you all speak English?", "Sì, _ inglese.", "Yes, we speak English.", 3, "Parlate → parliamo."],
