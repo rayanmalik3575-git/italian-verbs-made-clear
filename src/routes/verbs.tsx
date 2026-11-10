@@ -144,16 +144,7 @@ function VerbsPage() {
             </div>
             {mode === "learn"
               ? <Learn verb={selected} onPractice={() => select(selected.infinitive, "practice")} />
-              : <div>
-                  <h3 className="mt-6 text-lg font-bold">Practice 1 · Verb forms</h3>
-                  <p className="text-sm text-muted-foreground">Write the form for each person (io, tu, lui/lei…).</p>
-                  <Practice key={selected.infinitive + "-d"} kind="drill" verb={selected} onLearn={() => select(selected.infinitive, "learn")} />
-                  <div className="mt-10 border-t pt-6">
-                    <h3 className="text-lg font-bold">Practice 2 · In real sentences</h3>
-                    <p className="text-sm text-muted-foreground">Now use the verb inside everyday Italian, the way people really speak.</p>
-                    <Practice key={selected.infinitive + "-s"} kind="sentence" verb={selected} onLearn={() => select(selected.infinitive, "learn")} />
-                  </div>
-                </div>}
+              : <PracticeModes verb={selected} onLearn={() => select(selected.infinitive, "learn")} />}
           </Panel>
         </div>
       </div>
@@ -252,7 +243,29 @@ function Learn({ verb, onPractice }: { verb: Verb; onPractice: () => void }) {
 
 const ACCENTS = ["à", "è", "é", "ì", "ò", "ù"];
 
-function Practice({ verb, onLearn, kind }: { verb: Verb; onLearn: () => void; kind: "drill" | "sentence" }) {
+function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
+  const [kind, setKind] = useState<"drill" | "sentence">("drill");
+  const modes = [
+    { id: "drill" as const, n: 1, title: "Verb forms", sub: "Lock in the six endings" },
+    { id: "sentence" as const, n: 2, title: "Real sentences", sub: "Use it the way Italians speak" },
+  ];
+  return (
+    <div className="mt-6">
+      <div role="tablist" aria-label="Practice type" className="grid gap-2 sm:grid-cols-2">
+        {modes.map((m) => (
+          <button key={m.id} role="tab" aria-selected={kind === m.id} onClick={() => setKind(m.id)}
+            className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${kind === m.id ? "border-primary bg-accent" : "bg-card hover:bg-muted"}`}>
+            <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-bold ${kind === m.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{m.n}</span>
+            <span><span className="block font-semibold">{m.title}</span><span className="block text-xs text-muted-foreground">{m.sub}</span></span>
+          </button>
+        ))}
+      </div>
+      <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={kind === "drill" ? () => setKind("sentence") : undefined} />
+    </div>
+  );
+}
+
+function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => void; kind: "drill" | "sentence"; onNext?: (() => void) | undefined }) {
   const S = kind === "sentence";
   const order = useMemo(() => [0, 1, 2, 3, 4, 5].sort(() => Math.random() - 0.5), []);
   const [step, setStep] = useState(0);
@@ -270,6 +283,7 @@ function Practice({ verb, onLearn, kind }: { verb: Verb; onLearn: () => void; ki
         <p className="mt-2 text-muted-foreground">{score === 6 ? "Perfetto! Marked as mastered." : "Saved. Score 6/6 to master this verb."}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button onClick={() => { setStep(0); setScore(0); setResult(null); setAnswer(""); }} className={btn.primary}><RotateCcw className="h-4 w-4" /> Try again</button>
+          {onNext && <button onClick={onNext} className={btn.outline}>Next: real sentences <ArrowRight className="h-4 w-4" /></button>}
           <button onClick={onLearn} className={btn.outline}>Review the table</button>
         </div>
       </div>
@@ -304,25 +318,27 @@ function Practice({ verb, onLearn, kind }: { verb: Verb; onLearn: () => void; ki
   };
 
   return (
-    <div className="mt-6 grid gap-5 xl:grid-cols-[1fr_240px]">
+    <div className="mt-5 rounded-[20px] border bg-card p-5 sm:p-7">
       <div>
         <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Question {step + 1} of 6</span><span>Score {score}</span></div>
         <div className="mt-2"><ProgressBar value={(step / 6) * 100} label="Practice progress" /></div>
         {!S && <>
-        <p className="mt-6 text-sm font-semibold text-muted-foreground">Write this in Italian:</p>
-        <p className="mt-1 text-2xl font-bold">“{verb.en[i]}”</p>
+        <p className="mt-7 text-4xl font-bold tracking-tight sm:text-5xl">
+          <span className="text-muted-foreground">{p.it}</span>{" "}
+          <span className="inline-block min-w-24 border-b-2 border-primary text-primary">{result ? expected : "…"}</span>
+        </p>
+        <p className="mt-3 text-sm text-muted-foreground">meaning: {verb.en[i]}</p>
         </>}
         {S && <>
         <p className="mt-6 inline-flex rounded-full bg-tile-blue px-3 py-1 text-xs font-semibold text-tile-blue-ink">{ctx.situation}</p>
-        <p className="mt-3 text-sm font-semibold text-muted-foreground">Say this the Italian way:</p>
-        <p className="mt-1 text-xl font-bold">“{ctx.en}”</p>
-        <p className="mt-4 text-2xl font-semibold leading-relaxed" aria-label="Italian sentence with a blank">
+        <p className="mt-4 text-3xl font-bold leading-snug sm:text-4xl" aria-label="Italian sentence with a blank">
           {before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}
         </p>
+        <p className="mt-3 text-sm text-muted-foreground">meaning: {ctx.en}</p>
         </>}
 
         <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
-          <label htmlFor={`answer-${kind}`} className="text-sm font-semibold">{S ? `Fill the blank with ${verb.infinitive}` : `${p.it} …`}</label>
+          <label htmlFor={`answer-${kind}`} className="text-sm font-semibold">Your answer · form of {verb.infinitive}</label>
           <input id={`answer-${kind}`} ref={input} autoFocus={!S} autoComplete="off" autoCapitalize="off" spellCheck={false}
             value={answer} onChange={(e) => setAnswer(e.target.value)} readOnly={result !== null}
             placeholder={`form of ${verb.infinitive}`}
@@ -339,19 +355,16 @@ function Practice({ verb, onLearn, kind }: { verb: Verb; onLearn: () => void; ki
             </p>
           )}
 
-          <button className={`${btn.primary} mt-5 w-full sm:w-auto`} disabled={result === null && !answer.trim()}>
-            {result === null ? "Check answer" : step === 5 ? "See result" : "Continue"} {result !== null && <ArrowRight className="h-4 w-4" />}
-          </button>
+          {hint && result === null && <p className="mt-3 rounded-xl bg-muted px-4 py-2.5 text-sm text-muted-foreground">{isIrregular(verb) ? `Starts with “${expected.slice(0, 2)}…”` : ruleFor(verb)}</p>}
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <button className={`${btn.primary} w-full sm:w-auto`} disabled={result === null && !answer.trim()}>
+              {result === null ? "Check answer" : step === 5 ? "See result" : "Continue"} {result !== null && <ArrowRight className="h-4 w-4" />}
+            </button>
+            {!hint && result === null && <button type="button" onClick={() => setHint(true)} className="text-sm font-semibold text-accent-foreground underline">Show a hint</button>}
+            <button type="button" onClick={onLearn} className="text-sm font-semibold text-accent-foreground underline">Conjugation table</button>
+          </div>
         </form>
       </div>
-
-      <aside className="h-fit rounded-[16px] border bg-muted/60 p-4 text-sm" aria-label="Help">
-        <p className="font-semibold">Need a hint?</p>
-        {hint
-          ? <p className="mt-1 text-muted-foreground">{isIrregular(verb) ? `Starts with “${expected.slice(0, 2)}…”` : ruleFor(verb)}</p>
-          : <button type="button" onClick={() => setHint(true)} className="mt-2 font-semibold text-accent-foreground underline">Show a hint</button>}
-        <button type="button" onClick={onLearn} className="mt-3 block font-semibold text-accent-foreground underline">Open the conjugation table</button>
-      </aside>
     </div>
   );
 }
