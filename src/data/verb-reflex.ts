@@ -120,6 +120,14 @@ const ROUNDS: Record<string, R[]> = {
     ["I ragazzi possono restare?", "Can the kids stay?", "No, non _ restare.", "No, they can't stay.", 5, "Loro → possono."],
     ["Possiamo pagare con la carta?", "Can we pay by card?", "Sì, _ pagare con la carta.", "Yes, you all can pay by card.", 4, "To the group: potete."],
   ],
+  abitare: [
+    ["Dove abiti?", "Where do you live?", "_ a Roma, in centro.", "I live in Rome, downtown.", 0, "Abiti → abito. Swap -i for -o."],
+    ["Abitate insieme?", "Do you two live together?", "Sì, _ insieme da un anno.", "Yes, we've lived together for a year.", 3, "Abitate → abitiamo."],
+    ["Dove abita tuo fratello?", "Where does your brother live?", "_ a Milano.", "He lives in Milan.", 2, "Lui → abita."],
+    ["Io abito a Firenze.", "I live in Florence.", "Ah sì? E in che zona _?", "Oh really? And which area do you live in?", 1, "Back to the person: abiti."],
+    ["I tuoi genitori abitano qui?", "Do your parents live here?", "No, _ a Napoli.", "No, they live in Naples.", 5, "Loro → abitano."],
+    ["Abitiamo vicino all'università.", "We live near the university.", "Ragazzi, anche voi _ lì?", "Guys, do you live there too?", 4, "To the group: abitate."],
+  ],
   parlare: [
     ["Parli italiano?", "Do you speak Italian?", "Sì, _ un po' di italiano.", "Yes, I speak a little Italian.", 0, "Parli → parlo. Just swap -i for -o."],
     ["Parlate inglese?", "Do you all speak English?", "Sì, _ inglese.", "Yes, we speak English.", 3, "Parlate → parliamo."],
@@ -136,8 +144,8 @@ export function roundsFor(v: Verb): Round[] {
   if (hand) return hand.map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
   // Generic ping-pong built from the forms: hear one person, answer as another.
   return [
-    { q: `${cap(f[1]!)} spesso?`, qEn: `Do you ${v.english.replace(/^to /, "")} often?`, a: "Sì, _ spesso.", aEn: v.en[0] + " often.", idx: 0, why: `You heard ${f[1]} (you) → you answer ${f[0]} (I).` },
-    { q: `${cap(f[4]!)} anche voi?`, qEn: "Do you all too?", a: "Sì, _ anche noi.", aEn: v.en[3] + " too.", idx: 3, why: `You heard ${f[4]} (you all) → you answer ${f[3]} (we).` },
+    { q: `${cap(f[1]!)} anche tu?`, qEn: `Do you ${v.english.replace(/^to /, "")} too?`, a: "Sì, anch'io _.", aEn: `Yes, ${v.en[0]} too.`, idx: 0, why: `You heard ${f[1]} (you) → you answer ${f[0]} (I).` },
+    { q: `${cap(f[4]!)} anche voi?`, qEn: `Do you all ${v.english.replace(/^to /, "")} too?`, a: "Sì, _ anche noi.", aEn: v.en[3] + " too.", idx: 3, why: `You heard ${f[4]} (you all) → you answer ${f[3]} (we).` },
     { q: `Io ${f[0]}. E tu?`, qEn: v.en[0] + ". And you?", a: "Anch'io! Anche tu _?", aEn: "Me too! Do you too?", idx: 1, why: `Turning it to a friend: ${f[1]}.` },
     { q: `E Marco?`, qEn: "And Marco?", a: "Anche lui _.", aEn: v.en[2] + " too.", idx: 2, why: `One other person → ${f[2]}.` },
     { q: `E i tuoi amici?`, qEn: "And your friends?", a: "Anche loro _.", aEn: v.en[5] + " too.", idx: 5, why: `A group of others → ${f[5]}.` },

@@ -343,7 +343,6 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState<Grade | null>(null);
   const [score, setScore] = useState(0);
-  const [showEn, setShowEn] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   if (step >= rounds.length) {
@@ -364,7 +363,7 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
   const full = fillBlank(r.a, expected);
   const [before = "", after = ""] = r.a.split("_");
   const submit = () => {
-    if (result !== null) { setStep(step + 1); setAnswer(""); setResult(null); setShowEn(false); setTimeout(() => input.current?.focus(), 0); return; }
+    if (result !== null) { setStep(step + 1); setAnswer(""); setResult(null); setTimeout(() => input.current?.focus(), 0); return; }
     if (!answer.trim()) return;
     const g = grade(answer.trim().toLowerCase(), expected);
     setResult(g); if (g === "correct") setScore((s) => s + 1);
@@ -380,7 +379,7 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
         <div className="flex items-center gap-3 rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
           <div>
             <p className="text-xl font-bold sm:text-2xl">{r.q}</p>
-            {(showEn || result) && <p className="mt-1 text-sm text-muted-foreground">{r.qEn}</p>}
+            <p className="mt-1 text-sm font-medium text-muted-foreground">“{r.qEn}”</p>
           </div>
           <button type="button" onClick={() => speak(r.q)} aria-label="Hear the question" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground hover:opacity-90"><Volume2 className="h-4 w-4" /></button>
         </div>
@@ -393,8 +392,8 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">You reply</p>
         <div className="rounded-2xl rounded-tr-sm border-2 border-primary/30 px-4 py-3 text-right">
           <p className="text-xl font-bold sm:text-2xl">{before}<span className="mx-1 inline-block min-w-16 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}</p>
-          <p className="mt-1 text-sm font-medium text-muted-foreground">“{r.aEn}”</p>
         </div>
+        <p className="mt-1.5 pr-1 text-sm font-medium text-muted-foreground">“{r.aEn}”</p>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
@@ -414,7 +413,6 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
           <button className={`${btn.primary} w-full sm:w-auto`} disabled={result === null && !answer.trim()}>
             {result === null ? "Reply" : step === rounds.length - 1 ? "See result" : "Next round"} {result !== null && <ArrowRight className="h-4 w-4" />}
           </button>
-          {!showEn && result === null && <button type="button" onClick={() => setShowEn(true)} className="text-sm font-semibold text-accent-foreground underline">I don't understand the question</button>}
         </div>
       </form>
     </div>
