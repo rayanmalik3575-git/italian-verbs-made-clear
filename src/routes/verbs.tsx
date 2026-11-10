@@ -472,7 +472,8 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
         <p className="mt-4 text-3xl font-bold leading-snug sm:text-4xl" aria-label="Italian sentence with a blank">
           {before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}
         </p>
-        <p className="mt-3 text-sm text-muted-foreground">meaning: {ctx.en}</p>
+        <p className="mt-3 text-lg font-semibold text-foreground"><span className="text-sm font-medium text-muted-foreground">Meaning · </span>{ctx.en}</p>
+        <button type="button" onClick={() => speak(result ? full : ctx.it.replace("_", "…"))} className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary"><Volume2 className="h-4 w-4" aria-hidden /> Listen first</button>
         </>}
 
         <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
