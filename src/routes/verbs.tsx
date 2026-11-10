@@ -237,6 +237,8 @@ function Learn({ verb, onPractice }: { verb: Verb; onPractice: () => void }) {
         </ul>
       </div>
 
+      <HowItWorks verb={verb} />
+
       <button onClick={onPractice} className={`${btn.cta} w-full sm:w-auto`}>Practise this verb <ArrowRight className="h-4 w-4" /></button>
     </div>
   );
@@ -245,19 +247,18 @@ function Learn({ verb, onPractice }: { verb: Verb; onPractice: () => void }) {
 const ACCENTS = ["à", "è", "é", "ì", "ò", "ù"];
 
 function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
-  type K = "understand" | "drill" | "reflex" | "sentence";
-  const [kind, setKind] = useState<K>("understand");
+  type K = "drill" | "reflex" | "sentence";
+  const [kind, setKind] = useState<K>("drill");
   const modes = [
-    { id: "understand" as const, n: 1, title: "How it works", sub: "Stem, sound and chunks" },
-    { id: "drill" as const, n: 2, title: "Verb forms", sub: "Lock in the six endings" },
-    { id: "reflex" as const, n: 3, title: "Reply reflex", sub: "Hear a question, answer" },
-    { id: "sentence" as const, n: 4, title: "Real sentences", sub: "Use it like Italians do" },
+    { id: "drill" as const, n: 1, title: "Verb forms", sub: "Lock in the six endings" },
+    { id: "reflex" as const, n: 2, title: "Reply reflex", sub: "Hear a question, answer" },
+    { id: "sentence" as const, n: 3, title: "Real sentences", sub: "Use it like Italians do" },
   ];
-  const next: Record<K, K | undefined> = { understand: "drill", drill: "reflex", reflex: "sentence", sentence: undefined };
+  const next: Record<K, K | undefined> = { drill: "reflex", reflex: "sentence", sentence: undefined };
   const go = next[kind] ? () => setKind(next[kind]!) : undefined;
   return (
     <div className="mt-6">
-      <div role="tablist" aria-label="Practice type" className="grid grid-cols-2 gap-2 2xl:grid-cols-4">
+      <div role="tablist" aria-label="Practice type" className="grid gap-2 sm:grid-cols-3">
         {modes.map((m) => (
           <button key={m.id} role="tab" aria-selected={kind === m.id} onClick={() => setKind(m.id)}
             className={`flex items-center gap-3 rounded-2xl border p-3 text-left transition-colors ${kind === m.id ? "border-primary bg-accent" : "bg-card hover:bg-muted"}`}>
@@ -266,19 +267,18 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
           </button>
         ))}
       </div>
-      {kind === "understand" && <HowItWorks key={verb.infinitive} verb={verb} onNext={go!} />}
       {kind === "reflex" && <Reflex key={verb.infinitive} verb={verb} onNext={go} />}
       {(kind === "drill" || kind === "sentence") && <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={go} />}
     </div>
   );
 }
 
-function HowItWorks({ verb, onNext }: { verb: Verb; onNext: () => void }) {
+function HowItWorks({ verb }: { verb: Verb }) {
   const b = blueprintOf(verb);
   const chunks = chunksFor(verb);
   return (
-    <div className="mt-5 rounded-[20px] border bg-card p-5 sm:p-7">
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">The engine of {verb.infinitive}</p>
+    <div className="rounded-[20px] border bg-card p-5 sm:p-7">
+      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">How it works · the engine of {verb.infinitive}</p>
       <h3 className="mt-1 text-2xl font-bold">Stem: <span className="text-primary">{b.stem}</span></h3>
       <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">{b.idea}</p>
 
@@ -315,7 +315,6 @@ function HowItWorks({ verb, onNext }: { verb: Verb; onNext: () => void }) {
           </li>
         ))}
       </ul>
-      <button onClick={onNext} className={`${btn.primary} mt-6`}>Start practising <ArrowRight className="h-4 w-4" /></button>
     </div>
   );
 }
