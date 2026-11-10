@@ -343,7 +343,6 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState<Grade | null>(null);
   const [score, setScore] = useState(0);
-  const [showEn, setShowEn] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   if (step >= rounds.length) {
@@ -364,7 +363,7 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
   const full = fillBlank(r.a, expected);
   const [before = "", after = ""] = r.a.split("_");
   const submit = () => {
-    if (result !== null) { setStep(step + 1); setAnswer(""); setResult(null); setShowEn(false); setTimeout(() => input.current?.focus(), 0); return; }
+    if (result !== null) { setStep(step + 1); setAnswer(""); setResult(null); setTimeout(() => input.current?.focus(), 0); return; }
     if (!answer.trim()) return;
     const g = grade(answer.trim().toLowerCase(), expected);
     setResult(g); if (g === "correct") setScore((s) => s + 1);
