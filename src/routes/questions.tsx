@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, TrendingUp } from "lucide-react";
 import { PageHeader, Panel, ProgressBar, btn } from "@/components/app-shell";
+import { StepVoice, StepNoDo } from "@/components/lesson/QuestionSteps";
+import { useStepProgress } from "@/lib/progress";
 import { QWORDS, ORDER_TASKS, PICK_TASKS, isAcceptedQuestion, isCorrectPick, type OrderTask } from "@/data/questions";
 
 export const Route = createFileRoute("/questions")({
@@ -79,6 +81,8 @@ const TABS = ["Your voice does it", "Forget “do”", "The one word order", "Th
 
 function QuestionsPage() {
   const [step, setStep] = useState(0);
+  const prog = useStepProgress();
+  const KEYS = ["voice", "nodo"];
   const go = (s: number) => { setStep(s); if (typeof window !== "undefined") window.scrollTo({ top: 0 }); };
   return (
     <div>
@@ -89,6 +93,8 @@ function QuestionsPage() {
           <button key={t} role="tab" aria-selected={step === i} onClick={() => go(i)}
             className={`min-h-11 rounded-xl border px-3 text-sm font-semibold ${step === i ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground"}`}>
             {i + 1}. {t}
+            {(() => { const r = KEYS[i] ? prog[KEYS[i]!] : undefined; if (!r?.done) return null;
+              return r.mastered ? <Check aria-label="Mastered" className="ml-1.5 inline h-4 w-4" /> : <span className="ml-1.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-[14px] text-amber-800">Review</span>; })()}
           </button>
         ))}
       </div>
@@ -101,92 +107,6 @@ function QuestionsPage() {
         {step > 0 ? <button className={btn.outline} onClick={() => go(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
         {step < 4 && <button className={btn.primary} onClick={() => go(step + 1)}>Next: {TABS[step + 1]} <ArrowRight className="h-4 w-4" /></button>}
       </div>
-    </div>
-  );
-}
-
-function StepVoice() {
-  const pairs = [
-    { s: "Parli inglese.", q: "Parli inglese?", es: "You speak English.", eq: "Do you speak English?" },
-    { s: "Il museo è chiuso.", q: "Il museo è chiuso?", es: "The museum is closed.", eq: "Is the museum closed?" },
-    { s: "Prendete un caffè.", q: "Prendete un caffè?", es: "You're having a coffee.", eq: "Are you guys having a coffee?" },
-  ];
-  return (
-    <div>
-      <Lead>
-        Here is the good news first. To ask a yes-or-no question in Italian, you take the normal sentence and <strong>say it like a question</strong>.
-        Same words, same order. Nothing moves. Only your voice changes.
-      </Lead>
-      <Panel className="p-5 sm:p-6">
-        <div className="mb-3 grid grid-cols-2 gap-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          <span>Statement · voice falls</span><span>Question · voice rises</span>
-        </div>
-        {pairs.map((p) => (
-          <div key={p.q} className="grid grid-cols-2 gap-4 border-b py-3 last:border-0">
-            <div className="flex items-center gap-2"><div className="flex-1"><div className="font-semibold">{p.s}</div><div className="text-sm text-muted-foreground">{p.es}</div></div><Listen text={p.s} /></div>
-            <div className="flex items-center gap-2"><div className="flex-1"><div className="font-semibold text-primary">{p.q}</div><div className="text-sm text-muted-foreground">{p.eq}</div></div><Listen text={p.q} /></div>
-          </div>
-        ))}
-      </Panel>
-      <H>Where the voice goes up</H>
-      <P>
-        Lift your pitch on the last word or two, the way you would in English if you said in surprise “you're leaving?”. In a long sentence,
-        Italians often lift slightly at the end of each chunk, so the question sounds like a little staircase.
-      </P>
-      <div className="flex max-w-3xl flex-wrap items-end gap-2">
-        {["Prenotate", "una camera", "per tre notti?"].map((c, i) => (
-          <span key={c} className="rounded-xl border bg-card px-3 py-2 font-semibold text-foreground" style={{ marginBottom: i * 10 }}>{c}</span>
-        ))}
-        <TrendingUp className="mb-6 h-5 w-5 text-primary" />
-        <Listen text="Prenotate una camera per tre notti?" />
-      </div>
-      <Note title="What this means for you">
-        Every sentence you learn from now on is also a question you already know. Learn <em>Hai fame.</em> (you're hungry) and you own <em>Hai fame?</em> for free.
-      </Note>
-      <Note tone="amber" title="When you're writing">
-        In a text message there's no voice, so the <strong>?</strong> is the only thing that tells the reader it's a question. Never drop it.
-      </Note>
-    </div>
-  );
-}
-
-function StepNoDo() {
-  return (
-    <div>
-      <Lead>
-        The biggest obstacle for English speakers is a word Italian doesn't have. <strong>Do, does, are, is</strong> in English questions
-        are helper words. Italian has no helper. The verb ending already says who is doing it, so you go straight to the verb.
-      </Lead>
-      <Panel className="p-5 sm:p-6">
-        <Line it="Lavori?" en="Do you work?" lit="you-work?" />
-        <Line it="Mangiamo?" en="Are we eating? / Shall we eat?" lit="we-eat?" />
-        <Line it="Capisce?" en="Do you understand? (formal)" lit="you-understand?" />
-        <Line it="Arrivano stasera?" en="Are they arriving tonight?" lit="they-arrive tonight?" />
-      </Panel>
-      <H>The habit to build</H>
-      <P>
-        When an English question forms in your head, strip it before you speak. “Do you work?” becomes “you work?”. “Are we eating?” becomes “we eat?”.
-        That stripped version is exactly the Italian sentence. Italian present tense covers both “I eat” and “I am eating”, so you never need an extra word.
-      </P>
-      <div className="max-w-3xl rounded-2xl border bg-card p-5">
-        {[
-          ["Do you live here?", "you live here?", "Abiti qui?"],
-          ["Is she coming?", "she comes?", "Viene?"],
-          ["Are you guys tired?", "you guys are tired?", "Siete stanchi?"],
-        ].map(([a, b, c]) => (
-          <div key={a} className="flex flex-wrap items-center gap-2 border-b py-3 last:border-0">
-            <span className="text-muted-foreground line-through decoration-muted-foreground/40">{a}</span>
-            <ArrowRight className="h-4 w-4 text-muted-foreground" />
-            <span className="italic text-muted-foreground">{b}</span>
-            <ArrowRight className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold text-foreground">{c}</span>
-            <span className="ml-auto"><Listen text={c!} /></span>
-          </div>
-        ))}
-      </div>
-      <Note tone="amber" title="The mistake to avoid">
-        Don't hunt for a word that means “do”. <em>Fai lavori?</em> is not Italian. <em>Fare</em> means “to do” as an action (fare la spesa), never as a question helper.
-      </Note>
     </div>
   );
 }

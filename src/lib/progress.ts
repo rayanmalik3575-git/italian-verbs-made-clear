@@ -51,3 +51,35 @@ export const STATUS_LABEL: Record<Status, string> = {
   practising: "Practising",
   mastered: "Mastered",
 };
+
+/* ---------- Lesson step progress (Asking questions) ---------- */
+export type StepRecord = { done: boolean; mastered: boolean; best: number; total: number };
+export type StepProgress = Record<string, StepRecord>;
+export const QUESTIONS_KEY = "parlami.questions.progress";
+const EMPTY_STEPS: StepProgress = {};
+let stepCache: StepProgress | null = null;
+const stepListeners = new Set<() => void>();
+function readSteps(): StepProgress {
+  if (typeof window === "undefined") return EMPTY_STEPS;
+  if (stepCache) return stepCache;
+  try { stepCache = JSON.parse(window.localStorage.getItem(QUESTIONS_KEY) ?? "{}") as StepProgress; } catch { stepCache = {}; }
+  return stepCache;
+}
+/** Done at any score; mastered at 75% or better (3/4). Keeps the best score. */
+export function stepResult(score: number, total: number, prev?: StepRecord): StepRecord {
+  const best = Math.max(prev?.best ?? 0, score);
+  return { done: true, best, total, mastered: total > 0 && best / total >= 0.75 };
+}
+export function recordStep(step: string, score: number, total: number) {
+  const cur = readSteps();
+  stepCache = { ...cur, [step]: stepResult(score, total, cur[step]) };
+  try { window.localStorage.setItem(QUESTIONS_KEY, JSON.stringify(stepCache)); } catch { /* unavailable */ }
+  stepListeners.forEach((l) => l());
+}
+export function useStepProgress(): StepProgress {
+  return useSyncExternalStore(
+    (cb) => { stepListeners.add(cb); return () => stepListeners.delete(cb); },
+    readSteps,
+    () => EMPTY_STEPS,
+  );
+}
