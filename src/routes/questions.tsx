@@ -105,7 +105,7 @@ function QuestionsPage() {
                   <button type="button" onClick={() => go(i)} aria-current={active ? "step" : undefined} aria-label={`Step ${i + 1}: ${t}${done ? " (completed)" : ""}`}
                     className={`inline-flex h-9 min-w-9 items-center justify-center gap-1.5 rounded-full border text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:px-3 ${cls}`}>
                     {done ? <Check aria-hidden className="h-4 w-4" /> : <span>{i + 1}</span>}
-                    <span className="hidden whitespace-nowrap lg:inline">{t}</span>
+                    <span className={`hidden whitespace-nowrap ${active ? "lg:inline" : "2xl:inline"}`}>{t}</span>
                   </button>
                 </li>
               );
@@ -114,7 +114,7 @@ function QuestionsPage() {
           
         </nav>,
         slot)}
-        <h2 className="px-5 pt-6 text-[15px] font-semibold text-foreground sm:px-8 lg:hidden">{TABS[step]}</h2>
+        <h2 className="px-5 pt-6 text-[15px] font-semibold text-foreground sm:px-8 lg:sr-only">{TABS[step]}</h2>
         <motion.div key={step} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}
           className="flex-1 px-5 py-8 sm:px-8">
           {step === 0 && <StepVoice />}
