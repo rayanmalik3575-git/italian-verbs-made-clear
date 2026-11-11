@@ -31,7 +31,7 @@ export function PitchCurve({ direction, playingId, label = true }: { direction: 
       <svg viewBox="0 0 200 38" preserveAspectRatio="none" className="h-full w-full overflow-visible">
         <path d={PATHS[direction]} fill="none" stroke="currentColor" strokeOpacity={0.15} strokeWidth={3} vectorEffect="non-scaling-stroke" />
         <path ref={path} d={PATHS[direction]} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round"
-          vectorEffect="non-scaling-stroke" pathLength={1} strokeDasharray="1" strokeDashoffset={1 - t} />
+          pathLength={1} strokeDasharray="1" strokeDashoffset={1 - t} />
       </svg>
       {active && pt && (
         <span className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current"
