@@ -14,7 +14,7 @@ export function WordGlossBar({ words, gloss }: { words: string[]; gloss: string[
   );
 }
 
-export function EndingHighlight({ stem, ending, label }: { stem: string; ending: string; label?: string }) {
+export function EndingHighlight({ stem, ending, label }: { stem: string; ending: string; label?: string | undefined }) {
   return (
     <span className="inline-flex items-start text-xl font-bold">
       <span className="text-foreground">{stem}</span>
@@ -26,7 +26,7 @@ export function EndingHighlight({ stem, ending, label }: { stem: string; ending:
   );
 }
 
-export function WarningBox({ title, children, wrong, right }: { title?: string; children?: ReactNode; wrong?: string; right?: string }) {
+export function WarningBox({ title, children, wrong, right }: { title?: string | undefined; children?: ReactNode; wrong?: string | undefined; right?: string | undefined }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-amber-300/50 bg-amber-50 p-4 text-amber-800">
       <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
