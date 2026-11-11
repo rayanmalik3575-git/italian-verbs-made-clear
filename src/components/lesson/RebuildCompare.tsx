@@ -7,10 +7,10 @@ import { AudioButtons } from "./AudioButton";
 
 function Chip({ w, hot, tag, tagCls }: { w: string; hot?: boolean; tag?: string; tagCls?: string }) {
   return (
-    <motion.span layout layoutId={undefined} className="flex flex-col items-center gap-1">
+    <span className="flex flex-col items-center gap-1">
       <span className={`rounded-xl border px-3 py-1.5 text-lg font-semibold ${hot ? "border-amber-400 bg-amber-50 text-amber-800" : "bg-card text-foreground"}`}>{w}</span>
       {tag && <span className={`text-[14px] font-medium ${tagCls}`}>{tag}</span>}
-    </motion.span>
+    </span>
   );
 }
 

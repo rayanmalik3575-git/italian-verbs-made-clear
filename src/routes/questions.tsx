@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, TrendingUp } from "lucide-react";
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
 import { StepVoice, StepNoDo } from "@/components/lesson/QuestionSteps";
-import { useStepProgress } from "@/lib/progress";
+import { recordStep, useStepProgress } from "@/lib/progress";
 import { QWORDS, ORDER_TASKS, PICK_TASKS, isAcceptedQuestion, isCorrectPick, type OrderTask } from "@/data/questions";
 
 export const Route = createFileRoute("/questions")({
@@ -89,6 +89,13 @@ function QuestionsPage() {
   const reduce = useReducedMotion();
   const [slot, setSlot] = useState<HTMLElement | null>(null);
   useEffect(() => { setSlot(document.getElementById("header-slot")); }, []);
+  const footRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (step !== 0 || !footRef.current) return;
+    const io = new IntersectionObserver((e) => { if (e[0]?.isIntersecting) recordStep("voice", 1, 1); }, { threshold: 0.9 });
+    io.observe(footRef.current);
+    return () => io.disconnect();
+  }, [step]);
   const isDone = (i: number) => !!(KEYS[i] && prog[KEYS[i]!]?.done);
   return (
     <div className="pt-6 sm:pt-0">
@@ -122,11 +129,11 @@ function QuestionsPage() {
           {step === 2 && <StepOrder />}
           {step === 3 && <StepWords />}
           {step === 4 && <StepPractice />}
+          <div ref={footRef} className="mt-12 flex items-center justify-between gap-3">
+            {step > 0 ? <button type="button" className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[15px] font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => go(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
+            {step < 4 && <button type="button" className="inline-flex min-h-12 max-w-full items-center gap-2 rounded-full bg-primary px-6 text-[16px] font-semibold text-primary-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" onClick={() => go(step + 1)}><span className="truncate">Next: {TABS[step + 1]}</span> <ArrowRight className="h-4 w-4 shrink-0" /></button>}
+          </div>
         </motion.div>
-        <div className="sticky bottom-0 flex justify-between gap-3 rounded-b-3xl border-t bg-card/95 px-5 py-4 backdrop-blur sm:px-8">
-          {step > 0 ? <button className={btn.outline} onClick={() => go(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
-          {step < 4 && <button className={btn.primary} onClick={() => go(step + 1)}><span className="truncate">Next: {TABS[step + 1]}</span> <ArrowRight className="h-4 w-4 shrink-0" /></button>}
-        </div>
       </section>
     </div>
   );

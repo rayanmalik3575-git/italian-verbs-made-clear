@@ -1,4 +1,9 @@
-import { Info } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { usePlayer } from "./audio";
+import { TuneToggle } from "./TuneToggle";
+import { RebuildCompare } from "./RebuildCompare";
+import { ChatPair } from "./ChatPair";
+import { PhraseDeck } from "./PhraseDeck";
 import { STEP1, STEP2, audioPaths, type Sentence } from "@/content/questions-lesson";
 import { recordStep } from "@/lib/progress";
 import { Panel } from "@/components/app-shell";
@@ -28,43 +33,55 @@ function SentenceCell({ s }: { s: Sentence }) {
   );
 }
 
+function Scene({ title, line, children }: { title: string; line: string; children: React.ReactNode }) {
+  return (
+    <section className="mt-14 first:mt-0">
+      <h3 className="text-2xl font-bold text-foreground">{title}</h3>
+      <p className="mb-5 mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">{line}</p>
+      {children}
+    </section>
+  );
+}
+
 export function StepVoice() {
   const l = STEP1.long;
+  const p = usePlayer();
+  const switched = useRef(false);
+  useEffect(() => { if (switched.current && p.id) recordStep("voice", 1, 1); }, [p.id]);
   return (
     <div>
-      <P>{"English rebuilds a sentence to ask something: you work → do you work? Italian doesn't. Learn the two moves that cover every question you'll ask at this level."}</P>
-      <H1>{STEP1.headline}</H1>
-      {STEP1.paragraphs.map((p) => <P key={p}>{p}</P>)}
-      <p className="mb-6 flex w-fit max-w-[65ch] items-start gap-2 rounded-xl bg-muted px-3 py-2 text-[14px] text-muted-foreground"><Info aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />{STEP1.footnote}</p>
-      <Panel className="p-4 sm:p-6">
-        <div className="mb-1 hidden grid-cols-2 gap-6 text-sm font-semibold uppercase tracking-wide sm:grid">
-          <span className="text-voice-fall">Statement · voice falls</span><span className="text-voice-rise">Question · voice rises</span>
-        </div>
-        {STEP1.pairs.map(([a, b]) => (
-          <div key={a.id} className="grid gap-x-6 border-b last:border-0 sm:grid-cols-2"><SentenceCell s={a} /><SentenceCell s={b} /></div>
-        ))}
-      </Panel>
-      <Panel className="mt-6 p-4 sm:p-6">
-        <div className="flex flex-wrap items-end gap-2">
-          {l.wordGloss!.map((w, i, arr) => (
-            <div key={w} className="flex flex-col">
-              <div className="h-10">{i === arr.length - 1 && <PitchCurve direction="rise" playingId={l.id} label={false} />}</div>
-              <span className={`rounded-xl border px-3 py-2 text-lg font-semibold ${i === arr.length - 1 ? "border-voice-rise/40 text-voice-rise" : "bg-card text-foreground"}`}>{w}</span>
-            </div>
+      <Scene title={STEP1.tune.title} line={STEP1.tune.line}><TuneToggle onSwitch={() => { switched.current = true; }} /></Scene>
+      <Scene title={STEP1.rebuild.title} line={STEP1.rebuild.line}><RebuildCompare /></Scene>
+      <Scene title={STEP1.pairsTitle} line={STEP1.pairsLine}>
+        <Panel className="p-4 sm:p-6">
+          <div className="mb-1 hidden grid-cols-2 gap-6 text-[14px] font-semibold uppercase tracking-wide sm:grid">
+            <span className="text-voice-fall">Statement · voice lands</span><span className="text-voice-rise">Question · voice lifts</span>
+          </div>
+          {STEP1.pairs.map(([a, b]) => (
+            <div key={a.id} className="grid gap-x-6 border-b last:border-0 sm:grid-cols-2"><SentenceCell s={a} /><SentenceCell s={b} /></div>
           ))}
-          <AudioButtons s={l} />
-        </div>
-        <div className="mt-2 text-[15px] text-muted-foreground">{l.english} · <span className="font-medium text-voice-rise">Typical pattern</span></div>
-        <p className="mt-3 text-foreground">{STEP1.longCaption}</p>
-      </Panel>
-      <H>Know this</H>
-      <Panel className="divide-y">
-        {STEP1.knowThis.map(([k, v]) => (
-          <div key={k} className="grid gap-1 p-4 sm:grid-cols-[180px_1fr] sm:gap-4"><div className="font-semibold">{k}</div><div className="leading-relaxed">{v}</div></div>
-        ))}
-      </Panel>
-      <H>Check your ear</H>
-      <Quiz items={STEP1.quiz} onFinish={(sc, t) => recordStep("voice", sc, t)} />
+        </Panel>
+        <Panel className="mt-6 p-4 sm:p-6">
+          <div className="flex flex-wrap items-end gap-2">
+            {l.wordGloss!.map((w, i, arr) => (
+              <div key={w} className="flex flex-col">
+                <div className="h-10 w-full">
+                  <svg viewBox="0 0 100 38" preserveAspectRatio="none" className={`h-full w-full ${i === arr.length - 1 ? "text-voice-rise" : "text-muted-foreground/50"}`} aria-hidden>
+                    <path d={i === arr.length - 1 ? "M0,26 C50,26 70,26 98,4" : "M0,26 L100,26"} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                  </svg>
+                </div>
+                <span className={`rounded-xl border px-3 py-2 text-lg font-semibold ${i === arr.length - 1 ? "border-voice-rise/40 text-voice-rise" : "bg-card text-foreground"}`}>{w}</span>
+              </div>
+            ))}
+            <AudioButtons s={l} />
+          </div>
+          <div className="mt-2 text-[15px] text-muted-foreground">{l.english}</div>
+          <p className="mt-3 text-foreground">{STEP1.longCaption}</p>
+        </Panel>
+        <p className="mt-4 text-[14px] text-muted-foreground">{STEP1.regionNote}</p>
+      </Scene>
+      <Scene title={STEP1.chat.title} line={STEP1.chat.line}><ChatPair /></Scene>
+      <Scene title={STEP1.deck.title} line={STEP1.deck.line}><PhraseDeck /></Scene>
     </div>
   );
 }
