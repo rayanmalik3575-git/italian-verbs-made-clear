@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, TrendingUp } from "lucide-react";
-import { PageHeader, Panel, ProgressBar, btn } from "@/components/app-shell";
+import { Panel, ProgressBar, btn } from "@/components/app-shell";
 import { StepVoice, StepNoDo } from "@/components/lesson/QuestionSteps";
 import { useStepProgress } from "@/lib/progress";
 import { QWORDS, ORDER_TASKS, PICK_TASKS, isAcceptedQuestion, isCorrectPick, type OrderTask } from "@/data/questions";
@@ -84,29 +85,46 @@ function QuestionsPage() {
   const prog = useStepProgress();
   const KEYS = ["voice", "nodo"];
   const go = (s: number) => { setStep(s); if (typeof window !== "undefined") window.scrollTo({ top: 0 }); };
+  const reduce = useReducedMotion();
+  const isDone = (i: number) => !!(KEYS[i] && prog[KEYS[i]!]?.done);
   return (
-    <div>
-      <PageHeader title="Asking questions"
-        description="English rebuilds a sentence to ask something: you work → do you work? Italian doesn't. Learn the two moves that cover every question you'll ask at this level." />
-      <div role="tablist" aria-label="Lesson steps" className="mb-6 flex flex-wrap gap-2">
-        {TABS.map((t, i) => (
-          <button key={t} role="tab" aria-selected={step === i} onClick={() => go(i)}
-            className={`min-h-11 rounded-xl border px-3 text-sm font-semibold ${step === i ? "border-primary bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground"}`}>
-            {i + 1}. {t}
-            {(() => { const r = KEYS[i] ? prog[KEYS[i]!] : undefined; if (!r?.done) return null;
-              return r.mastered ? <Check aria-label="Mastered" className="ml-1.5 inline h-4 w-4" /> : <span className="ml-1.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-[14px] text-amber-800">Review</span>; })()}
-          </button>
-        ))}
-      </div>
-      {step === 0 && <StepVoice />}
-      {step === 1 && <StepNoDo />}
-      {step === 2 && <StepOrder />}
-      {step === 3 && <StepWords />}
-      {step === 4 && <StepPractice />}
-      <div className="mt-8 flex justify-between gap-3">
-        {step > 0 ? <button className={btn.outline} onClick={() => go(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
-        {step < 4 && <button className={btn.primary} onClick={() => go(step + 1)}>Next: {TABS[step + 1]} <ArrowRight className="h-4 w-4" /></button>}
-      </div>
+    <div className="pt-6 sm:pt-0">
+      <section className="mx-auto flex max-w-[960px] flex-col rounded-3xl border bg-card shadow-[0_8px_30px_-12px_rgba(23,50,77,0.18)] md:min-h-[640px]">
+        <div className="flex items-center justify-between px-5 pt-5 text-[14px] font-medium text-muted-foreground sm:px-8">
+          <span>Asking questions · A1</span><span>Step {step + 1} of 5</span>
+        </div>
+        <nav aria-label="Lesson steps" className="px-5 pt-5 sm:px-8">
+          <ol className="relative flex items-center justify-between gap-1 sm:justify-center sm:gap-0">
+            {TABS.map((t, i) => {
+              const active = step === i, done = isDone(i) && !active;
+              const cls = active ? "border-primary bg-primary text-primary-foreground" : done ? "border-success bg-success text-white" : "border-border bg-card text-muted-foreground hover:text-foreground";
+              return (
+                <li key={t} className="flex items-center">
+                  {i > 0 && <span aria-hidden className="h-px w-4 bg-border sm:w-3 lg:w-5" />}
+                  <button type="button" onClick={() => go(i)} aria-current={active ? "step" : undefined} aria-label={`Step ${i + 1}: ${t}${done ? " (completed)" : ""}`}
+                    className={`inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-full border text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:px-3 ${cls}`}>
+                    {done ? <Check aria-hidden className="h-4 w-4" /> : <span>{i + 1}</span>}
+                    <span className="hidden whitespace-nowrap lg:inline">{t}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+          <p className="mt-3 text-center text-[15px] font-semibold text-foreground lg:hidden">{TABS[step]}</p>
+        </nav>
+        <motion.div key={step} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}
+          className="flex-1 px-5 py-8 sm:px-8">
+          {step === 0 && <StepVoice />}
+          {step === 1 && <StepNoDo />}
+          {step === 2 && <StepOrder />}
+          {step === 3 && <StepWords />}
+          {step === 4 && <StepPractice />}
+        </motion.div>
+        <div className="sticky bottom-0 flex justify-between gap-3 rounded-b-3xl border-t bg-card/95 px-5 py-4 backdrop-blur sm:px-8">
+          {step > 0 ? <button className={btn.outline} onClick={() => go(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
+          {step < 4 && <button className={btn.primary} onClick={() => go(step + 1)}><span className="truncate">Next: {TABS[step + 1]}</span> <ArrowRight className="h-4 w-4 shrink-0" /></button>}
+        </div>
+      </section>
     </div>
   );
 }
