@@ -5,7 +5,7 @@ import { STEP1 } from "@/content/questions-lesson";
 import { btn } from "@/components/app-shell";
 import { AudioButtons } from "./AudioButton";
 
-function Chip({ w, hot, tag, tagCls }: { w: string; hot?: boolean; tag?: string; tagCls?: string }) {
+function Chip({ w, hot, tag, tagCls }: { w: string; hot?: boolean; tag?: string | undefined; tagCls?: string }) {
   return (
     <span className="flex flex-col items-center gap-1">
       <span className={`rounded-xl border px-3 py-1.5 text-lg font-semibold ${hot ? "border-amber-400 bg-amber-50 text-amber-800" : "bg-card text-foreground"}`}>{w}</span>
