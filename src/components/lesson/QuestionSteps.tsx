@@ -1,3 +1,4 @@
+import { Info } from "lucide-react";
 import { STEP1, STEP2, audioPaths, type Sentence } from "@/content/questions-lesson";
 import { recordStep } from "@/lib/progress";
 import { Panel } from "@/components/app-shell";
@@ -7,9 +8,9 @@ import { EndingHighlight, WarningBox, WordGlossBar } from "./bits";
 import { StripAnimation } from "./StripAnimation";
 import { Quiz } from "./QuizCard";
 
-const H1 = ({ children }: { children: string }) => <h2 className="mb-4 max-w-3xl text-2xl font-bold leading-snug text-foreground sm:text-[28px]">{children}</h2>;
+const H1 = ({ children }: { children: string }) => <h2 className="mb-4 max-w-[22ch] text-balance text-2xl font-bold leading-snug text-foreground sm:text-[28px]">{children}</h2>;
 const H = ({ children }: { children: string }) => <h3 className="mb-3 mt-10 text-xl font-bold text-foreground">{children}</h3>;
-const P = ({ children }: { children: string }) => <p className="mb-3 max-w-3xl leading-relaxed text-foreground">{children}</p>;
+const P = ({ children }: { children: string }) => <p className="mb-3 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">{children}</p>;
 
 function SentenceCell({ s }: { s: Sentence }) {
   const rise = s.type === "question";
@@ -31,9 +32,10 @@ export function StepVoice() {
   const l = STEP1.long;
   return (
     <div>
+      <P>{"English rebuilds a sentence to ask something: you work → do you work? Italian doesn't. Learn the two moves that cover every question you'll ask at this level."}</P>
       <H1>{STEP1.headline}</H1>
       {STEP1.paragraphs.map((p) => <P key={p}>{p}</P>)}
-      <p className="mb-6 text-[15px] font-medium text-primary">{STEP1.footnote}</p>
+      <p className="mb-6 flex max-w-[65ch] items-start gap-2 rounded-xl bg-muted px-3 py-2 text-[14px] text-muted-foreground"><Info aria-hidden className="mt-0.5 h-4 w-4 shrink-0" />{STEP1.footnote}</p>
       <Panel className="p-4 sm:p-6">
         <div className="mb-1 hidden grid-cols-2 gap-6 text-sm font-semibold uppercase tracking-wide sm:grid">
           <span className="text-voice-fall">Statement · voice falls</span><span className="text-voice-rise">Question · voice rises</span>
