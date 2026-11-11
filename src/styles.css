@@ -122,3 +122,7 @@
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   }
 }
+
+@media (max-width: 639px) {
+  header:has(#header-slot > *) .shell-logo { display: none; }
+}

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, TrendingUp } from "lucide-react";
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
@@ -86,32 +87,34 @@ function QuestionsPage() {
   const KEYS = ["voice", "nodo"];
   const go = (s: number) => { setStep(s); if (typeof window !== "undefined") window.scrollTo({ top: 0 }); };
   const reduce = useReducedMotion();
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  useEffect(() => { setSlot(document.getElementById("header-slot")); }, []);
   const isDone = (i: number) => !!(KEYS[i] && prog[KEYS[i]!]?.done);
   return (
     <div className="pt-6 sm:pt-0">
       <section className="mx-auto flex max-w-[960px] flex-col rounded-3xl border bg-card shadow-[0_8px_30px_-12px_rgba(23,50,77,0.18)] md:min-h-[640px]">
-        <div className="flex items-center justify-between px-5 pt-5 text-[14px] font-medium text-muted-foreground sm:px-8">
-          <span>Asking questions · A1</span><span>Step {step + 1} of 5</span>
-        </div>
-        <nav aria-label="Lesson steps" className="px-5 pt-5 sm:px-8">
-          <ol className="relative flex items-center justify-between gap-1 sm:justify-center sm:gap-0">
+        {slot && createPortal(
+<nav aria-label="Lesson steps" className="min-w-0">
+          <ol className="relative flex items-center justify-between gap-0">
             {TABS.map((t, i) => {
               const active = step === i, done = isDone(i) && !active;
               const cls = active ? "border-primary bg-primary text-primary-foreground" : done ? "border-success bg-success text-white" : "border-border bg-card text-muted-foreground hover:text-foreground";
               return (
                 <li key={t} className="flex items-center">
-                  {i > 0 && <span aria-hidden className="h-px w-4 bg-border sm:w-3 lg:w-5" />}
+                  {i > 0 && <span aria-hidden className="h-px w-1.5 bg-border sm:w-3 lg:w-5" />}
                   <button type="button" onClick={() => go(i)} aria-current={active ? "step" : undefined} aria-label={`Step ${i + 1}: ${t}${done ? " (completed)" : ""}`}
-                    className={`inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-full border text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:px-3 ${cls}`}>
+                    className={`inline-flex h-9 min-w-9 items-center justify-center gap-1.5 rounded-full border text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:px-3 ${cls}`}>
                     {done ? <Check aria-hidden className="h-4 w-4" /> : <span>{i + 1}</span>}
-                    <span className="hidden whitespace-nowrap lg:inline">{t}</span>
+                    <span className={`hidden whitespace-nowrap ${active ? "lg:inline" : "2xl:inline"}`}>{t}</span>
                   </button>
                 </li>
               );
             })}
           </ol>
-          <p className="mt-3 text-center text-[15px] font-semibold text-foreground lg:hidden">{TABS[step]}</p>
-        </nav>
+          
+        </nav>,
+        slot)}
+        <h2 className="px-5 pt-6 text-[15px] font-semibold text-foreground sm:px-8 lg:sr-only">{TABS[step]}</h2>
         <motion.div key={step} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}
           className="flex-1 px-5 py-8 sm:px-8">
           {step === 0 && <StepVoice />}
