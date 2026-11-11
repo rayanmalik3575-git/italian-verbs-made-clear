@@ -119,8 +119,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-card/90 px-4 backdrop-blur sm:px-6">
           <button onClick={() => setOpen(true)} aria-label="Open navigation" className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground hover:bg-muted lg:hidden"><Menu className="h-5 w-5" /></button>
           <div className="lg:hidden"><Logo /></div>
-          <span className="hidden text-sm text-muted-foreground lg:inline">Italian, step by step · A1–A2</span>
-          <div className="ml-auto"><ProfileMenu /></div>
+          <div id="header-slot" className="flex min-w-0 flex-1 justify-center" />
+          <div className="shrink-0"><ProfileMenu /></div>
         </header>
         <main id="main" className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       </div>
