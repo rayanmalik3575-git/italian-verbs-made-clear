@@ -118,7 +118,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className={`transition-[padding] ${collapsed ? "lg:pl-[76px]" : "lg:pl-64"}`}>
         <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-card/90 px-4 backdrop-blur sm:px-6">
           <button onClick={() => setOpen(true)} aria-label="Open navigation" className="grid h-10 w-10 place-items-center rounded-xl text-muted-foreground hover:bg-muted lg:hidden"><Menu className="h-5 w-5" /></button>
-          <div className="lg:hidden max-sm:[header:has(#header-slot:not(:empty))_&]:hidden"><Logo /></div>
+          <div className="shell-logo lg:hidden"><Logo /></div>
           <div id="header-slot" className="flex min-w-0 flex-1 justify-center" />
           <div className="shrink-0"><ProfileMenu /></div>
         </header>
