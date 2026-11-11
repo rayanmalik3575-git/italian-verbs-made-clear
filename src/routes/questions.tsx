@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, TrendingUp } from "lucide-react";
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
-import { StepVoice, StepNoDo } from "@/components/lesson/QuestionSteps";
+import { StepVoice } from "@/components/lesson/QuestionSteps";
 import { recordStep, useStepProgress } from "@/lib/progress";
 import { QWORDS, ORDER_TASKS, PICK_TASKS, isAcceptedQuestion, isCorrectPick, type OrderTask } from "@/data/questions";
 
@@ -79,23 +79,16 @@ function Chunk({ r, children }: { r: keyof typeof ROLE; children: React.ReactNod
   return <span className={`inline-flex items-center rounded-lg border px-2.5 py-1 font-semibold ${ROLE[r]}`}>{children}</span>;
 }
 
-const TABS = ["Your voice does it", "Forget “do”", "The one word order", "The question words", "Practise"];
+const TABS = ["Make a question", "The question words", "The one word order", "Practise"];
 
 function QuestionsPage() {
   const [step, setStep] = useState(0);
   const prog = useStepProgress();
-  const KEYS = ["voice", "nodo"];
+  const KEYS = ["make"];
   const go = (s: number) => { setStep(s); if (typeof window !== "undefined") window.scrollTo({ top: 0 }); };
   const reduce = useReducedMotion();
   const [slot, setSlot] = useState<HTMLElement | null>(null);
   useEffect(() => { setSlot(document.getElementById("header-slot")); }, []);
-  const footRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (step !== 0 || !footRef.current) return;
-    const io = new IntersectionObserver((e) => { if (e[0]?.isIntersecting) recordStep("voice", 1, 1); }, { threshold: 0.9 });
-    io.observe(footRef.current);
-    return () => io.disconnect();
-  }, [step]);
   const isDone = (i: number) => !!(KEYS[i] && prog[KEYS[i]!]?.done);
   return (
     <div className="pt-6 sm:pt-0">
@@ -125,13 +118,12 @@ function QuestionsPage() {
         <motion.div key={step} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}
           className="flex-1 px-5 py-8 sm:px-8">
           {step === 0 && <StepVoice />}
-          {step === 1 && <StepNoDo />}
+          {step === 1 && <StepWords />}
           {step === 2 && <StepOrder />}
-          {step === 3 && <StepWords />}
-          {step === 4 && <StepPractice />}
-          <div ref={footRef} className="mt-12 flex items-center justify-between gap-3">
+          {step === 3 && <StepPractice />}
+          <div className="mt-12 flex items-center justify-between gap-3">
             {step > 0 ? <button type="button" className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[15px] font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => go(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
-            {step < 4 && <button type="button" className="inline-flex min-h-12 max-w-full items-center gap-2 rounded-full bg-primary px-6 text-[16px] font-semibold text-primary-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" onClick={() => go(step + 1)}><span className="truncate">Next: {TABS[step + 1]}</span> <ArrowRight className="h-4 w-4 shrink-0" /></button>}
+            {step < 3 && <button type="button" className="inline-flex min-h-12 max-w-full items-center gap-2 rounded-full bg-primary px-6 text-[16px] font-semibold text-primary-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" onClick={() => go(step + 1)}><span className="truncate">Next: {TABS[step + 1]}</span> <ArrowRight className="h-4 w-4 shrink-0" /></button>}
           </div>
         </motion.div>
       </section>

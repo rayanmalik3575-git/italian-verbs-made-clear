@@ -39,7 +39,7 @@ export function StripAnimation({ item, sentence }: { item: StripItem; sentence: 
         <button type="button" onClick={() => setRun((r) => r + 1)} className="inline-flex min-h-10 items-center gap-1.5 rounded-xl border px-3 text-sm font-semibold text-primary hover:bg-accent">
           {run ? <><RotateCcw className="h-4 w-4" />Replay</> : <><Play className="h-4 w-4" />Show me</>}
         </button>
-        <span className="text-sm text-muted-foreground">{item.english} → {item.stripped} → {item.italian}</span>
+        {run > 0 && step === 3 && <span className="text-sm text-muted-foreground">{item.english} → {item.stripped} → {item.italian}</span>}
         <span className="ml-auto"><AudioButtons s={sentence} /></span>
       </div>
     </div>
