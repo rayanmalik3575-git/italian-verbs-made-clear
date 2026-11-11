@@ -25,7 +25,9 @@ export function PitchCurve({ direction, playingId, label = true }: { direction: 
   const pt = path.current && len ? path.current.getPointAtLength(len * t) : null;
   const color = direction === "fall" ? "text-voice-fall" : "text-voice-rise";
   return (
-    <div className={`relative h-10 w-full ${color}`} aria-hidden>
+    <div className={`w-full ${color}`} aria-hidden>
+      {label && <div className="text-right text-[14px] font-medium opacity-80">Typical pattern</div>}
+      <div className="relative h-10 w-full">
       <svg viewBox="0 0 200 38" preserveAspectRatio="none" className="h-full w-full overflow-visible">
         <path d={PATHS[direction]} fill="none" stroke="currentColor" strokeOpacity={0.15} strokeWidth={3} vectorEffect="non-scaling-stroke" />
         <path ref={path} d={PATHS[direction]} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round"
@@ -35,7 +37,7 @@ export function PitchCurve({ direction, playingId, label = true }: { direction: 
         <span className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current"
           style={{ left: `${(pt.x / 200) * 100}%`, top: `${(pt.y / 38) * 100}%` }} />
       )}
-      {label && <span className="absolute -top-1 right-0 text-[14px] font-medium opacity-80">Typical pattern</span>}
+      </div>
     </div>
   );
 }
