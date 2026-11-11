@@ -86,7 +86,8 @@ const KEEP = ["abiti-qui-q", "hai-penna-q", "siete-stanchi-q"];
 function NoDo() {
   return (
     <div>
-      <H1>{STEP2.headline}</H1>
+      <h3 className="text-2xl font-bold text-foreground">Forget “do”</h3>
+      <p className="mb-5 mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">{STEP2.headline}</p>
       {STEP2.paragraphs.map((p) => <P key={p}>{p}</P>)}
       <H>{STEP2.habitTitle}</H>
       <ol className="max-w-3xl space-y-2">
