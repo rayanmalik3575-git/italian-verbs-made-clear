@@ -9,7 +9,6 @@ import { EndingHighlight, WarningBox } from "./bits";
 import { StripAnimation } from "./StripAnimation";
 import { Quiz } from "./QuizCard";
 
-const H1 = ({ children }: { children: string }) => <h2 className="mb-4 max-w-[22ch] text-balance text-2xl font-bold leading-snug text-foreground sm:text-[28px]">{children}</h2>;
 const H = ({ children }: { children: string }) => <h3 className="mb-3 mt-10 text-xl font-bold text-foreground">{children}</h3>;
 const P = ({ children }: { children: string }) => <p className="mb-3 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">{children}</p>;
 
