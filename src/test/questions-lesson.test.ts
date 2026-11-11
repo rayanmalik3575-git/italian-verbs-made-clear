@@ -19,6 +19,11 @@ describe("questions lesson", () => {
     expect(stepResult(3, 4).mastered).toBe(true);
     expect(stepResult(1, 4, stepResult(4, 4)).mastered).toBe(true);
   });
+  it("step 1 has no quiz and every clip needs a real recording", () => {
+    expect("quiz" in STEP1).toBe(false);
+    expect([STEP1.tune.statement, STEP1.tune.question, ...STEP1.deck.phrases, ...STEP1.rebuild.rows.map((r) => r.it)].every((s) => s.needsRecording)).toBe(true);
+    expect(allSentences().some((s) => s.id.startsWith("hai-fame") || s.id.startsWith("siete-a-casa"))).toBe(false);
+  });
   it("ids are unique", () => {
     const ids = allSentences().map((s) => s.id);
     expect(new Set(ids).size).toBe(ids.length);
