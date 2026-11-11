@@ -32,6 +32,11 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-voice-fall: #2563EB;
+  --color-voice-rise: #F97316;
+  --color-ending: #7C3AED;
+  --color-right: #16A34A;
+  --color-wrong: #DC2626;
   --color-warning: var(--warning);
   --color-border: var(--border);
   --color-input: var(--input);
