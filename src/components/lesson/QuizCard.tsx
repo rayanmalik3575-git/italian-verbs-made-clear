@@ -35,17 +35,17 @@ export function Quiz({ items, onFinish }: { items: QuizItem[]; onFinish: (score:
             </div>
             <div className="grid gap-2 sm:grid-cols-3">
               {opts.map((o) => {
-                const st = !a ? "bg-card hover:border-primary" : o === q.answer ? "border-right bg-right/10 text-right" : o === a ? "border-wrong bg-wrong/10 text-wrong" : "opacity-50";
+                const st = !a ? "bg-card hover:border-primary" : o === q.answer ? "border-correct bg-correct/10 text-correct" : o === a ? "border-wrong bg-wrong/10 text-wrong" : "opacity-50";
                 return (
                   <button key={o} type="button" disabled={!!a || ready === null} onClick={() => setAnswers({ ...answers, [q.id]: o })}
-                    className={`min-h-11 rounded-xl border px-3 text-base font-semibold capitalize-first ${st}`}>
+                    className={`min-h-11 rounded-xl border px-3 text-base font-semibold ${st}`}>
                     {q.kind === "audio-choice" ? (o === "statement" ? "Statement" : "Question") : o}
                   </button>
                 );
               })}
             </div>
             {a && (
-              <p className={`mt-3 flex items-start gap-2 ${a === q.answer ? "text-right" : "text-wrong"}`} aria-live="polite">
+              <p className={`mt-3 flex items-start gap-2 ${a === q.answer ? "text-correct" : "text-wrong"}`} aria-live="polite">
                 {a === q.answer ? <Check className="mt-0.5 h-4 w-4 shrink-0" /> : <X className="mt-0.5 h-4 w-4 shrink-0" />}
                 <span className="text-foreground">{q.kind === "audio-choice" && <strong>"{q.sentence.italian}" </strong>}{why}</span>
               </p>

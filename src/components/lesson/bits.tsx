@@ -33,7 +33,7 @@ export function WarningBox({ title, children, wrong, right }: { title?: string; 
       <div className="min-w-0 space-y-1.5 text-foreground">
         {title && <div className="font-semibold text-amber-800">{title}</div>}
         {wrong && <div className="flex items-center gap-2 font-semibold text-wrong"><X className="h-4 w-4 shrink-0" />{wrong}</div>}
-        {right && <div className="flex items-center gap-2 font-semibold text-right"><Check className="h-4 w-4 shrink-0" />{right}</div>}
+        {right && <div className="flex items-center gap-2 font-semibold text-correct"><Check className="h-4 w-4 shrink-0" />{right}</div>}
         {children && <div className="leading-relaxed">{children}</div>}
       </div>
     </div>
