@@ -88,7 +88,7 @@ function QuestionsPage() {
   const reduce = useReducedMotion();
   const isDone = (i: number) => !!(KEYS[i] && prog[KEYS[i]!]?.done);
   return (
-    <div className="-mx-4 -my-4 min-h-full bg-[#F8FAFC] px-3 py-6 sm:-mx-6 sm:px-6">
+    <div className="pt-6 sm:pt-0">
       <section className="mx-auto flex max-w-[960px] flex-col rounded-3xl border bg-card shadow-[0_8px_30px_-12px_rgba(23,50,77,0.18)] md:min-h-[640px]">
         <div className="flex items-center justify-between px-5 pt-5 text-[14px] font-medium text-muted-foreground sm:px-8">
           <span>Asking questions · A1</span><span>Step {step + 1} of 5</span>
