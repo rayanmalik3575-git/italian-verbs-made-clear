@@ -95,13 +95,13 @@ function QuestionsPage() {
       <section className="mx-auto flex max-w-[960px] flex-col rounded-3xl border bg-card shadow-[0_8px_30px_-12px_rgba(23,50,77,0.18)] md:min-h-[640px]">
         {slot && createPortal(
 <nav aria-label="Lesson steps" className="min-w-0">
-          <ol className="relative flex items-center justify-between gap-1  sm:gap-0">
+          <ol className="relative flex items-center justify-between gap-0">
             {TABS.map((t, i) => {
               const active = step === i, done = isDone(i) && !active;
               const cls = active ? "border-primary bg-primary text-primary-foreground" : done ? "border-success bg-success text-white" : "border-border bg-card text-muted-foreground hover:text-foreground";
               return (
                 <li key={t} className="flex items-center">
-                  {i > 0 && <span aria-hidden className="h-px w-4 bg-border sm:w-3 lg:w-5" />}
+                  {i > 0 && <span aria-hidden className="h-px w-1.5 bg-border sm:w-3 lg:w-5" />}
                   <button type="button" onClick={() => go(i)} aria-current={active ? "step" : undefined} aria-label={`Step ${i + 1}: ${t}${done ? " (completed)" : ""}`}
                     className={`inline-flex h-9 min-w-9 items-center justify-center gap-1.5 rounded-full border text-[14px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:px-3 ${cls}`}>
                     {done ? <Check aria-hidden className="h-4 w-4" /> : <span>{i + 1}</span>}
