@@ -33,3 +33,4 @@ use the editor.
 - All pages render inside `AppShell` (src/components/app-shell.tsx), which also exports shared UI pieces (Panel, IconTile, Chip, btn, ProgressBar) — reuse them so styling stays consistent.
 - Learner progress lives in src/lib/progress.ts (browser localStorage) until accounts exist — keep all status logic there so it can move to a backend later.
 - Verb family/regularity is derived in src/lib/verb-meta.ts from data, not stored — keeps verb data simple.
+- Lesson content that the learner reads lives as typed data in src/content/*.ts, and the reusable lesson widgets live in src/components/lesson/. This keeps lesson wording editable without touching the page layout.
