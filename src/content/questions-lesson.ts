@@ -23,32 +23,54 @@ export type QuizItem =
   | { kind: "audio-choice"; id: string; sentence: Sentence; answer: "statement" | "question"; why: string }
   | { kind: "multiple-choice"; id: string; prompt: string; options: string[]; answer: string; why: string; whyWrong?: Record<string, string> };
 
+export type RebuildRow = { en: string[]; enQ: string[]; change: "added" | "moved"; changed: string[]; it: Sentence };
+export type Phrase = Sentence;
+
 export const STEP1 = {
-  headline: "In Italian, a yes/no question looks exactly like a statement.",
-  paragraphs: [
-    "To turn a statement into a yes/no question, change nothing. Same words, same order. Only your voice changes in speech, and only the ? changes in writing.",
-    "Statement: voice goes down at the end. Question: voice goes up toward the end.",
-    "English does this too in surprise: \"You're leaving?\" Italian does this for yes/no questions all the time.",
-  ],
-  footnote: "Word order can change too. Step 3 covers that.",
+  tune: {
+    title: "Same words. Different tune.",
+    line: "To ask a yes/no question in Italian, you don't change a single word. Flip the switch and watch.",
+    words: ["Parli", "inglese"],
+    statement: s("parli-inglese-s", "Parli inglese.", "You speak English.", rec),
+    question: s("parli-inglese-q", "Parli inglese?", "Do you speak English?", rec),
+    caption: "Only the tune and the punctuation changed.",
+  },
+  rebuild: {
+    title: "English rebuilds. Italian doesn't.",
+    line: "English has to add a word or swap words. Italian leaves the sentence alone.",
+    rows: [
+      { en: ["You", "speak", "English"], enQ: ["Do", "you", "speak", "English"], change: "added", changed: ["Do"], it: s("parli-inglese-q", "Parli inglese?", "Do you speak English?", { ...rec, wordGloss: ["Parli", "inglese"] }) },
+      { en: ["You", "are", "tired"], enQ: ["Are", "you", "tired"], change: "moved", changed: ["Are", "you"], it: s("sei-stanco-q", "Sei stanco?", "Are you tired?", { ...rec, wordGloss: ["Sei", "stanco"] }) },
+    ] as RebuildRow[],
+    note: "Word order can change too. Step 3 covers that.",
+  },
+  pairsTitle: "The tune",
+  pairsLine: "Statement: your voice lands at the end. Question: your voice lifts at the end, like you're waiting for an answer.",
   pairs: [
     [s("parli-inglese", "Parli inglese.", "You speak English.", rec), s("parli-inglese-q", "Parli inglese?", "Do you speak English?", rec)],
     [s("museo-chiuso", "Il museo è chiuso.", "The museum is closed.", rec), s("museo-chiuso-q", "Il museo è chiuso?", "Is the museum closed?", rec)],
     [s("prendete-caffe", "Prendete un caffè.", "You all are having a coffee.", rec), s("prendete-caffe-q", "Prendete un caffè?", "Are you all having a coffee?", rec)],
   ] as [Sentence, Sentence][],
   long: s("prenotate-camera-q", "Prenotate una camera per tre notti?", "Are you all booking a room for three nights?", { ...rec, wordGloss: ["Prenotate", "una camera", "per tre notti?"] }),
-  longCaption: "In a long sentence, the rise comes at the end of the whole question.",
-  knowThis: [
-    ["Regional melody", "The rise is the standard pattern, but some regions (for example Naples and parts of the south) use a different melody. Copy the audio."],
-    ["Writing", "In a text message there is no voice, so ? is the only signal. Never drop it."],
-    ["Punctuation", "Italian uses only the final ?, no upside-down ¿ like Spanish."],
-  ] as [string, string][],
-  quiz: [
-    { kind: "audio-choice", id: "q1", sentence: s("hai-fame", "Hai fame.", "You're hungry.", rec), answer: "statement", why: "The voice falls at the end: it's telling you, not asking." },
-    { kind: "audio-choice", id: "q2", sentence: s("hai-fame-q", "Hai fame?", "Are you hungry?", rec), answer: "question", why: "Same words, but the voice rises on the last word: it's asking." },
-    { kind: "audio-choice", id: "q3", sentence: s("siete-a-casa-q", "Siete a casa?", "Are you all at home?", rec), answer: "question", why: "The rise across \"a casa\" turns it into a question." },
-    { kind: "audio-choice", id: "q4", sentence: s("siete-a-casa", "Siete a casa.", "You all are at home.", rec), answer: "statement", why: "The voice drops at the end: a plain statement." },
-  ] as QuizItem[],
+  longCaption: "In a long question, stay level and lift at the very end.",
+  regionNote: "Some regions (for example Naples) use a different melody. Copy the people around you.",
+  chat: {
+    title: "In writing, the ? is your voice",
+    line: "In a text message there's no sound. The ? is the only thing that says you're asking.",
+    statement: { it: "Hai la macchina", en: "You have the car." },
+    question: { it: "Hai la macchina", en: "Do you have the car?" },
+  },
+  deck: {
+    title: "Questions you can ask today",
+    line: "No verb needed. A word plus the right tune is already a question.",
+    phrases: [
+      s("tutto-bene-q", "Tutto bene?", "All good? / Everything OK?", rec),
+      s("davvero-q", "Davvero?", "Really?", rec),
+      s("un-caffe-q", "Un caffè?", "(Want) a coffee?", rec),
+      s("va-bene-q", "Va bene?", "Is that OK?", rec),
+      s("capito-q", "Capito?", "Got it? / Understood?", rec),
+    ] as Phrase[],
+  },
 };
 
 export type StripItem = { id: string; english: string; helperWord: string; stripped: string; italian: string; stem: string; ending: string; rest: string };
@@ -106,10 +128,10 @@ export const STEP2 = {
 export function allSentences(): Sentence[] {
   const strip = STEP2.strips.map((x) => s(x.id, x.italian, x.english));
   return [
-    ...STEP1.pairs.flat(), STEP1.long,
-    ...STEP1.quiz.flatMap((q) => (q.kind === "audio-choice" ? [q.sentence] : [])),
+    STEP1.tune.statement, STEP1.tune.question, ...STEP1.rebuild.rows.map((r) => r.it),
+    ...STEP1.pairs.flat(), STEP1.long, ...STEP1.deck.phrases,
     ...STEP2.table.map((r) => r.it), ...strip,
-  ];
+  ].filter((x, i, arr) => arr.findIndex((y) => y.id === x.id) === i);
 }
 export function scoreQuiz(items: QuizItem[], answers: Record<string, string>): number {
   return items.filter((q) => answers[q.id] === q.answer).length;
