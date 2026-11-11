@@ -1,19 +1,14 @@
-import { useEffect, useRef } from "react";
-import { usePlayer } from "./audio";
 import { TuneToggle } from "./TuneToggle";
 import { RebuildCompare } from "./RebuildCompare";
-import { ChatPair } from "./ChatPair";
-import { PhraseDeck } from "./PhraseDeck";
 import { STEP1, STEP2, audioPaths, type Sentence } from "@/content/questions-lesson";
 import { recordStep } from "@/lib/progress";
 import { Panel } from "@/components/app-shell";
 import { AudioButtons } from "./AudioButton";
 import { PitchCurve } from "./PitchCurve";
-import { EndingHighlight, WarningBox, WordGlossBar } from "./bits";
+import { EndingHighlight, WarningBox } from "./bits";
 import { StripAnimation } from "./StripAnimation";
 import { Quiz } from "./QuizCard";
 
-const H1 = ({ children }: { children: string }) => <h2 className="mb-4 max-w-[22ch] text-balance text-2xl font-bold leading-snug text-foreground sm:text-[28px]">{children}</h2>;
 const H = ({ children }: { children: string }) => <h3 className="mb-3 mt-10 text-xl font-bold text-foreground">{children}</h3>;
 const P = ({ children }: { children: string }) => <p className="mb-3 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">{children}</p>;
 
@@ -45,12 +40,9 @@ function Scene({ title, line, children }: { title: string; line: string; childre
 
 export function StepVoice() {
   const l = STEP1.long;
-  const p = usePlayer();
-  const switched = useRef(false);
-  useEffect(() => { if (switched.current && p.id) recordStep("voice", 1, 1); }, [p.id]);
   return (
     <div>
-      <Scene title={STEP1.tune.title} line={STEP1.tune.line}><TuneToggle onSwitch={() => { switched.current = true; }} /></Scene>
+      <Scene title={STEP1.tune.title} line={STEP1.tune.line}><TuneToggle /></Scene>
       <Scene title={STEP1.rebuild.title} line={STEP1.rebuild.line}><RebuildCompare /></Scene>
       <Scene title={STEP1.pairsTitle} line={STEP1.pairsLine}>
         <Panel className="p-4 sm:p-6">
@@ -78,30 +70,24 @@ export function StepVoice() {
           <div className="mt-2 text-[15px] text-muted-foreground">{l.english}</div>
           <p className="mt-3 text-foreground">{STEP1.longCaption}</p>
         </Panel>
-        <p className="mt-4 text-[14px] text-muted-foreground">{STEP1.regionNote}</p>
+        <p className="mt-4 text-[17px] font-semibold text-foreground">In writing, the ? is your voice. Never drop it.</p>
+        <p className="mt-2 text-[14px] text-muted-foreground">{STEP1.regionNote}</p>
       </Scene>
-      <Scene title={STEP1.chat.title} line={STEP1.chat.line}><ChatPair /></Scene>
-      <Scene title={STEP1.deck.title} line={STEP1.deck.line}><PhraseDeck /></Scene>
+      <section className="mt-14"><NoDo /></section>
     </div>
   );
 }
 
 const ROLE_LABEL: Record<string, string> = { o: "I", i: "you", a: "he/she", iamo: "we", ate: "you all", ano: "they", ete: "you all", è: "is" };
 
-export function StepNoDo() {
+const KEEP = ["abiti-qui-q", "hai-penna-q", "siete-stanchi-q"];
+
+function NoDo() {
   return (
     <div>
-      <H1>{STEP2.headline}</H1>
+      <h3 className="text-2xl font-bold text-foreground">Forget “do”</h3>
+      <p className="mb-5 mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">{STEP2.headline}</p>
       {STEP2.paragraphs.map((p) => <P key={p}>{p}</P>)}
-      <Panel className="mt-6 divide-y">
-        {STEP2.table.map((r) => (
-          <div key={r.it.id} className="grid items-center gap-3 p-4 sm:grid-cols-[1fr_1.3fr_auto]">
-            <div className="font-medium text-muted-foreground">{r.en}</div>
-            <WordGlossBar words={r.it.italian.split(" ")} gloss={r.it.wordGloss ?? []} />
-            <AudioButtons s={r.it} />
-          </div>
-        ))}
-      </Panel>
       <H>{STEP2.habitTitle}</H>
       <ol className="max-w-3xl space-y-2">
         {STEP2.habit.map((h, i) => (
@@ -109,7 +95,7 @@ export function StepNoDo() {
         ))}
       </ol>
       <div className="mt-6 grid gap-3 lg:grid-cols-2">
-        {STEP2.strips.map((x) => (
+        {STEP2.strips.filter((x) => KEEP.includes(x.id)).map((x) => (
           <StripAnimation key={x.id} item={x} sentence={{ id: x.id, italian: x.italian, english: x.english, type: "question", ...audioPaths(x.id) }} />
         ))}
       </div>
@@ -126,10 +112,10 @@ export function StepNoDo() {
       <p className="mt-4 max-w-3xl leading-relaxed">{STEP2.endingsNote}</p>
       <H>Watch out</H>
       <div className="space-y-3">
-        {STEP2.warnings.map((w) => <WarningBox key={w.text} wrong={w.wrong} right={w.right}>{w.text}</WarningBox>)}
+        {STEP2.warnings.slice(0, 1).map((w) => <WarningBox key={w.text} wrong={w.wrong} right={w.right}>{w.text}</WarningBox>)}
       </div>
       <H>Check yourself</H>
-      <Quiz items={STEP2.quiz} onFinish={(sc, t) => recordStep("nodo", sc, t)} />
+      <Quiz items={STEP2.quiz} onFinish={(sc, t) => recordStep("make", sc, t)} />
     </div>
   );
 }
