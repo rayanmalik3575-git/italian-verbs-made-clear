@@ -48,7 +48,7 @@ export function StepVoice() {
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">1</span>
           How Italian asks a yes/no question
         </h2>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">This is the first rule of asking questions in Italian. In English you add "do" or flip the words: <i>you speak</i> becomes <i>do you speak?</i> Italian does neither. You say the statement exactly as it is, and change only one thing:</p>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the first rule of asking questions in Italian.</b> In English you add "do" or flip the words: <b>"you speak"</b> becomes <b>"do you speak?"</b>. Italian does neither. You say the statement exactly as it is, and change only one thing:</p>
         <ul className="mt-5 space-y-2 text-left text-[17px] leading-[1.6] text-foreground">
           <li className="flex gap-2"><Mic className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Speaking:</b> your voice lifts at the end. That change of tone is how the listener knows you're asking.</span></li>
           <li className="flex gap-2"><Pencil className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Writing:</b> you put a question mark at the end.</span></li>
