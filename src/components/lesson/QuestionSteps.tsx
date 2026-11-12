@@ -164,7 +164,6 @@ function LongQuestions() {
           <div key={e.sentence.id} className="border-b py-5 first:pt-0 last:border-0 last:pb-0">
             <div className="flex flex-wrap items-end justify-between gap-3"><Blocks blocks={e.blocks} /><AudioButtons s={e.sentence} /></div>
             <div className="mt-2 text-[15px] text-muted-foreground">{e.sentence.english}</div>
-            <p className="mt-1 text-[15px] text-foreground">{e.note}</p>
           </div>
         ))}
       </Panel>

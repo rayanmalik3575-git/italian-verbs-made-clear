@@ -141,10 +141,9 @@ export function scoreQuiz(items: QuizItem[], answers: Record<string, string>): n
 export type LongExample = { sentence: Sentence; blocks: string[]; note: string };
 export const LONG = {
   rules: [
-    { title: "Say it in blocks.", text: "Break the sentence into small groups of words that belong together, like \"una camera\" or \"per tre notti\". Never stop between an article and its noun." },
-    { title: "Keep the voice level until the last block.", text: "Every block before the end stays flat and calm, so the listener knows you haven't finished yet." },
-    { title: "Lift only on the last block.", text: "The rise lands on the stressed syllable of the last word: per tre NOT-ti? If you lift too early, it sounds like several questions." },
-    { title: "Don't slow down to think.", text: "Pause only between blocks, never inside one. A short pause between blocks sounds natural; a pause inside a block sounds unsure." },
+    { title: "Speak in blocks.", text: "Group words that belong together, like \"una camera\" or \"per tre notti\". Pause only between blocks, never inside one, and never between an article and its noun." },
+    { title: "Stay level until the end.", text: "Every block before the last one stays flat and calm. That tells the listener you haven't finished yet." },
+    { title: "Lift only on the last word.", text: "The rise lands on the stressed syllable of the final word: per tre NOT-ti? Lift earlier and one question sounds like three." },
   ],
   examples: [
     { sentence: s("prenotate-camera-q", "Prenotate una camera per tre notti?", "Are you all booking a room for three nights?", rec), blocks: ["Prenotate", "una camera", "per tre notti?"], note: "Verb, then what, then how long. The lift falls on \"notti\"." },
