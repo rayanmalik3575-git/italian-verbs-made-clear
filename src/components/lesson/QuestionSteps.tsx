@@ -44,21 +44,13 @@ export function StepVoice() {
     <div>
       <section>
         <h2 className="text-2xl font-bold text-foreground sm:text-[28px] sm:leading-tight">What a question is, and how Italian asks one</h2>
-        <p className="mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">A question is a sentence that asks for an answer: either a simple <b className="text-foreground">yes or no</b> (<i>Parli inglese?</i>) or a piece of information with a question word like <i>dove</i> or <i>quando</i>. Here we start with yes/no questions. In Italian you keep the exact words of the statement, add no “do”, and let your voice <b className="text-voice-rise">lift at the end</b>. In writing, the <b className="text-foreground">?</b> does that job.</p>
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {["Use your voice", "Drop the English helper “do”", "Check yourself"].map((x, i) => (
-            <li key={x} className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-[14px] font-medium text-foreground">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[14px] font-bold text-primary">{i + 1}</span>{x}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8"><TuneToggle /></div>
+        <p className="mt-3 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">A question is simply a sentence that waits for an answer. Some questions want a <b>yes or no</b> (<i>Parli inglese?</i>), others want a piece of information and start with a word like <i>dove</i> or <i>quando</i>. This first step is about the yes/no kind.</p>
+        <p className="mt-3 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">Here is the good news: in Italian you don't change the sentence at all. You take the statement, keep every word where it is, and let your voice <b className="text-voice-rise">go up at the end</b>. When you write, the <b>?</b> does that same job.</p>
       </section>
-      <Scene title={STEP1.rebuild.title} line={STEP1.rebuild.line}><RebuildCompare /></Scene>
-      <Scene title={STEP1.pairsTitle} line={STEP1.pairsLine}>
+      <Scene title={STEP1.pairsTitle} line="Listen to each pair. The words are identical; only the ending of your voice changes. A statement settles down, a question stays open and lifts, because you are waiting for the other person to answer.">
         <Panel className="p-4 sm:p-6">
           <div className="mb-1 hidden grid-cols-2 gap-6 text-[14px] font-semibold uppercase tracking-wide sm:grid">
-            <span className="text-voice-fall">Statement · voice lands</span><span className="text-voice-rise">Question · voice lifts</span>
+            <span className="text-voice-fall">Statement · voice settles</span><span className="text-voice-rise">Question · voice lifts</span>
           </div>
           {STEP1.pairs.map(([a, b]) => (
             <div key={a.id} className="grid gap-x-6 border-b last:border-0 sm:grid-cols-2"><SentenceCell s={a} /><SentenceCell s={b} /></div>
@@ -79,10 +71,9 @@ export function StepVoice() {
             <AudioButtons s={l} />
           </div>
           <div className="mt-2 text-[15px] text-muted-foreground">{l.english}</div>
-          <p className="mt-3 text-foreground">{STEP1.longCaption}</p>
+          <p className="mt-3 text-foreground">With a longer question, keep your voice level through the sentence and lift only on the last words.</p>
         </Panel>
-        <p className="mt-4 text-[17px] font-semibold text-foreground">In writing, the ? is your voice. Never drop it.</p>
-        <p className="mt-2 text-[14px] text-muted-foreground">{STEP1.regionNote}</p>
+        <p className="mt-4 max-w-[65ch] text-[15px] text-muted-foreground">When texting, always keep the <b className="text-foreground">?</b>, because without it the reader sees a statement. {STEP1.regionNote}</p>
       </Scene>
       <section className="mt-14"><NoDo /></section>
     </div>
@@ -91,36 +82,14 @@ export function StepVoice() {
 
 const ROLE_LABEL: Record<string, string> = { o: "I", i: "you", a: "he/she", iamo: "we", ate: "you all", ano: "they", ete: "you all", è: "is" };
 
-const KEEP = ["abiti-qui-q", "hai-penna-q", "siete-stanchi-q"];
 
 function NoDo() {
   return (
     <div>
-      <h3 className="text-2xl font-bold text-foreground">Forget “do”</h3>
-      <p className="mb-5 mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">{STEP2.headline}</p>
-      {STEP2.paragraphs.map((p) => <P key={p}>{p}</P>)}
-      <H>{STEP2.habitTitle}</H>
-      <ol className="max-w-3xl space-y-2">
-        {STEP2.habit.map((h, i) => (
-          <li key={h} className="flex gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">{i + 1}</span><span className="pt-0.5">{h}</span></li>
-        ))}
-      </ol>
-      <div className="mt-6 grid gap-3 lg:grid-cols-2">
-        {STEP2.strips.filter((x) => KEEP.includes(x.id)).map((x) => (
-          <StripAnimation key={x.id} item={x} sentence={{ id: x.id, italian: x.italian, english: x.english, type: "question", ...audioPaths(x.id) }} />
-        ))}
-      </div>
-      <p className="mt-4 max-w-3xl font-medium text-foreground">{STEP2.stripNote}</p>
-      <H>{STEP2.endingsTitle}</H>
-      <Panel className="grid grid-cols-2 gap-px overflow-hidden bg-border sm:grid-cols-3">
-        {STEP2.endings.map(([who, stem, end]) => (
-          <div key={who} className="bg-card p-4">
-            <div className="text-sm font-semibold text-muted-foreground">{who}</div>
-            <EndingHighlight stem={stem} ending={end} label={ROLE_LABEL[end]} />
-          </div>
-        ))}
-      </Panel>
-      <p className="mt-4 max-w-3xl leading-relaxed">{STEP2.endingsNote}</p>
+      <h3 className="text-2xl font-bold text-foreground">Why Italian needs no "do"</h3>
+      <p className="mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">To ask a question, English adds "do" or moves words around: <i>you speak</i> becomes <i>do you speak?</i>, <i>you are</i> becomes <i>are you?</i>. Italian does neither. The verb ending already tells you who is doing the action, so <i>parli</i> already means "you speak", and <i>Parli?</i> already means "do you speak?".</p>
+      <div className="mt-6"><RebuildCompare /></div>
+      <p className="mt-4 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">So don't look for an Italian word for "do". Think of the action, say it, and lift your voice.</p>
       <H>Watch out</H>
       <div className="space-y-3">
         {STEP2.warnings.slice(0, 1).map((w) => <WarningBox key={w.text} wrong={w.wrong} right={w.right}>{w.text}</WarningBox>)}
