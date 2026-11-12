@@ -207,8 +207,13 @@ function StepWords() {
               </div>
               <Listen text={w.it.split(" · ")[0]!} />
             </div>
-            <p className="mt-3 text-[16px] leading-relaxed text-foreground">{w.rule}</p>
-            {w.trap && <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{w.trap}</p>}
+            <div className="mt-1 text-[14px] text-muted-foreground">said <span className="font-semibold text-foreground">{w.say}</span></div>
+            <div className="mt-4 flex gap-2.5 rounded-xl border border-border bg-accent/30 px-3 py-2.5">
+              <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <p className="text-[16px] leading-relaxed text-foreground">{w.hook}</p>
+            </div>
+            <p className="mt-3 text-[15px] leading-relaxed text-foreground">{w.rule}</p>
+            {w.trap && <p className="mt-1.5 flex gap-1.5 text-[15px] leading-relaxed text-muted-foreground"><AlertTriangle className="mt-1 h-3.5 w-3.5 shrink-0" />{w.trap}</p>}
             <div className="mt-auto pt-4">
               <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2">
                 <div className="flex-1"><div className="font-semibold text-foreground">{w.ex}</div><div className="text-[14px] text-muted-foreground">{w.exEn}</div></div>

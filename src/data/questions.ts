@@ -11,18 +11,18 @@ export function toYesNoQuestion(statement: string): string {
 
 export type QWord = {
   it: string; en: string; say: string;
-  rule: string; ex: string; exEn: string; trap?: string;
+  hook: string; rule: string; ex: string; exEn: string; trap?: string;
 };
 
 export const QWORDS: QWord[] = [
-  { it: "dove", en: "where", say: "DOH-veh", rule: "Before è it loses its last letter: dov'è.", ex: "Dov'è la stazione?", exEn: "Where's the station?" },
-  { it: "quando", en: "when", say: "KWAN-doh", rule: "Straight in front of the verb.", ex: "Quando parte il treno?", exEn: "When does the train leave?" },
-  { it: "come", en: "how", say: "KOH-meh", rule: "Also the word in Come ti chiami? — literally “how do you call yourself?”", ex: "Come prepari il ragù?", exEn: "How do you make ragù?" },
-  { it: "chi", en: "who", say: "KEE", rule: "Never changes. The verb tells you if it's one person or more.", ex: "Chi sono quei ragazzi?", exEn: "Who are those guys?", trap: "Spelled chi, said “kee”. The h keeps the c hard." },
-  { it: "cosa · che · che cosa", en: "what", say: "KOH-zah · KEH", rule: "Three versions, same meaning before a verb. Before a noun, only che.", ex: "Cosa mangi stasera?", exEn: "What are you eating tonight?", trap: "Cosa pizza? never. Che pizza? always." },
-  { it: "quale · quali", en: "which", say: "KWAH-leh · KWAH-lee", rule: "Follows number: quale for one thing, quali for more.", ex: "Quali scarpe compri?", exEn: "Which shoes are you buying?", trap: "Before è it becomes qual è — no apostrophe." },
-  { it: "quanto · quanta · quanti · quante", en: "how much · how many", say: "", rule: "Agrees with the noun: quanti anni, quante volte. Alone, quanto means how much.", ex: "Quanto costa?", exEn: "How much is it?", trap: "Quanti anni hai? — Italians ask how many years you have." },
-  { it: "perché", en: "why · because", say: "pehr-KEH", rule: "Same word for the question and the answer. The accent is part of the spelling.", ex: "Perché non vieni?", exEn: "Why aren't you coming?" },
+  { it: "dove", en: "where", say: "DOH-veh", hook: "Spelled like the English bird. Picture it: where did the dove go?", rule: "Before è it drops the e: dov'è.", ex: "Dov'è il bagno?", exEn: "Where's the bathroom?" },
+  { it: "quando", en: "when", say: "KWAN-doh", hook: "The famous song: “Quando, quando, quando…” — when, when, when will you come?", rule: "Goes straight in front of the verb.", ex: "Quando parte il treno?", exEn: "When does the train leave?" },
+  { it: "come", en: "how", say: "KOH-meh", hook: "You already know it from Come stai? — how are you?", rule: "Come si dice…? is the sentence you'll use most as a learner.", ex: "Come si dice “fork”?", exEn: "How do you say “fork”?" },
+  { it: "chi", en: "who", say: "KEE", hook: "Sounds like “key”. Who has the key? Chi?", rule: "Never changes. The verb shows one person or more.", ex: "Chi paga?", exEn: "Who's paying?", trap: "Never say “chee”. The h keeps the c hard." },
+  { it: "cosa · che · che cosa", en: "what", say: "KOH-zah · KEH", hook: "Cosa literally means “thing”. Cosa fai? = what thing are you doing?", rule: "Before a verb, all three work. Before a noun, only che.", ex: "Cosa prendi?", exEn: "What are you having?", trap: "Che vino? — never cosa vino?" },
+  { it: "quale · quali", en: "which", say: "KWAH-leh · KWAH-lee", hook: "Close to “quality”: you're choosing one from a shelf.", rule: "Quale for one thing, quali for more.", ex: "Qual è il tuo preferito?", exEn: "Which one is your favourite?", trap: "Qual è has no apostrophe — never qual'è." },
+  { it: "quanto · quanta · quanti · quante", en: "how much · how many", say: "KWAN-toh", hook: "Close to “quantity”: you're asking for an amount.", rule: "Matches the noun: quanti anni, quante pizze. Alone, quanto = how much.", ex: "Quanto costa?", exEn: "How much is it?", trap: "Quanti anni hai? — Italians ask how many years you have." },
+  { it: "perché", en: "why · because", say: "pehr-KEH", hook: "Two for one: the same word asks the question and gives the answer.", rule: "Perché studi? — Perché mi piace! The accent is part of the spelling.", ex: "Perché no?", exEn: "Why not?" },
 ];
 
 /** Word-order builder: learner arranges blocks; any listed order is accepted. */
