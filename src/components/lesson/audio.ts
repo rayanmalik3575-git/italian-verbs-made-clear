@@ -34,7 +34,17 @@ export function stop() {
 function speakFallback(s: Sentence, slow: boolean) {
   if (!("speechSynthesis" in window)) return;
   const u = new SpeechSynthesisUtterance(s.italian);
-  u.lang = "it-IT"; u.rate = slow ? 0.6 : 0.9;
+  u.lang = "it-IT";
+  const it = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("it"));
+  if (it) u.voice = it;
+  if (s.type === "question") {
+    // Italian yes/no questions: same words, voice lifts at the end.
+    u.text = s.italian.replace(/[.!]?\s*$/, "").replace(/\?$/, "") + "?";
+    u.pitch = 1.35; u.rate = slow ? 0.6 : 0.85;
+  } else {
+    u.text = s.italian.replace(/\?$/, "").replace(/\.?\s*$/, ".");
+    u.pitch = 0.95; u.rate = slow ? 0.6 : 0.9;
+  }
   u.onend = () => { if (state.id === s.id) stop(); };
   window.speechSynthesis.speak(u);
   set({ id: s.id, slow, duration: (slow ? 2.6 : 1.8), startedAt: performance.now() });
@@ -45,7 +55,6 @@ export async function play(s: Sentence, slow = false): Promise<boolean> {
   stop();
   const hasNormal = await fileExists(s.audioNormal);
   if (!hasNormal) {
-    if (s.needsRecording) return false;
     speakFallback(s, slow);
     return true;
   }

@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
 import { STEP1 } from "@/content/questions-lesson";
 import { AudioButtons } from "./AudioButton";
-import { usePlayer } from "./audio";
+import { play, usePlayer } from "./audio";
 
 // viewBox 200x56: level across the first word, then a clear ~40px move over the last word.
 const D = { fall: "M6,10 L100,10 C140,10 160,18 194,50", rise: "M6,46 L100,46 C140,46 160,38 194,6" };
@@ -12,7 +12,7 @@ const END = { fall: { x: 194, y: 50 }, rise: { x: 194, y: 6 } };
 const COACH = [
   "Try it: press Question",
   "Same two words. Only the ? and your voice changed. Press Statement to go back.",
-  "Now press Question again and tap the speaker to hear the difference.",
+  "Listen: the statement lands, the question lifts at the end. Switch again to compare.",
   "Got it. Scroll down to see how English does this differently.",
 ];
 
@@ -27,6 +27,7 @@ export function TuneToggle({ onSwitch }: { onSwitch?: () => void }) {
   }, [player.id, c.question.id, c.statement.id]);
   const pick = (v: boolean) => {
     setQ(v); onSwitch?.();
+    play(v ? c.question : c.statement);
     setStage((st) => (st === 3 ? 3 : v ? (st === 0 ? 1 : st) : st >= 1 ? 2 : st));
   };
   const s = q ? c.question : c.statement;

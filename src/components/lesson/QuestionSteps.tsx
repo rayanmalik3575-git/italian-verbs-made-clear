@@ -43,8 +43,8 @@ export function StepVoice() {
   return (
     <div>
       <section>
-        <h2 className="text-2xl font-bold text-foreground sm:text-[28px] sm:leading-tight">Turn any statement into a question</h2>
-        <p className="mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">By the end of this step you'll ask <i>Parli inglese?</i> and <i>Lavori?</i> without building the sentence word by word.</p>
+        <h2 className="text-2xl font-bold text-foreground sm:text-[28px] sm:leading-tight">What a question is, and how Italian asks one</h2>
+        <p className="mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">A question is a sentence that asks for an answer: either a simple <b className="text-foreground">yes or no</b> (<i>Parli inglese?</i>) or a piece of information with a question word like <i>dove</i> or <i>quando</i>. Here we start with yes/no questions. In Italian you keep the exact words of the statement, add no “do”, and let your voice <b className="text-voice-rise">lift at the end</b>. In writing, the <b className="text-foreground">?</b> does that job.</p>
         <ul className="mt-4 flex flex-wrap gap-2">
           {["Use your voice", "Drop the English helper “do”", "Check yourself"].map((x, i) => (
             <li key={x} className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-[14px] font-medium text-foreground">
