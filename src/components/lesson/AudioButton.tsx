@@ -1,10 +1,11 @@
 import { Volume2, Snail } from "lucide-react";
 import type { Sentence } from "@/content/questions-lesson";
-import { play, stop, useFileExists, usePlayer } from "./audio";
+import { useEffect } from "react";
+import { play, preload, stop, usePlayer } from "./audio";
 
 export function AudioButtons({ s }: { s: Sentence }) {
   const p = usePlayer();
-  const has = useFileExists(s.audioNormal);
+  useEffect(() => { preload(s); }, [s]);
   const btn = (slow: boolean) => {
     const on = p.id === s.id && p.slow === slow;
     const Icon = slow ? Snail : Volume2;

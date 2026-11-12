@@ -13,9 +13,10 @@ export function PitchCurve({ direction, playingId, label = true }: { direction: 
   const active = p.id === playingId && !reduce;
   useEffect(() => {
     if (!active) { setT(1); return; }
+    if (!p.startedAt || !p.duration) { setT(0); return; }
     let raf = 0;
     const tick = () => {
-      const k = Math.min(1, (performance.now() - p.startedAt) / 1000 / (p.duration || 1.8));
+      const k = Math.min(1, (performance.now() - p.startedAt) / 1000 / p.duration);
       setT(k); if (k < 1) raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
