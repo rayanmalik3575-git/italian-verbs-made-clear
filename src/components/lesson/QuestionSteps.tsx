@@ -82,7 +82,7 @@ export function StepVoice() {
           <div className="mt-2 text-[15px] text-muted-foreground">{l.english}</div>
           <p className="mt-3 text-foreground">With a longer question, keep your voice level through the sentence and lift only on the last words.</p>
         </Panel>
-        <p className="mt-4 max-w-[65ch] text-[15px] text-muted-foreground">When texting, always keep the <b className="text-foreground">?</b>, because without it the reader sees a statement. {STEP1.regionNote}</p>
+        <p className="mt-4 max-w-[65ch] text-[15px] text-muted-foreground">When texting, always keep the <b className="text-foreground">?</b>, because without it the reader sees a statement.</p>
       </Scene>
       <SayWriteAnswer />
       <section className="mt-14"><NoDo /></section>
