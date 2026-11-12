@@ -32,43 +32,57 @@ export function stop() {
 }
 
 function speakFallback(s: Sentence, slow: boolean) {
-  if (!("speechSynthesis" in window)) return;
+  if (!("speechSynthesis" in window)) { stop(); return; }
   const u = new SpeechSynthesisUtterance(s.italian);
   u.lang = "it-IT";
   const it = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("it"));
   if (it) u.voice = it;
   if (s.type === "question") {
-    // Italian yes/no questions: same words, voice lifts at the end.
     u.text = s.italian.replace(/[.!]?\s*$/, "").replace(/\?$/, "") + "?";
     u.pitch = 1.35; u.rate = slow ? 0.6 : 0.85;
   } else {
     u.text = s.italian.replace(/\?$/, "").replace(/\.?\s*$/, ".");
     u.pitch = 0.95; u.rate = slow ? 0.6 : 0.9;
   }
+  // Rough estimate: ~13 chars per second at rate 1.
+  const est = Math.max(0.8, u.text.length / 13 / u.rate);
+  u.onstart = () => { if (state.id === s.id) set({ ...state, duration: est, startedAt: performance.now() }); };
   u.onend = () => { if (state.id === s.id) stop(); };
   window.speechSynthesis.speak(u);
-  set({ id: s.id, slow, duration: (slow ? 2.6 : 1.8), startedAt: performance.now() });
 }
 
-/** Plays a sentence. Returns false when a required recording is missing. */
-export async function play(s: Sentence, slow = false): Promise<boolean> {
+const cache = new Map<string, HTMLAudioElement>();
+function getAudio(url: string): HTMLAudioElement {
+  let a = cache.get(url);
+  if (!a) { a = new Audio(url); a.preload = "auto"; cache.set(url, a); }
+  return a;
+}
+/** Warm the browser cache so the first click starts instantly. */
+export function preload(s: Sentence) {
+  if (typeof window === "undefined") return;
+  getAudio(s.audioNormal); getAudio(s.audioSlow);
+}
+
+/** Plays a sentence immediately. The curve starts only when sound actually starts. */
+export function play(s: Sentence, slow = false): Promise<boolean> {
   stop();
-  const hasNormal = await fileExists(s.audioNormal);
-  if (!hasNormal) {
-    speakFallback(s, slow);
-    return true;
-  }
-  const useSlowFile = slow && (await fileExists(s.audioSlow));
-  const a = new Audio(useSlowFile ? s.audioSlow : s.audioNormal);
-  if (slow && !useSlowFile) { a.preservesPitch = true; a.playbackRate = 0.7; }
+  const a = getAudio(slow ? s.audioSlow : s.audioNormal);
+  a.onplaying = a.onended = a.onerror = null;
+  a.currentTime = 0;
   current = a;
-  a.onended = () => { if (current === a) stop(); };
-  a.onloadedmetadata = () => {
-    if (current === a && Number.isFinite(a.duration)) set({ ...state, duration: a.duration / a.playbackRate });
+  // startedAt 0 = waiting for sound; curve stays at the start.
+  set({ id: s.id, slow, duration: 0, startedAt: 0 });
+  a.onplaying = () => {
+    if (current !== a) return;
+    const d = Number.isFinite(a.duration) && a.duration > 0 ? a.duration / a.playbackRate : 1.5;
+    set({ ...state, duration: d, startedAt: performance.now() - (a.currentTime / a.playbackRate) * 1000 });
   };
-  set({ id: s.id, slow, duration: 1.8, startedAt: performance.now() });
-  try { await a.play(); } catch { stop(); }
-  return true;
+  a.onended = () => { if (current === a) stop(); };
+  a.onerror = () => { if (current === a) { current = null; speakFallback(s, slow); } };
+  return a.play().then(() => true).catch(() => {
+    if (current === a) { current = null; speakFallback(s, slow); }
+    return true;
+  });
 }
 
 export function usePlayer(): State {
