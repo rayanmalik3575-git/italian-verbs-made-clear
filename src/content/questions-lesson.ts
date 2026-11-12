@@ -136,3 +136,34 @@ export function allSentences(): Sentence[] {
 export function scoreQuiz(items: QuizItem[], answers: Record<string, string>): number {
   return items.filter((q) => answers[q.id] === q.answer).length;
 }
+
+/** Section 2 of Step 1: speaking long questions. Each example is split into the blocks a native breathes in. */
+export type LongExample = { sentence: Sentence; blocks: string[]; note: string };
+export const LONG = {
+  rules: [
+    { title: "Say it in blocks.", text: "Break the sentence into small groups of words that belong together, like \"una camera\" or \"per tre notti\". Never stop between an article and its noun." },
+    { title: "Keep the voice level until the last block.", text: "Every block before the end stays flat and calm, so the listener knows you haven't finished yet." },
+    { title: "Lift only on the last block.", text: "The rise lands on the stressed syllable of the last word: per tre NOT-ti? If you lift too early, it sounds like several questions." },
+    { title: "Don't slow down to think.", text: "Pause only between blocks, never inside one. A short pause between blocks sounds natural; a pause inside a block sounds unsure." },
+  ],
+  examples: [
+    { sentence: s("prenotate-camera-q", "Prenotate una camera per tre notti?", "Are you all booking a room for three nights?", rec), blocks: ["Prenotate", "una camera", "per tre notti?"], note: "Verb, then what, then how long. The lift falls on \"notti\"." },
+    { sentence: s("vieni-cena-sabato-q", "Vieni a cena da noi sabato sera?", "Are you coming to dinner at ours on Saturday evening?", rec), blocks: ["Vieni", "a cena da noi", "sabato sera?"], note: "Time words usually go last, so they carry the lift." },
+    { sentence: s("treno-milano-ritardo-q", "Il treno per Milano è in ritardo?", "Is the train to Milan late?", rec), blocks: ["Il treno per Milano", "è in ritardo?"], note: "A long subject is one block. Keep it flat, then lift on \"ritardo\"." },
+    { sentence: s("hai-tempo-caffe-q", "Hai tempo per un caffè dopo il lavoro?", "Do you have time for a coffee after work?", rec), blocks: ["Hai tempo", "per un caffè", "dopo il lavoro?"], note: "Three blocks, two level, one lifting." },
+  ] as LongExample[],
+  build: {
+    title: "Grow a question, block by block",
+    line: "Start short and add one block at a time. The lift always moves to the new end.",
+    steps: [
+      s("parti-q", "Parti?", "Are you leaving?", rec),
+      s("parti-domani-q", "Parti domani?", "Are you leaving tomorrow?", rec),
+      s("parti-domani-roma-q", "Parti domani per Roma?", "Are you leaving for Rome tomorrow?", rec),
+      s("parti-domani-roma-treno-q", "Parti domani per Roma in treno?", "Are you leaving for Rome by train tomorrow?", rec),
+    ],
+  },
+  mistakes: [
+    { wrong: "Prenotate? Una camera? Per tre notti?", right: "Prenotate una camera per tre notti?", text: "Lifting on every block turns one question into three." },
+    { wrong: "Il treno per… Milano è in ritardo?", right: "Il treno per Milano è in ritardo?", text: "Don't pause inside a block. \"Il treno per Milano\" is one piece." },
+  ],
+};
