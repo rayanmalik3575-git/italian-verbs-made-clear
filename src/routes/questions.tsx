@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, TrendingUp } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, Zap, Pin, TrendingUp } from "lucide-react";
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
 import { StepVoice } from "@/components/lesson/QuestionSteps";
 import { recordStep, useStepProgress } from "@/lib/progress";
@@ -199,27 +199,36 @@ function StepWords() {
       </section>
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {QWORDS.map((w) => (
-          <Panel key={w.it} className="flex flex-col p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="text-2xl font-bold text-foreground">{w.it}</div>
-                <div className="text-[15px] font-medium text-primary">{w.en}</div>
+          <Panel key={w.it} className="flex flex-col gap-3 p-5">
+            <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-2xl font-bold capitalize text-foreground">{w.it}</span>
+                <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[14px] font-semibold text-primary">{w.en}</span>
+                <span className="rounded-full bg-muted px-2.5 py-0.5 text-[14px] font-medium text-muted-foreground">{w.say}</span>
               </div>
               <Listen text={w.it.split(" · ")[0]!} />
             </div>
-            <div className="mt-1 text-[14px] text-muted-foreground">said <span className="font-semibold text-foreground">{w.say}</span></div>
-            <div className="mt-4 flex gap-2.5 rounded-xl border border-border bg-accent/30 px-3 py-2.5">
-              <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <p className="text-[16px] leading-relaxed text-foreground">{w.hook}</p>
-            </div>
-            <p className="mt-3 text-[15px] leading-relaxed text-foreground">{w.rule}</p>
-            {w.trap && <p className="mt-1.5 flex gap-1.5 text-[15px] leading-relaxed text-muted-foreground"><AlertTriangle className="mt-1 h-3.5 w-3.5 shrink-0" />{w.trap}</p>}
-            <div className="mt-auto pt-4">
-              <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2">
-                <div className="flex-1"><div className="font-semibold text-foreground">{w.ex}</div><div className="text-[14px] text-muted-foreground">{w.exEn}</div></div>
+            <section className="rounded-xl border border-border bg-accent/30 px-3.5 py-3">
+              <div className="mb-1 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-primary"><Lightbulb className="h-4 w-4" />Memory hook</div>
+              <p className="text-[15px] leading-relaxed text-foreground">{w.hook}</p>
+            </section>
+            <section className="rounded-xl border border-primary/30 bg-primary/5 px-3.5 py-3">
+              <div className="mb-1 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-primary"><Zap className="h-4 w-4" />Daily survival phrase</div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1"><div className="text-[16px] font-bold text-foreground">{w.ex}</div><div className="text-[14px] text-muted-foreground">{w.exEn}</div></div>
                 <Listen text={w.ex} />
               </div>
-            </div>
+            </section>
+            <section className="rounded-xl bg-muted/50 px-3.5 py-3">
+              <div className="mb-1 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-foreground"><Pin className="h-4 w-4" />The rule</div>
+              <p className="text-[15px] leading-relaxed text-foreground">{w.rule}</p>
+            </section>
+            {w.trap && (
+              <section className="rounded-xl border border-destructive/25 bg-destructive/5 px-3.5 py-3">
+                <div className="mb-1 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-destructive"><AlertTriangle className="h-4 w-4" />Watch out</div>
+                <p className="text-[15px] leading-relaxed text-foreground">{w.trap}</p>
+              </section>
+            )}
           </Panel>
         ))}
       </div>
