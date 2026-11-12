@@ -39,9 +39,35 @@ function Scene({ title, line, children }: { title: string; line: string; childre
   );
 }
 
+const TYPES = [
+  { n: "1", title: "Yes / no", how: "Same sentence, voice lifts at the end.", it: "Parli italiano?", en: "Do you speak Italian?" },
+  { n: "2", title: "Asking for information", how: "Question word first, verb right after.", it: "Dove abiti?", en: "Where do you live?" },
+  { n: "3", title: "Checking", how: "Say it as a fact, add vero? or no?", it: "Vieni stasera, vero?", en: "You're coming tonight, right?" },
+];
+
 export function StepVoice() {
     return (
     <div>
+      <section className="mx-auto mb-12 max-w-[820px] text-center">
+        <h2 className="text-2xl font-bold leading-tight text-foreground sm:text-[30px]">Italian has three kinds of question</h2>
+        <p className="mx-auto mt-3 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">None of them needs a helper like "do" or "does". Learn these three and you can ask anything.</p>
+        <div className="mt-6 grid gap-3 text-left sm:grid-cols-3">
+          {TYPES.map((t) => (
+            <Panel key={t.n} className="p-4">
+              <div className="flex items-center gap-2">
+                <span className="grid h-7 w-7 place-items-center rounded-full bg-primary text-[14px] font-bold text-primary-foreground">{t.n}</span>
+                <span className="font-bold text-foreground">{t.title}</span>
+              </div>
+              <p className="mt-2 text-[15px] leading-snug text-muted-foreground">{t.how}</p>
+              <div className="mt-3 rounded-xl bg-muted/50 px-3 py-2">
+                <div className="font-semibold text-foreground">{t.it}</div>
+                <div className="text-[14px] text-muted-foreground">{t.en}</div>
+              </div>
+            </Panel>
+          ))}
+        </div>
+        <p className="mt-4 text-[15px] text-muted-foreground">This step teaches type 1. The next step covers type 2.</p>
+      </section>
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">1</span>
@@ -49,7 +75,7 @@ export function StepVoice() {
         </h2>
         <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the first rule of asking questions in Italian.</b> In English you add "do" or flip the words: <b>"you speak"</b> becomes <b>"do you speak?"</b>. Italian does neither. You say the statement exactly as it is, and change only one thing:</p>
         <ul className="mt-5 space-y-2 text-left text-[17px] leading-[1.6] text-foreground">
-          <li className="flex gap-2"><Mic className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Speaking:</b> your voice lifts at the end. That change of tone is how the listener knows you're asking.</span></li>
+          <li className="flex gap-2"><Mic className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Speaking:</b> keep your voice level through the sentence, then lift it on the last stressed syllable: <i>Parli itali<b>a</b>no?</i>, <i>Prendi un caff<b>è</b>?</i> Lift once, at the end, not across the whole sentence. That rise is how the listener knows you're asking.</span></li>
           <li className="flex gap-2"><Pencil className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Writing:</b> you put a question mark at the end.</span></li>
         </ul>
         <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Everything else stays the same: same words, same order, same verb. Italians ask questions this way all day, at the bar, on the phone and with friends.</p>
