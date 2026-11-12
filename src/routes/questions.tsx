@@ -182,7 +182,7 @@ function StepOrder() {
 function StepWords() {
   return (
     <div>
-      <section className="mx-auto flex max-w-[720px] flex-col items-center pt-2 text-center">
+      <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">2</span>
           The question words
@@ -194,30 +194,29 @@ function StepWords() {
           <Chunk r="v">verb</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
           <Chunk r="x">the rest</Chunk>
         </div>
+        
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Learn the words below and you can ask for directions, prices, times and reasons anywhere in Italy. Each one has a small detail worth remembering.</p>
       </section>
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {QWORDS.map((w) => (
-          <Panel key={w.it} className="flex flex-col overflow-hidden p-0">
-            <div className="flex items-start justify-between gap-3 px-5 pt-5">
+          <Panel key={w.it} className="flex flex-col p-5">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="text-[28px] font-bold leading-none text-foreground">{w.it}</span>
-                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-[13px] font-semibold text-muted-foreground">{w.say}</span>
-                </div>
-                <div className="mt-1.5 text-[16px] font-semibold text-primary">{w.en}</div>
+                <div className="text-2xl font-bold text-foreground">{w.it}</div>
+                <div className="text-[15px] font-medium text-primary">{w.en}</div>
               </div>
               <Listen text={w.it.split(" · ")[0]!} />
             </div>
-            <p className="mx-5 mt-3 flex gap-2 text-[15px] leading-relaxed text-foreground">
-              <Lightbulb className="mt-1 h-4 w-4 shrink-0 text-primary" /><span>{w.hook}</span>
-            </p>
-            <div className="mx-5 mt-3 space-y-2 border-t border-border pt-3 text-[14.5px] leading-relaxed">
-              <p className="text-foreground"><span className="mr-1.5 font-bold text-success">Rule</span>{w.rule}</p>
-              {w.trap && <p className="text-muted-foreground"><span className="mr-1.5 font-bold text-destructive">Trap</span>{w.trap}</p>}
+            <div className="mt-1 text-[14px] text-muted-foreground">said <span className="font-semibold text-foreground">{w.say}</span></div>
+            <div className="mt-4 flex gap-2.5 rounded-xl border border-border bg-accent/30 px-3 py-2.5">
+              <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <p className="text-[16px] leading-relaxed text-foreground">{w.hook}</p>
             </div>
+            <p className="mt-3 text-[15px] leading-relaxed text-foreground">{w.rule}</p>
+            {w.trap && <p className="mt-1.5 flex gap-1.5 text-[15px] leading-relaxed text-muted-foreground"><AlertTriangle className="mt-1 h-3.5 w-3.5 shrink-0" />{w.trap}</p>}
             <div className="mt-auto pt-4">
-              <div className="flex items-center gap-3 border-t border-border bg-accent/40 px-5 py-3.5">
-                <div className="flex-1"><div className="text-[17px] font-bold text-foreground">{w.ex}</div><div className="text-[14px] text-muted-foreground">{w.exEn}</div></div>
+              <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2">
+                <div className="flex-1"><div className="font-semibold text-foreground">{w.ex}</div><div className="text-[14px] text-muted-foreground">{w.exEn}</div></div>
                 <Listen text={w.ex} />
               </div>
             </div>
