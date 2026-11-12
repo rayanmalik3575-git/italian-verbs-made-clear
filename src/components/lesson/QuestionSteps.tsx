@@ -98,30 +98,19 @@ export function StepVoice() {
   );
 }
 
-const REPLIES: [string, string][] = [
-  ["Certo!", "Sure, of course"], ["Dipende.", "It depends"], ["Un po'.", "A little"],
-  ["Magari!", "I wish!"], ["Per niente.", "Not at all"], ["Boh.", "No idea"],
-];
 const TIPS: [string, string][] = [
-  ["Leave out \"you\".", "Vieni? and Hai fame? are complete questions; the ending already says who. Tu vieni? stresses YOU, as in \"are YOU coming?\"."],
-  ["Strangers and formal situations.", "Same tune, formal verb: Parla inglese? instead of Parli inglese?"],
-  ["Don't answer with a bare sì.", "Natives usually repeat the verb: Hai fame? → Sì, ho fame. It sounds warmer and confirms you understood."],
-  ["Soften with the end words.", "Add no? or vero? to check something you think is true: Sei italiano, vero? (You're Italian, right?)"],
-  ["Regional melody.", "The lift is the standard pattern. Some regions (for example Naples) use a different melody. Copy the people around you."],
+  ["Do I say \"tu\"?", "Usually not. Vieni? and Hai fame? are complete questions, because the verb ending already says who. Tu vieni? puts the weight on YOU: \"are YOU coming?\"."],
+  ["Does it work with strangers?", "Yes, same tune. Only the verb becomes formal: Parla inglese? instead of Parli inglese?"],
+  ["Does it work with every sentence?", "Yes. If you can say it, you can ask it: Il treno arriva alle tre. becomes Il treno arriva alle tre? Nothing moves."],
+  ["How do I answer?", "Repeat the verb instead of a bare sì: Hai fame? → Sì, ho fame. It sounds natural and shows you understood."],
 ];
 
 function SayWriteAnswer() {
   return (
     <section className="mt-14">
-      <H>Answers natives actually use</H>
-      <div className="grid gap-2 sm:grid-cols-3">
-        {REPLIES.map(([it, en]) => (
-          <div key={it} className="rounded-xl border bg-card px-4 py-3"><div className="font-bold text-foreground">{it}</div><div className="text-[14px] text-muted-foreground">{en}</div></div>
-        ))}
-      </div>
-      <H>What every learner should know</H>
-      <ul className="space-y-3">
-        {TIPS.map(([b, txt]) => <li key={b} className="max-w-[70ch] text-[16px] leading-[1.6] text-foreground"><b>{b}</b> {txt}</li>)}
+      <H>What every learner asks next</H>
+      <ul className="space-y-4">
+        {TIPS.map(([b, txt]) => <li key={b} className="max-w-[70ch] text-[16px] leading-[1.6] text-foreground"><b className="block">{b}</b><span className="text-muted-foreground">{txt}</span></li>)}
       </ul>
     </section>
   );
