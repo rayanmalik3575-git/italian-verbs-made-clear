@@ -55,7 +55,7 @@ export function StepVoice() {
         </ul>
         <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Everything else stays the same: same words, same order, same verb. Italians ask questions this way all day, at the bar, on the phone and with friends.</p>
       </section>
-      <Scene title="Listen to three pairs" line="The words are identical; only the ending of your voice changes. A statement settles down, a question stays open and lifts, because you are waiting for the other person to answer.">
+      <section className="mt-6">
         <Panel className="p-4 sm:p-6">
           <div className="mb-1 hidden grid-cols-2 gap-6 text-[14px] font-semibold uppercase tracking-wide sm:grid">
             <span className="text-voice-fall">Statement · voice settles</span><span className="text-voice-rise">Question · voice lifts</span>
@@ -82,7 +82,7 @@ export function StepVoice() {
           <p className="mt-3 text-foreground">With a longer question, keep your voice level through the sentence and lift only on the last words.</p>
         </Panel>
         <p className="mt-4 max-w-[65ch] text-[15px] text-muted-foreground">When texting, always keep the <b className="text-foreground">?</b>, because without it the reader sees a statement.</p>
-      </Scene>
+      </section>
       <SayWriteAnswer />
       <section className="mt-14"><NoDo /></section>
     </div>
