@@ -43,7 +43,7 @@ export function TuneToggle({ onSwitch }: { onSwitch?: () => void }) {
       <div className="mt-2 grid grid-cols-2 gap-3">
         {c.words.map((w, i) => (
           <div key={w} className="flex flex-col items-center gap-1.5">
-            <span className="rounded-2xl border bg-background px-4 py-2 text-[22px] font-bold text-foreground">
+            <span className="whitespace-nowrap rounded-2xl border bg-background px-4 py-2 text-[22px] font-bold text-foreground">
               {w}
               {i === c.words.length - 1 && (
                 <AnimatePresence mode="wait" initial={false}>
