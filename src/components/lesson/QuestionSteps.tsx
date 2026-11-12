@@ -1,7 +1,7 @@
 import { Mic, Pencil } from "lucide-react";
 import { TuneToggle } from "./TuneToggle";
 import { RebuildCompare } from "./RebuildCompare";
-import { STEP1, STEP2, audioPaths, type Sentence } from "@/content/questions-lesson";
+import { STEP1, STEP2, LONG, audioPaths, type Sentence } from "@/content/questions-lesson";
 import { recordStep } from "@/lib/progress";
 import { Panel } from "@/components/app-shell";
 import { AudioButtons } from "./AudioButton";
@@ -40,8 +40,7 @@ function Scene({ title, line, children }: { title: string; line: string; childre
 }
 
 export function StepVoice() {
-  const l = STEP1.long;
-  return (
+    return (
     <div>
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
@@ -64,26 +63,10 @@ export function StepVoice() {
             <div key={a.id} className="grid gap-x-6 border-b last:border-0 sm:grid-cols-2"><SentenceCell s={a} /><SentenceCell s={b} /></div>
           ))}
         </Panel>
-        <Panel className="mt-6 p-4 sm:p-6">
-          <div className="flex flex-wrap items-end gap-2">
-            {l.wordGloss!.map((w, i, arr) => (
-              <div key={w} className="flex flex-col">
-                <div className="h-10 w-full">
-                  <svg viewBox="0 0 100 38" preserveAspectRatio="none" className={`h-full w-full ${i === arr.length - 1 ? "text-voice-rise" : "text-muted-foreground/50"}`} aria-hidden>
-                    <path d={i === arr.length - 1 ? "M0,26 C50,26 70,26 98,4" : "M0,26 L100,26"} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-                  </svg>
-                </div>
-                <span className={`rounded-xl border px-3 py-2 text-lg font-semibold ${i === arr.length - 1 ? "border-voice-rise/40 text-voice-rise" : "bg-card text-foreground"}`}>{w}</span>
-              </div>
-            ))}
-            <AudioButtons s={l} />
-          </div>
-          <div className="mt-2 text-[15px] text-muted-foreground">{l.english}</div>
-          <p className="mt-3 text-foreground">With a longer question, keep your voice level through the sentence and lift only on the last words.</p>
-        </Panel>
         <p className="mt-4 max-w-[65ch] text-[15px] text-muted-foreground">When texting, always keep the <b className="text-foreground">?</b>, because without it the reader sees a statement.</p>
       </section>
       <SayWriteAnswer />
+      <LongQuestions />
       <section className="mt-14"><NoDo /></section>
     </div>
   );
@@ -135,5 +118,75 @@ function NoDo() {
       <H>Check yourself</H>
       <Quiz items={STEP2.quiz} onFinish={(sc, t) => recordStep("make", sc, t)} />
     </div>
+  );
+}
+
+function Blocks({ blocks }: { blocks: string[] }) {
+  return (
+    <div className="flex flex-wrap items-end gap-2">
+      {blocks.map((w, i, arr) => {
+        const last = i === arr.length - 1;
+        return (
+          <div key={w} className="flex flex-col">
+            <div className="h-8 w-full">
+              <svg viewBox="0 0 100 38" preserveAspectRatio="none" className={`h-full w-full ${last ? "text-voice-rise" : "text-muted-foreground/50"}`} aria-hidden>
+                <path d={last ? "M0,26 C50,26 70,26 98,4" : "M0,26 L100,26"} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+              </svg>
+            </div>
+            <span className={`rounded-xl border px-3 py-2 text-lg font-semibold ${last ? "border-voice-rise/40 text-voice-rise" : "bg-card text-foreground"}`}>{w}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function LongQuestions() {
+  return (
+    <section className="mt-14">
+      <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
+        <h2 className="flex max-w-[28ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">2</span>
+          How to say a long question
+        </h2>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>The rule is the same, the sentence is just longer.</b> Most learners rush a long question or lift their voice too early. Natives say it in small blocks: level, level, and a lift only at the very end.</p>
+      </div>
+      <ul className="mx-auto mt-6 max-w-[720px] space-y-3">
+        {LONG.rules.map((r, i) => (
+          <li key={r.title} className="flex gap-3 text-[17px] leading-[1.6] text-foreground">
+            <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-muted text-[14px] font-bold text-foreground">{i + 1}</span>
+            <span><b>{r.title}</b> {r.text}</span>
+          </li>
+        ))}
+      </ul>
+      <Panel className="mt-8 p-4 sm:p-6">
+        {LONG.examples.map((e) => (
+          <div key={e.sentence.id} className="border-b py-5 first:pt-0 last:border-0 last:pb-0">
+            <div className="flex flex-wrap items-end justify-between gap-3"><Blocks blocks={e.blocks} /><AudioButtons s={e.sentence} /></div>
+            <div className="mt-2 text-[15px] text-muted-foreground">{e.sentence.english}</div>
+            <p className="mt-1 text-[15px] text-foreground">{e.note}</p>
+          </div>
+        ))}
+      </Panel>
+      <H>{LONG.build.title}</H>
+      <P>{LONG.build.line}</P>
+      <Panel className="p-4 sm:p-6">
+        <ol className="space-y-3">
+          {LONG.build.steps.map((s, i) => (
+            <li key={s.id} className="flex items-center justify-between gap-3 border-b pb-3 last:border-0 last:pb-0">
+              <div className="min-w-0" style={{ paddingLeft: `${i * 12}px` }}>
+                <div className="text-lg font-bold text-foreground">{s.italian.split(" ").map((w, j, arr) => <span key={j} className={j === arr.length - 1 ? "text-voice-rise" : ""}>{w}{j < arr.length - 1 ? " " : ""}</span>)}</div>
+                <div className="text-[15px] text-muted-foreground">{s.english}</div>
+              </div>
+              <AudioButtons s={s} />
+            </li>
+          ))}
+        </ol>
+      </Panel>
+      <H>Common mistakes</H>
+      <div className="space-y-3">
+        {LONG.mistakes.map((m) => <WarningBox key={m.text} wrong={m.wrong} right={m.right}>{m.text}</WarningBox>)}
+      </div>
+    </section>
   );
 }
