@@ -1,36 +1,52 @@
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useInView, useReducedMotion } from "framer-motion";
-import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, Check } from "lucide-react";
 import { STEP1 } from "@/content/questions-lesson";
 import { AudioButtons } from "./AudioButton";
+import { usePlayer } from "./audio";
 
-const D = { fall: "M4,8 C70,9 140,14 196,34", rise: "M4,26 C90,26 140,26 196,4" };
+// viewBox 200x56: level across the first word, then a clear ~40px move over the last word.
+const D = { fall: "M6,10 L100,10 C140,10 160,18 194,50", rise: "M6,46 L100,46 C140,46 160,38 194,6" };
+const END = { fall: { x: 194, y: 50 }, rise: { x: 194, y: 6 } };
+
+const COACH = [
+  "Try it: press Question",
+  "Same two words. Only the ? and your voice changed. Press Statement to go back.",
+  "Now press Question again and tap the speaker to hear the difference.",
+  "Got it. Scroll down to see how English does this differently.",
+];
 
 export function TuneToggle({ onSwitch }: { onSwitch?: () => void }) {
   const c = STEP1.tune;
   const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const seen = useInView(ref, { once: true, amount: 0.6 });
+  const player = usePlayer();
   const [q, setQ] = useState(false);
-  const touched = useRef(false);
+  const [stage, setStage] = useState(0);
   useEffect(() => {
-    if (!seen || reduce) return;
-    const t = setTimeout(() => { if (!touched.current) setQ(true); }, 1200);
-    return () => clearTimeout(t);
-  }, [seen, reduce]);
-  const pick = (v: boolean) => { touched.current = true; setQ(v); onSwitch?.(); };
+    if (player.id && (player.id === c.question.id || player.id === c.statement.id)) setStage(3);
+  }, [player.id, c.question.id, c.statement.id]);
+  const pick = (v: boolean) => {
+    setQ(v); onSwitch?.();
+    setStage((st) => (st === 3 ? 3 : v ? (st === 0 ? 1 : st) : st >= 1 ? 2 : st));
+  };
   const s = q ? c.question : c.statement;
+  const dir = q ? "rise" : "fall";
   const tone = q ? "text-voice-rise" : "text-voice-fall";
   const dur = reduce ? 0 : 0.4;
+  const shown = stage >= 1;
   return (
-    <div ref={ref} className="rounded-3xl border bg-card p-5 sm:p-8">
-      <svg viewBox="0 0 200 38" preserveAspectRatio="none" className={`h-12 w-full overflow-visible ${tone}`} aria-hidden>
-        <motion.path initial={false} animate={{ d: q ? D.rise : D.fall }} transition={{ duration: dur }} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+    <div className="mx-auto max-w-[560px] rounded-[20px] border bg-card p-6">
+      <div className={`relative h-14 w-full ${tone}`} aria-hidden>
+      <svg viewBox="0 0 200 56" preserveAspectRatio="none" className="block h-full w-full overflow-visible">
+        <motion.path initial={false} animate={{ d: D[dir] }} transition={{ duration: dur }} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
       </svg>
-      <div className="mt-4 flex flex-wrap items-start justify-center gap-3">
+        <motion.span initial={false} animate={{ top: `${(END[dir].y / 56) * 100}%` }} transition={{ duration: dur }}
+          className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" style={{ left: `${(END[dir].x / 200) * 100}%` }} />
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-3">
         {c.words.map((w, i) => (
           <div key={w} className="flex flex-col items-center gap-1.5">
-            <span className="rounded-2xl border bg-background px-4 py-2 text-2xl font-bold text-foreground sm:text-3xl">
+            <span className="whitespace-nowrap rounded-2xl border bg-background px-4 py-2 text-[22px] font-bold text-foreground">
               {w}
               {i === c.words.length - 1 && (
                 <AnimatePresence mode="wait" initial={false}>
@@ -38,12 +54,16 @@ export function TuneToggle({ onSwitch }: { onSwitch?: () => void }) {
                 </AnimatePresence>
               )}
             </span>
-            <span className="inline-flex items-center gap-1 text-[14px] font-medium text-correct"><Check aria-hidden className="h-4 w-4" />same</span>
+            <motion.span initial={false} animate={{ opacity: shown ? 1 : 0 }} transition={{ duration: reduce ? 0 : 0.3 }} aria-hidden={!shown}
+              className="inline-flex items-center gap-1 text-[14px] font-medium text-correct"><Check aria-hidden className="h-4 w-4" />same</motion.span>
           </div>
         ))}
       </div>
-      <p className="mt-4 text-center text-[17px] text-muted-foreground" aria-live="polite">{s.english}</p>
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+      <p className="mt-3 text-center text-[16px] text-muted-foreground">{s.english}</p>
+      <p aria-live="polite" className="mx-auto mt-5 flex w-fit items-start gap-2 rounded-2xl bg-primary/10 px-4 py-2 text-[16px] font-medium text-primary">
+        <ArrowRight aria-hidden className="mt-1 h-4 w-4 shrink-0" />{COACH[stage]}
+      </p>
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
         <div role="radiogroup" aria-label="Sentence type" className="inline-flex rounded-full border bg-muted p-1">
           {([false, true] as const).map((v) => (
             <button key={String(v)} type="button" role="radio" aria-checked={q === v} onClick={() => pick(v)}
@@ -54,7 +74,6 @@ export function TuneToggle({ onSwitch }: { onSwitch?: () => void }) {
         </div>
         <AudioButtons s={s} />
       </div>
-      <p className="mt-5 text-center text-[15px] font-medium text-foreground">{c.caption}</p>
     </div>
   );
 }
