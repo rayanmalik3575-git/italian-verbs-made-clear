@@ -44,12 +44,11 @@ export function StepVoice() {
   return (
     <div>
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
-        <div className="flex items-center gap-3">
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">1</span>
-          <span className="text-[15px] font-medium text-muted-foreground">Point 1 · Yes/no questions</span>
-        </div>
-        <h2 className="mt-5 max-w-[22ch] text-2xl font-bold leading-tight text-foreground sm:text-[30px]">Yes/no questions: the statement, with a lifted voice</h2>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">This is the first and most common kind of question in Italian: a question that expects <i>sì</i> or <i>no</i>. You don't add a helper word and you don't rearrange anything. You take the statement exactly as it is and change one thing.</p>
+        <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">1</span>
+          How Italian asks a yes/no question
+        </h2>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">This is the first rule of asking questions in Italian. In English you add "do" or flip the words: <i>you speak</i> becomes <i>do you speak?</i> Italian does neither. You say the statement exactly as it is, and change only one thing:</p>
         <ul className="mt-5 space-y-2 text-left text-[17px] leading-[1.6] text-foreground">
           <li className="flex gap-2"><Mic className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Speaking:</b> your voice lifts at the end. That change of tone is how the listener knows you're asking.</span></li>
           <li className="flex gap-2"><Pencil className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Writing:</b> you put a question mark at the end.</span></li>
@@ -90,11 +89,6 @@ export function StepVoice() {
   );
 }
 
-const SWA: [string, string, string][] = [
-  ["Say it", "Statement + a voice that lifts at the end", "Hai fame ↗"],
-  ["Write it", "Statement + ?", "Hai fame?"],
-  ["Answer it", "Say sì or no, or repeat the verb", "Sì, ho fame. · No, non ho fame. · Un po'."],
-];
 const REPLIES: [string, string][] = [
   ["Certo!", "Sure, of course"], ["Dipende.", "It depends"], ["Un po'.", "A little"],
   ["Magari!", "I wish!"], ["Per niente.", "Not at all"], ["Boh.", "No idea"],
@@ -110,16 +104,6 @@ const TIPS: [string, string][] = [
 function SayWriteAnswer() {
   return (
     <section className="mt-14">
-      <h3 className="text-2xl font-bold text-foreground">Say it, write it, answer it</h3>
-      <Panel className="mt-5 divide-y p-0">
-        {SWA.map(([k, rule, ex]) => (
-          <div key={k} className="grid gap-1 px-5 py-4 sm:grid-cols-[140px_1fr] sm:gap-4">
-            <div className="font-bold text-foreground">{k}</div>
-            <div><div className="text-foreground">{rule}</div><div className="text-[15px] text-muted-foreground">{ex}</div></div>
-          </div>
-        ))}
-      </Panel>
-      <div className="mt-5 rounded-2xl bg-primary/10 px-5 py-4 text-lg font-semibold text-primary">Yes/no question = the statement + a lifted voice (or a ?)</div>
       <H>Answers natives actually use</H>
       <div className="grid gap-2 sm:grid-cols-3">
         {REPLIES.map(([it, en]) => (
