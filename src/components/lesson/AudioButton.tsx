@@ -1,13 +1,10 @@
-import { Volume2, Snail, MicOff } from "lucide-react";
+import { Volume2, Snail } from "lucide-react";
 import type { Sentence } from "@/content/questions-lesson";
 import { play, stop, useFileExists, usePlayer } from "./audio";
 
 export function AudioButtons({ s }: { s: Sentence }) {
   const p = usePlayer();
   const has = useFileExists(s.audioNormal);
-  if (has === false && s.needsRecording) {
-    return <span className="inline-flex items-center gap-1.5 rounded-lg border border-dashed px-2.5 py-1.5 text-sm text-muted-foreground"><MicOff className="h-4 w-4" />Recording needed</span>;
-  }
   const btn = (slow: boolean) => {
     const on = p.id === s.id && p.slow === slow;
     const Icon = slow ? Snail : Volume2;
@@ -22,7 +19,6 @@ export function AudioButtons({ s }: { s: Sentence }) {
   return (
     <span className="inline-flex shrink-0 items-center gap-1.5">
       {btn(false)}{btn(true)}
-      {has === false && <span className="text-sm text-muted-foreground">temporary voice</span>}
     </span>
   );
 }
