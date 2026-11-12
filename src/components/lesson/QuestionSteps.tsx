@@ -42,7 +42,18 @@ export function StepVoice() {
   const l = STEP1.long;
   return (
     <div>
-      <Scene title={STEP1.tune.title} line={STEP1.tune.line}><TuneToggle /></Scene>
+      <section>
+        <h2 className="text-2xl font-bold text-foreground sm:text-[28px] sm:leading-tight">Turn any statement into a question</h2>
+        <p className="mt-2 max-w-[65ch] text-[17px] leading-[1.6] text-muted-foreground">By the end of this step you'll ask <i>Parli inglese?</i> and <i>Lavori?</i> without building the sentence word by word.</p>
+        <ul className="mt-4 flex flex-wrap gap-2">
+          {["Use your voice", "Drop the English helper “do”", "Check yourself"].map((x, i) => (
+            <li key={x} className="inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-[14px] font-medium text-foreground">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[14px] font-bold text-primary">{i + 1}</span>{x}
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8"><TuneToggle /></div>
+      </section>
       <Scene title={STEP1.rebuild.title} line={STEP1.rebuild.line}><RebuildCompare /></Scene>
       <Scene title={STEP1.pairsTitle} line={STEP1.pairsLine}>
         <Panel className="p-4 sm:p-6">
