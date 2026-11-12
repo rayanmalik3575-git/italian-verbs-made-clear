@@ -36,10 +36,13 @@ export function TuneToggle({ onSwitch }: { onSwitch?: () => void }) {
   const shown = stage >= 1;
   return (
     <div className="mx-auto max-w-[560px] rounded-[20px] border bg-card p-6">
-      <svg viewBox="0 0 200 56" preserveAspectRatio="none" className={`block h-14 w-full overflow-visible ${tone}`} aria-hidden>
+      <div className={`relative h-14 w-full ${tone}`} aria-hidden>
+      <svg viewBox="0 0 200 56" preserveAspectRatio="none" className="block h-full w-full overflow-visible">
         <motion.path initial={false} animate={{ d: D[dir] }} transition={{ duration: dur }} fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" vectorEffect="non-scaling-stroke" />
-        <motion.circle initial={false} animate={{ cx: END[dir].x, cy: END[dir].y }} transition={{ duration: dur }} r={4} fill="currentColor" />
       </svg>
+        <motion.span initial={false} animate={{ top: `${(END[dir].y / 56) * 100}%` }} transition={{ duration: dur }}
+          className="absolute h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" style={{ left: `${(END[dir].x / 200) * 100}%` }} />
+      </div>
       <div className="mt-2 grid grid-cols-2 gap-3">
         {c.words.map((w, i) => (
           <div key={w} className="flex flex-col items-center gap-1.5">
