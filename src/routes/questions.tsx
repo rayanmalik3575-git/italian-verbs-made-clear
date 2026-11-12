@@ -182,50 +182,55 @@ function StepOrder() {
 function StepWords() {
   return (
     <div>
-      <Lead>
-        Seven question words cover almost everything. All of them sit at the very start and are followed by the verb. What changes is the
-        small detail each one carries. Learn the detail, and you won't make the classic mistakes.
-      </Lead>
-      <div className="grid gap-4 md:grid-cols-2">
+      <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
+        <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">2</span>
+          The words that open a question
+        </h2>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, put the question word first and the verb straight after it. English needs a helper: <b>"where do you live?"</b>. Italian just says <b>"Dove abiti?"</b>, literally "where live-you?".</p>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Eight words cover almost every question you'll ask. Each has one small detail worth knowing.</p>
+      </section>
+      <div className="mt-10 grid gap-4 md:grid-cols-2">
         {QWORDS.map((w) => (
-          <Panel key={w.it} className="p-5">
+          <Panel key={w.it} className="flex flex-col p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="text-2xl font-bold text-foreground">{w.it}</div>
-                <div className="text-sm text-muted-foreground">{w.en} · <span className="tracking-wide">{w.say}</span></div>
+                <div className="text-[15px] font-medium text-primary">{w.en}</div>
               </div>
               <Listen text={w.it.split(" · ")[0]!} />
             </div>
-            <p className="mt-3 leading-relaxed text-foreground">{w.rule}</p>
-            <div className="mt-3 flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2">
-              <div className="flex-1"><div className="font-semibold">{w.ex}</div><div className="text-sm text-muted-foreground">{w.exEn}</div></div>
-              <Listen text={w.ex} />
+            <p className="mt-3 text-[16px] leading-relaxed text-foreground">{w.rule}</p>
+            {w.trap && <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{w.trap}</p>}
+            <div className="mt-auto pt-4">
+              <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2">
+                <div className="flex-1"><div className="font-semibold text-foreground">{w.ex}</div><div className="text-[14px] text-muted-foreground">{w.exEn}</div></div>
+                <Listen text={w.ex} />
+              </div>
             </div>
-            {w.trap && <p className="mt-3 flex gap-2 text-sm text-amber-700"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />{w.trap}</p>}
           </Panel>
         ))}
       </div>
-      <H>Cosa, che, or che cosa?</H>
-      <P>
-        Before a verb, all three are correct and mean the same. <em>Cosa</em> is the most common in everyday speech, <em>che</em> sounds quick and casual,
-        <em> che cosa</em> is the full version. Before a noun, only <strong>che</strong> works, because then it means “what kind of / which”.
-      </P>
-      <Panel className="p-5 sm:p-6">
-        <Line it="Cosa bevi?" en="What are you drinking? — verb follows: any of the three" />
-        <Line it="Che vino bevi?" en="What wine are you drinking? — noun follows: only che" />
-      </Panel>
-      <H>Perché non…? — the suggestion</H>
-      <P>
-        <em>Perché non</em> + a verb sounds like a question but works as an invitation, exactly like “why don't we…?”. You'll hear it constantly.
-      </P>
-      <Panel className="p-5 sm:p-6">
-        <Line it="Perché non prendiamo un gelato?" en="Why don't we get an ice cream?" />
+      <H>Three details that make you sound Italian</H>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Panel className="p-5">
+          <div className="text-[14px] font-semibold uppercase tracking-wide text-primary">Cosa or che?</div>
+          <p className="mt-2 text-[16px] leading-relaxed text-foreground">Before a verb, both are fine: <em>Cosa bevi?</em> = <em>Che bevi?</em> Before a noun, only <b>che</b>: <em>Che vino bevi?</em></p>
+        </Panel>
+        <Panel className="p-5">
+          <div className="text-[14px] font-semibold uppercase tracking-wide text-primary">Qual è, not cosa è</div>
+          <p className="mt-2 text-[16px] leading-relaxed text-foreground">For name, number or address, Italian picks one from many: <em>Qual è il tuo numero?</em> Written without an apostrophe.</p>
+        </Panel>
+        <Panel className="p-5">
+          <div className="text-[14px] font-semibold uppercase tracking-wide text-primary">Perché non…?</div>
+          <p className="mt-2 text-[16px] leading-relaxed text-foreground">Turns a question into an invitation, like "why don't we…?": <em>Perché non prendiamo un gelato?</em></p>
+        </Panel>
+      </div>
+      <Panel className="mt-6 p-5 sm:p-6">
+        <Line it="Che vino bevi?" en="What wine are you drinking?" />
+        <Line it="Qual è il tuo nome?" en="What's your name?" />
         <Line it="Perché non vieni anche tu?" en="Why don't you come too?" />
       </Panel>
-      <Note title="Qual è — the one that surprises everyone">
-        For “what's your name / number / address?”, Italian uses <strong>qual è</strong>, not <em>cosa è</em>, because you're picking one from many possible answers.
-        <em> Qual è il tuo numero?</em> And no apostrophe: <em>qual è</em>, never <em>qual'è</em>.
-      </Note>
     </div>
   );
 }

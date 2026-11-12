@@ -21,6 +21,7 @@ export const QWORDS: QWord[] = [
   { it: "chi", en: "who", say: "KEE", rule: "Never changes. The verb tells you if it's one person or more.", ex: "Chi sono quei ragazzi?", exEn: "Who are those guys?", trap: "Spelled chi, said “kee”. The h keeps the c hard." },
   { it: "cosa · che · che cosa", en: "what", say: "KOH-zah · KEH", rule: "Three versions, same meaning before a verb. Before a noun, only che.", ex: "Cosa mangi stasera?", exEn: "What are you eating tonight?", trap: "Cosa pizza? never. Che pizza? always." },
   { it: "quale · quali", en: "which", say: "KWAH-leh · KWAH-lee", rule: "Follows number: quale for one thing, quali for more.", ex: "Quali scarpe compri?", exEn: "Which shoes are you buying?", trap: "Before è it becomes qual è — no apostrophe." },
+  { it: "quanto · quanta · quanti · quante", en: "how much · how many", say: "", rule: "Agrees with the noun: quanti anni, quante volte. Alone, quanto means how much.", ex: "Quanto costa?", exEn: "How much is it?", trap: "Quanti anni hai? — Italians ask how many years you have." },
   { it: "perché", en: "why · because", say: "pehr-KEH", rule: "Same word for the question and the answer. The accent is part of the spelling.", ex: "Perché non vieni?", exEn: "Why aren't you coming?" },
 ];
 
