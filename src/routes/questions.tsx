@@ -185,16 +185,17 @@ function StepWords() {
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">2</span>
-          Asking for information
+          The question words
         </h2>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, put the question word first and the verb straight after it. English needs a helper: <b>"where do you live?"</b>. Italian just says <b>"Dove abiti?"</b>, literally "where live-you?".</p>
+        <p className="mt-2 text-[16px] font-medium text-muted-foreground">The words that open every conversation</p>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, you need a question word: where, when, who, why, what, how, how much. Put it first, and the verb comes straight after it. No "do", no "does".</p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[16px]">
           <Chunk r="q">question word</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
           <Chunk r="v">verb</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
           <Chunk r="x">the rest</Chunk>
         </div>
-        <p className="mt-3 text-[15px] text-muted-foreground"><b className="text-foreground">Dove</b> abita <b className="text-foreground">Marco</b>? · Where does Marco live? Your voice falls at the end here, because the question word already does the asking.</p>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Eight words cover almost every question you'll ask. Each has one small detail worth knowing.</p>
+        
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Learn the words below and you can ask for directions, prices, times and reasons anywhere in Italy. Each one has a small detail worth remembering.</p>
       </section>
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {QWORDS.map((w) => (
