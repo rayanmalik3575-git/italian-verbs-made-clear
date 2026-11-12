@@ -1,3 +1,4 @@
+import { Mic, Pencil } from "lucide-react";
 import { TuneToggle } from "./TuneToggle";
 import { RebuildCompare } from "./RebuildCompare";
 import { STEP1, STEP2, audioPaths, type Sentence } from "@/content/questions-lesson";
@@ -42,12 +43,20 @@ export function StepVoice() {
   const l = STEP1.long;
   return (
     <div>
-      <section>
-        <h2 className="text-2xl font-bold text-foreground sm:text-[28px] sm:leading-tight">What a question is, and how Italian asks one</h2>
-        <p className="mt-3 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">A question is simply a sentence that waits for an answer. Some questions want a <b>yes or no</b> (<i>Parli inglese?</i>), others want a piece of information and start with a word like <i>dove</i> or <i>quando</i>. This first step is about the yes/no kind.</p>
-        <p className="mt-3 max-w-[65ch] text-[17px] leading-[1.6] text-foreground">Here is the good news: in Italian you don't change the sentence at all. You take the statement, keep every word where it is, and let your voice <b className="text-voice-rise">go up at the end</b>. When you write, the <b>?</b> does that same job.</p>
+      <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
+        <div className="flex items-center gap-3">
+          <span className="grid h-11 w-11 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">1</span>
+          <span className="text-[15px] font-medium text-muted-foreground">Point 1 · Yes/no questions</span>
+        </div>
+        <h2 className="mt-5 max-w-[22ch] text-2xl font-bold leading-tight text-foreground sm:text-[30px]">Yes/no questions: the statement, with a lifted voice</h2>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">This is the first and most common kind of question in Italian: a question that expects <i>sì</i> or <i>no</i>. You don't add a helper word and you don't rearrange anything. You take the statement exactly as it is and change one thing.</p>
+        <ul className="mt-5 space-y-2 text-left text-[17px] leading-[1.6] text-foreground">
+          <li className="flex gap-2"><Mic className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Speaking:</b> your voice lifts at the end. That change of tone is how the listener knows you're asking.</span></li>
+          <li className="flex gap-2"><Pencil className="mt-1 h-5 w-5 shrink-0 text-voice-rise" aria-hidden /><span><b>Writing:</b> you put a question mark at the end.</span></li>
+        </ul>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Everything else stays the same: same words, same order, same verb. Italians ask questions this way all day, at the bar, on the phone and with friends.</p>
       </section>
-      <Scene title={STEP1.pairsTitle} line="Listen to each pair. The words are identical; only the ending of your voice changes. A statement settles down, a question stays open and lifts, because you are waiting for the other person to answer.">
+      <Scene title="Listen to three pairs" line="The words are identical; only the ending of your voice changes. A statement settles down, a question stays open and lifts, because you are waiting for the other person to answer.">
         <Panel className="p-4 sm:p-6">
           <div className="mb-1 hidden grid-cols-2 gap-6 text-[14px] font-semibold uppercase tracking-wide sm:grid">
             <span className="text-voice-fall">Statement · voice settles</span><span className="text-voice-rise">Question · voice lifts</span>
@@ -75,8 +84,53 @@ export function StepVoice() {
         </Panel>
         <p className="mt-4 max-w-[65ch] text-[15px] text-muted-foreground">When texting, always keep the <b className="text-foreground">?</b>, because without it the reader sees a statement. {STEP1.regionNote}</p>
       </Scene>
+      <SayWriteAnswer />
       <section className="mt-14"><NoDo /></section>
     </div>
+  );
+}
+
+const SWA: [string, string, string][] = [
+  ["Say it", "Statement + a voice that lifts at the end", "Hai fame ↗"],
+  ["Write it", "Statement + ?", "Hai fame?"],
+  ["Answer it", "Say sì or no, or repeat the verb", "Sì, ho fame. · No, non ho fame. · Un po'."],
+];
+const REPLIES: [string, string][] = [
+  ["Certo!", "Sure, of course"], ["Dipende.", "It depends"], ["Un po'.", "A little"],
+  ["Magari!", "I wish!"], ["Per niente.", "Not at all"], ["Boh.", "No idea"],
+];
+const TIPS: [string, string][] = [
+  ["Leave out \"you\".", "Vieni? and Hai fame? are complete questions; the ending already says who. Tu vieni? stresses YOU, as in \"are YOU coming?\"."],
+  ["Strangers and formal situations.", "Same tune, formal verb: Parla inglese? instead of Parli inglese?"],
+  ["Don't answer with a bare sì.", "Natives usually repeat the verb: Hai fame? → Sì, ho fame. It sounds warmer and confirms you understood."],
+  ["Soften with the end words.", "Add no? or vero? to check something you think is true: Sei italiano, vero? (You're Italian, right?)"],
+  ["Regional melody.", "The lift is the standard pattern. Some regions (for example Naples) use a different melody. Copy the people around you."],
+];
+
+function SayWriteAnswer() {
+  return (
+    <section className="mt-14">
+      <h3 className="text-2xl font-bold text-foreground">Say it, write it, answer it</h3>
+      <Panel className="mt-5 divide-y p-0">
+        {SWA.map(([k, rule, ex]) => (
+          <div key={k} className="grid gap-1 px-5 py-4 sm:grid-cols-[140px_1fr] sm:gap-4">
+            <div className="font-bold text-foreground">{k}</div>
+            <div><div className="text-foreground">{rule}</div><div className="text-[15px] text-muted-foreground">{ex}</div></div>
+          </div>
+        ))}
+      </Panel>
+      <div className="mt-5 rounded-2xl bg-primary/10 px-5 py-4 text-lg font-semibold text-primary">Yes/no question = the statement + a lifted voice (or a ?)</div>
+      <H>Answers natives actually use</H>
+      <div className="grid gap-2 sm:grid-cols-3">
+        {REPLIES.map(([it, en]) => (
+          <div key={it} className="rounded-xl border bg-card px-4 py-3"><div className="font-bold text-foreground">{it}</div><div className="text-[14px] text-muted-foreground">{en}</div></div>
+        ))}
+      </div>
+      <H>What every learner should know</H>
+      <ul className="space-y-3">
+        {TIPS.map(([b, txt]) => <li key={b} className="max-w-[70ch] text-[16px] leading-[1.6] text-foreground"><b>{b}</b> {txt}</li>)}
+      </ul>
+    </section>
   );
 }
 
