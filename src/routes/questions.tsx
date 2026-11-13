@@ -184,12 +184,12 @@ function StepWords() {
     <div>
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">2</span>
+          <span aria-hidden className="shrink-0 bg-[linear-gradient(90deg,#009246_0%,#009246_33.3%,#E2E8F0_33.3%,#E2E8F0_66.6%,#CE2B37_66.6%,#CE2B37_100%)] bg-clip-text text-[44px] font-extrabold leading-none text-transparent sm:text-[52px]" style={{WebkitTextStroke:"1px rgba(23,50,77,0.15)"}}>2</span>
           The question words
         </h2>
         <p className="mt-2 text-[16px] font-medium text-foreground">The words that open every conversation</p>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, start with a question word. Here is the secret that makes Italian questions so easy: <b>the question word and the verb are glued together.</b> There is no <i>"do"</i> or <i>"does"</i>, and if there is a person or thing in the question, push them to the very end.</p>
-        <div className="mt-6 w-full max-w-[620px] rounded-2xl border border-border bg-card px-4 py-5 text-left sm:px-6">
+        <p className="mt-5 max-w-[58ch] text-[17px] leading-[1.75] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, start with a question word. Here is the secret that makes Italian questions so easy: <b>the question word and the verb are glued together.</b> There is no <i>"do"</i> or <i>"does"</i>, and if there is a person or thing in the question, push them to the very end.</p>
+        <div className="mt-8 w-full max-w-[640px] rounded-2xl border border-border bg-card px-4 py-6 text-center shadow-sm sm:px-7">
           <div className="text-[14px] font-bold uppercase tracking-wide text-primary">How Italian does it (glued together)</div>
           <div className="mt-3 flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:justify-center sm:gap-3">
             {([["q","question word","Quando","(When)"],["v","verb","parte","(leaves)"],["x","who / what / the rest","il treno?","(the train?)"]] as const).map(([r,label,it,en],i)=>(
