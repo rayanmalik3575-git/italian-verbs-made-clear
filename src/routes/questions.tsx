@@ -251,26 +251,6 @@ function StepWords() {
         ))}
       </div>
       <SayIt />
-      <H>Three details that make you sound Italian</H>
-      <div className="grid gap-4 md:grid-cols-3">
-        <Panel className="p-5">
-          <div className="text-[14px] font-semibold uppercase tracking-wide text-primary">Cosa or che?</div>
-          <p className="mt-2 text-[16px] leading-relaxed text-foreground">Before a verb, both are fine: <em>Cosa bevi?</em> = <em>Che bevi?</em> Before a noun, only <b>che</b>: <em>Che vino bevi?</em></p>
-        </Panel>
-        <Panel className="p-5">
-          <div className="text-[14px] font-semibold uppercase tracking-wide text-primary">Qual è, not cosa è</div>
-          <p className="mt-2 text-[16px] leading-relaxed text-foreground">For name, number or address, Italian picks one from many: <em>Qual è il tuo numero?</em> Written without an apostrophe.</p>
-        </Panel>
-        <Panel className="p-5">
-          <div className="text-[14px] font-semibold uppercase tracking-wide text-primary">Perché non…?</div>
-          <p className="mt-2 text-[16px] leading-relaxed text-foreground">Turns a question into an invitation, like "why don't we…?": <em>Perché non prendiamo un gelato?</em></p>
-        </Panel>
-      </div>
-      <Panel className="mt-6 p-5 sm:p-6">
-        <Line it="Che vino bevi?" en="What wine are you drinking?" />
-        <Line it="Qual è il tuo nome?" en="What's your name?" />
-        <Line it="Perché non vieni anche tu?" en="Why don't you come too?" />
-      </Panel>
     </div>
   );
 }
