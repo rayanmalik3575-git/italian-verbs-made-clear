@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTriangle, Zap, Pin, TrendingUp } from "lucide-react";
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
 import { StepVoice } from "@/components/lesson/QuestionSteps";
+import { SayIt } from "@/components/lesson/SayIt";
 import { recordStep, useStepProgress } from "@/lib/progress";
 import { QWORDS, ORDER_TASKS, PICK_TASKS, isAcceptedQuestion, isCorrectPick, type OrderTask } from "@/data/questions";
 
@@ -249,6 +250,7 @@ function StepWords() {
           </Panel>
         ))}
       </div>
+      <SayIt />
       <H>Three details that make you sound Italian</H>
       <div className="grid gap-4 md:grid-cols-3">
         <Panel className="p-5">
