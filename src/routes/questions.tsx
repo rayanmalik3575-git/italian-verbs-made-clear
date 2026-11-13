@@ -187,17 +187,10 @@ function StepWords() {
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">2</span>
           The question words
         </h2>
-        <p className="mt-2 text-[16px] font-medium text-muted-foreground">The words that open every conversation</p>
+        <p className="mt-2 text-[16px] font-medium text-foreground">The words that open every conversation</p>
         <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, start with a question word. Here is the secret that makes Italian questions so easy: <b>the question word and the verb are glued together.</b> There is no <i>"do"</i> or <i>"does"</i>, and if there is a person or thing in the question, push them to the very end.</p>
         <div className="mt-6 w-full max-w-[620px] rounded-2xl border border-border bg-card px-4 py-5 text-left sm:px-6">
-          <div className="text-[14px] font-bold uppercase tracking-wide text-muted-foreground">How English does it</div>
-          <div className="mt-2 flex flex-wrap items-start gap-x-3 gap-y-2 text-[15px] text-muted-foreground">
-            <span className="pt-0.5">When</span>
-            <span className="flex flex-col items-center"><span className="text-destructive/80 line-through">does</span><span className="text-[14px] italic">disappears</span></span>
-            <span className="flex flex-col items-center"><span>the train</span><span className="text-[14px] italic">moves to the end →</span></span>
-            <span className="pt-0.5">leave?</span>
-          </div>
-          <div className="mt-5 border-t border-border pt-4 text-[14px] font-bold uppercase tracking-wide text-primary">How Italian does it (glued together)</div>
+          <div className="text-[14px] font-bold uppercase tracking-wide text-primary">How Italian does it (glued together)</div>
           <div className="mt-3 flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:justify-center sm:gap-3">
             {([["q","question word","Quando","(When)"],["v","verb","parte","(leaves)"],["x","who / what / the rest","il treno?","(the train?)"]] as const).map(([r,label,it,en],i)=>(
               <div key={label} className="flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:gap-3">
@@ -205,7 +198,7 @@ function StepWords() {
                 <div className="flex flex-col items-center text-center">
                   <Chunk r={r}>{label}</Chunk>
                   <span className="mt-2 text-[18px] font-bold text-foreground">{it}</span>
-                  <span className="text-[14px] text-muted-foreground">{en}</span>
+                  <span className="text-[14px] text-foreground">{en}</span>
                 </div>
               </div>
             ))}
@@ -216,7 +209,7 @@ function StepWords() {
           </div>
         </div>
         
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Learn the words below and you can ask for directions, prices, times and reasons anywhere in Italy. Each one has a small detail worth remembering.</p>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">Learn the words below and you can ask for directions, prices, times and reasons anywhere in Italy. Each one has a small detail worth remembering.</p>
       </section>
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {QWORDS.map((w) => (
@@ -225,7 +218,7 @@ function StepWords() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-2xl font-bold capitalize text-foreground">{w.it}</span>
                 <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[14px] font-semibold text-primary">{w.en}</span>
-                <span className="rounded-full bg-muted px-2.5 py-0.5 text-[14px] font-medium text-muted-foreground">{w.say}</span>
+                <span className="rounded-full bg-muted px-2.5 py-0.5 text-[14px] font-medium text-foreground">{w.say}</span>
               </div>
               <Listen text={w.it.split(" · ")[0]!} />
             </div>
@@ -236,7 +229,7 @@ function StepWords() {
             <section className="rounded-xl border border-primary/30 bg-primary/5 px-3.5 py-3">
               <div className="mb-1 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-primary"><Zap className="h-4 w-4" />Daily survival phrase</div>
               <div className="flex items-center gap-2">
-                <div className="flex-1"><div className="text-[16px] font-bold text-foreground">{w.ex}</div><div className="text-[14px] text-muted-foreground">{w.exEn}</div></div>
+                <div className="flex-1"><div className="text-[16px] font-bold text-foreground">{w.ex}</div><div className="text-[14px] text-foreground">{w.exEn}</div></div>
                 <Listen text={w.ex} />
               </div>
             </section>
