@@ -203,9 +203,14 @@ function StepWords() {
               </div>
             ))}
           </div>
-          <div className="mt-5 flex items-start gap-2 rounded-xl bg-muted px-3.5 py-3 text-[15px] leading-relaxed text-foreground">
-            <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <span><b>Golden rule:</b> Nothing can stand between the question word and the verb. Say <b>Quando parte Marco?</b> — never <i>Quando Marco parte?</i></span>
+          <div className="mt-5 flex flex-col gap-2.5 border-t border-border pt-4">
+            {([["Dove","lavora","tuo padre?","Where does your father work?"],["Quando","arriva","l'autobus?","When does the bus arrive?"],["Cosa","mangiano","i bambini?","What are the children eating?"]] as const).map(([q,v,x,en])=>(
+              <div key={q} className="flex flex-wrap items-center justify-center gap-2">
+                <Chunk r="q">{q}</Chunk><Chunk r="v">{v}</Chunk><Chunk r="s">{x}</Chunk>
+                <span className="text-[15px] text-foreground">{en}</span>
+                <Listen text={`${q} ${v} ${x}`} />
+              </div>
+            ))}
           </div>
         </div>
         
