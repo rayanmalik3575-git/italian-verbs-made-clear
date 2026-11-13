@@ -83,7 +83,7 @@ export function StoryMode() {
   const story = STORIES[s]!;
   const done = i >= story.lines.length;
   const reset = (n: number) => { setS(n); setI(0); setScore(0); };
-  const full = story.lines.map((l) => l.answers[0].replace(/([^?])$/, "$1.")).join(" ");
+  const full = story.lines.map((l) => l.answers[0]!.replace(/([^?])$/, "$1.")).join(" ");
   return (
     <Panel>
       <div className="flex flex-wrap gap-2">
