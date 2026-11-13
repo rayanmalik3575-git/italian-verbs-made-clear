@@ -5,6 +5,7 @@ import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verb
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
 import { grade, type Grade } from "@/lib/grading";
 import { contextFor, fill } from "@/data/verb-sentences";
+import { blocksOf, builderFor, endMark } from "@/data/verb-builder";
 
 const ENDING_CLUE = [
   "Ends in -o (or -go/-sco) → it's me, I.",
@@ -256,7 +257,7 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
   const modes = [
     { id: "drill" as const, n: 1, title: "Verb forms", sub: "Lock in the six endings" },
     { id: "reflex" as const, n: 2, title: "Reply reflex", sub: "Hear a question, answer" },
-    { id: "sentence" as const, n: 3, title: "Real sentences", sub: "Use it like Italians do" },
+    { id: "sentence" as const, n: 3, title: "Build sentences", sub: "Say a full thought in Italian" },
   ];
   const next: Record<K, K | undefined> = { drill: "reflex", reflex: "sentence", sentence: undefined };
   const go = next[kind] ? () => setKind(next[kind]!) : undefined;
@@ -272,7 +273,8 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
         ))}
       </div>
       {kind === "reflex" && <Reflex key={verb.infinitive} verb={verb} onNext={go} />}
-      {(kind === "drill" || kind === "sentence") && <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={go} />}
+      {kind === "drill" && <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={go} />}
+      {kind === "sentence" && <Builder key={verb.infinitive} verb={verb} />}
     </div>
   );
 }
@@ -540,3 +542,91 @@ function Feedback({ result, answer, expected, meaning }: { result: Grade; answer
   );
 }
 
+
+function shuffleBlocks(a: string[]): string[] {
+  const r = [...a];
+  for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j]!, r[i]!]; }
+  if (r.length > 1 && r.every((b, k) => b === a[k])) r.push(r.shift()!);
+  return r;
+}
+
+function Builder({ verb }: { verb: Verb }) {
+  const items = useMemo(() => builderFor(verb), [verb]);
+  const [step, setStep] = useState(0);
+  const [score, setScore] = useState(0);
+  const [picked, setPicked] = useState<number[]>([]);
+  const [result, setResult] = useState<null | boolean>(null);
+  const [hint, setHint] = useState(false);
+  const item = items[step];
+  const target = useMemo(() => (item ? blocksOf(item.it) : []), [item]);
+  const pool = useMemo(() => shuffleBlocks(target), [target]);
+
+  if (!item) {
+    return (
+      <div className="mt-8 rounded-[18px] border bg-gradient-feature p-6 text-center sm:p-10">
+        <p className="text-sm font-semibold text-muted-foreground">Build sentences · {verb.infinitive}</p>
+        <p className="mt-1 text-5xl font-bold">{score}<span className="text-muted-foreground">/{items.length}</span></p>
+        <p className="mt-2 text-muted-foreground">{score === items.length ? "Every sentence in native order. Now say each one out loud." : "Go again — aim to build each one without the hint."}</p>
+        <button onClick={() => { setStep(0); setScore(0); setPicked([]); setResult(null); setHint(false); }} className={`${btn.primary} mt-6`}><RotateCcw className="h-4 w-4" /> Again</button>
+      </div>
+    );
+  }
+  const mark = endMark(item.it);
+  const attempt = picked.map((k) => pool[k]!);
+  const form = verb.forms[item.idx] ?? "";
+  const check = () => {
+    const ok = attempt.join(" ").toLowerCase() === target.join(" ").toLowerCase();
+    setResult(ok); if (ok) setScore((s) => s + 1);
+    speak(item.it);
+  };
+  const next = () => { setStep(step + 1); setPicked([]); setResult(null); setHint(false); };
+
+  return (
+    <div className="mt-5 rounded-[20px] border bg-card p-5 sm:p-7">
+      <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Sentence {step + 1} of {items.length}</span><span>Score {score}</span></div>
+      <div className="mt-2"><ProgressBar value={(step / items.length) * 100} label="Builder progress" /></div>
+
+      <p className="mt-7 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Say this in Italian</p>
+      <p className="mt-1 text-2xl font-bold leading-snug text-foreground sm:text-3xl">“{item.en}”</p>
+
+      <div className="mt-6 flex min-h-16 flex-wrap items-center gap-2 rounded-2xl border border-dashed p-3">
+        {attempt.length === 0 && <span className="text-sm text-muted-foreground">Tap the pieces in Italian order</span>}
+        {picked.map((k) => (
+          <button key={k} type="button" disabled={result !== null} onClick={() => setPicked(picked.filter((x) => x !== k))}
+            className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-lg font-semibold text-primary">{pool[k]}</button>
+        ))}
+        {attempt.length > 0 && <span className="text-lg font-bold text-primary">{mark}</span>}
+      </div>
+      {result === null && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {pool.map((b, k) => !picked.includes(k) && (
+            <button key={k} type="button" onClick={() => setPicked([...picked, k])} className="rounded-xl border bg-card px-3 py-2 text-lg font-semibold hover:border-primary">{b}</button>
+          ))}
+        </div>
+      )}
+
+      {hint && result === null && <p className="mt-4 rounded-xl bg-muted px-4 py-2.5 text-sm text-foreground">The verb you need is <span className="font-bold">{form}</span> ({PRONOUNS[item.idx]!.en}).</p>}
+
+      {result !== null && (
+        <div className={`mt-5 rounded-2xl border p-4 ${result ? "border-success/30 bg-tile-green" : "border-destructive/30 bg-tile-pink"}`}>
+          <div className="flex items-center gap-2 font-semibold text-foreground">
+            {result ? <Check className="h-5 w-5 text-success" /> : <X className="h-5 w-5 text-destructive" />}
+            <span>{result ? "Exactly how an Italian says it." : "Native order:"}</span>
+          </div>
+          <p className="mt-2 flex items-center gap-2 text-xl font-bold text-foreground">{item.it}
+            <button type="button" onClick={() => speak(item.it)} aria-label="Hear it again" className="grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-foreground"><Volume2 className="h-4 w-4" /></button>
+          </p>
+          {item.tip && <p className="mt-2 text-[15px] text-foreground">{item.tip}</p>}
+        </div>
+      )}
+
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        {result === null ? <>
+          <button type="button" className={btn.primary} disabled={picked.length !== pool.length} onClick={check}>Check</button>
+          <button type="button" className={btn.outline} onClick={() => setPicked([])}><RotateCcw className="h-4 w-4" /> Clear</button>
+          {!hint && <button type="button" onClick={() => setHint(true)} className="text-sm font-semibold text-accent-foreground underline">Show a hint</button>}
+        </> : <button type="button" className={btn.primary} onClick={next}>{step === items.length - 1 ? "See result" : "Next sentence"} <ArrowRight className="h-4 w-4" /></button>}
+      </div>
+    </div>
+  );
+}
