@@ -238,16 +238,14 @@ function StepWords() {
                 <Listen text={w.ex} />
               </div>
             </section>
-            <section className="rounded-xl bg-muted/50 px-3.5 py-3">
-              <div className="mb-1 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-foreground"><Pin className="h-4 w-4" />The rule</div>
-              <p className="text-[15px] leading-relaxed text-foreground">{w.rule}</p>
+            <section className={`mt-auto rounded-xl border px-3.5 py-3 ${w.power.kind === "trap" ? "border-destructive/25 bg-destructive/5" : "border-border bg-muted/50"}`}>
+              <div className={`mb-1.5 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide ${w.power.kind === "trap" ? "text-destructive" : "text-foreground"}`}>
+                {w.power.kind === "trap" ? <AlertTriangle className="h-4 w-4" /> : <Pin className="h-4 w-4" />}{w.power.title}
+              </div>
+              <ul className="space-y-1">
+                {w.power.lines.map((l) => <li key={l} className="text-[15px] leading-relaxed text-foreground">{l}</li>)}
+              </ul>
             </section>
-            {w.trap && (
-              <section className="rounded-xl border border-destructive/25 bg-destructive/5 px-3.5 py-3">
-                <div className="mb-1 flex items-center gap-1.5 text-[14px] font-bold uppercase tracking-wide text-destructive"><AlertTriangle className="h-4 w-4" />Watch out</div>
-                <p className="text-[15px] leading-relaxed text-foreground">{w.trap}</p>
-              </section>
-            )}
           </Panel>
         ))}
       </div>
