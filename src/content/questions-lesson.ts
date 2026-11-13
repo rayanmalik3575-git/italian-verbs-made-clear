@@ -42,7 +42,7 @@ export const STEP1 = {
       { en: ["You", "speak", "English"], enQ: ["Do", "you", "speak", "English"], change: "added", changed: ["Do"], it: s("parli-inglese-q", "Parli inglese?", "Do you speak English?", { ...rec, wordGloss: ["Parli", "inglese"] }) },
       { en: ["You", "are", "tired"], enQ: ["Are", "you", "tired"], change: "moved", changed: ["Are", "you"], it: s("sei-stanco-q", "Sei stanco?", "Are you tired?", { ...rec, wordGloss: ["Sei", "stanco"] }) },
     ] as RebuildRow[],
-    note: "Word order can change too. Step 3 covers that.",
+    note: "Word order can change too. Step 2 covers that.",
   },
   pairsTitle: "The tune",
   pairsLine: "Statement: your voice lands at the end. Question: your voice lifts at the end, like you're waiting for an answer.",

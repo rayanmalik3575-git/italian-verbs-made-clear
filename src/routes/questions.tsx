@@ -79,7 +79,7 @@ function Chunk({ r, children }: { r: keyof typeof ROLE; children: React.ReactNod
   return <span className={`inline-flex items-center rounded-lg border px-2.5 py-1 font-semibold ${ROLE[r]}`}>{children}</span>;
 }
 
-const TABS = ["Make a question", "The question words", "The one word order", "Practise"];
+const TABS = ["Make a question", "The question words", "Practise"];
 
 function QuestionsPage() {
   const [step, setStep] = useState(0);
@@ -119,11 +119,10 @@ function QuestionsPage() {
           className="flex-1 px-5 py-8 sm:px-8">
           {step === 0 && <StepVoice />}
           {step === 1 && <StepWords />}
-          {step === 2 && <StepOrder />}
-          {step === 3 && <StepPractice />}
+          {step === 2 && <StepPractice />}
           <div className="mt-12 flex items-center justify-between gap-3">
             {step > 0 ? <button type="button" className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-[15px] font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => go(step - 1)}><ArrowLeft className="h-4 w-4" /> Back</button> : <span />}
-            {step < 3 && <button type="button" className="inline-flex min-h-12 max-w-full items-center gap-2 rounded-full bg-primary px-6 text-[16px] font-semibold text-primary-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" onClick={() => go(step + 1)}><span className="truncate">Next: {TABS[step + 1]}</span> <ArrowRight className="h-4 w-4 shrink-0" /></button>}
+            {step < TABS.length - 1 && <button type="button" className="inline-flex min-h-12 max-w-full items-center gap-2 rounded-full bg-primary px-6 text-[16px] font-semibold text-primary-foreground hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" onClick={() => go(step + 1)}><span className="truncate">Next: {TABS[step + 1]}</span> <ArrowRight className="h-4 w-4 shrink-0" /></button>}
           </div>
         </motion.div>
       </section>
@@ -184,7 +183,7 @@ function StepWords() {
     <div>
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
-          <span aria-hidden className="shrink-0 bg-[linear-gradient(90deg,#009246_0%,#009246_33.3%,#E2E8F0_33.3%,#E2E8F0_66.6%,#CE2B37_66.6%,#CE2B37_100%)] bg-clip-text text-[44px] font-extrabold leading-none text-transparent sm:text-[52px]" style={{WebkitTextStroke:"1px rgba(23,50,77,0.15)"}}>2</span>
+          <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none text-white sm:text-[52px]" style={{WebkitTextStroke:"1.5px #17324D"}}>2</span>
           The question words
         </h2>
         <p className="mt-2 text-[16px] font-medium text-foreground">The words that open every conversation</p>
@@ -279,7 +278,13 @@ function StepPractice() {
   const [part, setPart] = useState<"build" | "pick">("build");
   return (
     <div>
-      <Lead>Two short drills. First put the blocks in the Italian order, then choose the right question word.</Lead>
+      <section className="mx-auto mb-8 flex max-w-[720px] flex-col items-center text-center">
+        <h2 className="flex items-center gap-3 text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
+          <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none text-[#CE2B37] sm:text-[52px]">3</span>
+          Practise
+        </h2>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">Two short drills. First put the blocks in the Italian order, then choose the right question word.</p>
+      </section>
       <div className="mb-6 grid gap-2 sm:grid-cols-2">
         {([["build", "1 · Build the question"], ["pick", "2 · Choose the word"]] as const).map(([k, l]) => (
           <button key={k} onClick={() => setPart(k)}
