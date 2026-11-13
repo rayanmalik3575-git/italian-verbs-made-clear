@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Check, RotateCcw, Volume2, X, ArrowRight, Layers } from "lucide-react";
 import { PageHeader, Panel, ProgressBar, Chip, btn } from "@/components/app-shell";
+import { TranslateMode, StoryMode, ReadingMode } from "@/components/review/ReviewModes";
 import { buildSession, isCorrect, SKILL_LABEL, type Item, type Skill } from "@/content/mixed-practice";
 
 export const Route = createFileRoute("/review")({
@@ -32,7 +33,23 @@ function speak(text: string) {
 const fullSentence = (it: Item) => (it.kind === "choice" && it.prompt.includes("___") ? it.prompt.replace("___", it.answer) : it.answer);
 const SKILLS: (Skill | "all")[] = ["all", "articles", "plurals", "negatives", "questions", "sentences"];
 
+const MODES = [["drills", "Quick drills"], ["translate", "Translate"], ["story", "Paragraph"], ["reading", "Reading"]] as const;
+type Mode = (typeof MODES)[number][0];
+
 function ReviewPage() {
+  const [mode, setMode] = useState<Mode>("drills");
+  return (
+    <div className="mx-auto max-w-3xl space-y-5">
+      <PageHeader title="All-in-one review" description="Every exercise mixes rules you've already learned. Answer without translating in your head — think in Italian." />
+      <div role="tablist" className="grid grid-cols-2 gap-1 rounded-[16px] border bg-card p-1 sm:grid-cols-4">
+        {MODES.map(([m, l]) => <button key={m} role="tab" aria-selected={mode === m} onClick={() => setMode(m)} className={`min-h-11 rounded-[12px] text-[15px] font-semibold ${mode === m ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}>{l}</button>)}
+      </div>
+      {mode === "drills" ? <Drills /> : mode === "translate" ? <TranslateMode /> : mode === "story" ? <StoryMode /> : <ReadingMode />}
+    </div>
+  );
+}
+
+function Drills() {
   const [skill, setSkill] = useState<Skill | "all">("all");
   const [seed, setSeed] = useState(0);
   const [session, setSession] = useState<Item[]>([]);
@@ -58,8 +75,7 @@ function ReviewPage() {
   const builtText = built.map((k) => item?.kind === "build" ? item.tiles[k] : "").join(" ");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
-      <PageHeader title="All-in-one review" description="Every question mixes rules you've already learned. Answer without translating — think in Italian." />
+    <div className="space-y-5">
       <div className="flex flex-wrap gap-2">
         {SKILLS.map((s) => <Chip key={s} active={skill === s} onClick={() => setSkill(s)}>{s === "all" ? "Mixed" : SKILL_LABEL[s]}</Chip>)}
       </div>
