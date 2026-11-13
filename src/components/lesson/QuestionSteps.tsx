@@ -70,7 +70,7 @@ export function StepVoice() {
       </section>
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-bold text-primary-foreground">1</span>
+          <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none text-[#009246] sm:text-[52px]">1</span>
           How Italian asks a yes/no question
         </h2>
         <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the first rule of asking questions in Italian.</b> In English you add "do" or flip the words: <b>"you speak"</b> becomes <b>"do you speak?"</b>. Italian does neither. You say the statement exactly as it is, and change only one thing:</p>
