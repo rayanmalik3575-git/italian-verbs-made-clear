@@ -20,6 +20,7 @@ import { Route as PluralsRouteImport } from './routes/plurals'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as QuestionsRouteImport } from './routes/questions'
+import { Route as ReviewRouteImport } from './routes/review'
 import { Route as SentencesRouteImport } from './routes/sentences'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as VerbsRouteImport } from './routes/verbs'
@@ -79,6 +80,11 @@ const QuestionsRoute = QuestionsRouteImport.update({
   path: '/questions',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReviewRoute = ReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SentencesRoute = SentencesRouteImport.update({
   id: '/sentences',
   path: '/sentences',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/questions': typeof QuestionsRoute
+  '/review': typeof ReviewRoute
   '/sentences': typeof SentencesRoute
   '/settings': typeof SettingsRoute
   '/verbs': typeof VerbsRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/questions': typeof QuestionsRoute
+  '/review': typeof ReviewRoute
   '/sentences': typeof SentencesRoute
   '/settings': typeof SettingsRoute
   '/verbs': typeof VerbsRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/practice': typeof PracticeRoute
   '/progress': typeof ProgressRoute
   '/questions': typeof QuestionsRoute
+  '/review': typeof ReviewRoute
   '/sentences': typeof SentencesRoute
   '/settings': typeof SettingsRoute
   '/verbs': typeof VerbsRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/progress'
     | '/questions'
+    | '/review'
     | '/sentences'
     | '/settings'
     | '/verbs'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/progress'
     | '/questions'
+    | '/review'
     | '/sentences'
     | '/settings'
     | '/verbs'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/progress'
     | '/questions'
+    | '/review'
     | '/sentences'
     | '/settings'
     | '/verbs'
@@ -207,6 +219,7 @@ export interface RootRouteChildren {
   PracticeRoute: typeof PracticeRoute
   ProgressRoute: typeof ProgressRoute
   QuestionsRoute: typeof QuestionsRoute
+  ReviewRoute: typeof ReviewRoute
   SentencesRoute: typeof SentencesRoute
   SettingsRoute: typeof SettingsRoute
   VerbsRoute: typeof VerbsRoute
@@ -291,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuestionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/review': {
+      id: '/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sentences': {
       id: '/sentences'
       path: '/sentences'
@@ -327,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   PracticeRoute: PracticeRoute,
   ProgressRoute: ProgressRoute,
   QuestionsRoute: QuestionsRoute,
+  ReviewRoute: ReviewRoute,
   SentencesRoute: SentencesRoute,
   SettingsRoute: SettingsRoute,
   VerbsRoute: VerbsRoute,
