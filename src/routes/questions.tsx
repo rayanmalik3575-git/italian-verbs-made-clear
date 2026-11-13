@@ -255,8 +255,33 @@ function StepWords() {
   );
 }
 
+type Round = { kind: "order"; task: OrderTask } | { kind: "pick"; task: (typeof PICK_TASKS)[number] };
+
+function buildRounds(): Round[] {
+  const out: Round[] = [];
+  const n = Math.max(ORDER_TASKS.length, PICK_TASKS.length);
+  for (let k = 0; k < n; k++) {
+    if (PICK_TASKS[k]) out.push({ kind: "pick", task: PICK_TASKS[k]! });
+    if (ORDER_TASKS[k]) out.push({ kind: "order", task: ORDER_TASKS[k]! });
+  }
+  return out;
+}
+
 function StepPractice() {
-  const [part, setPart] = useState<"build" | "pick">("build");
+  const rounds = useMemo(buildRounds, []);
+  const [i, setI] = useState(0);
+  const [score, setScore] = useState(0);
+  const [answered, setAnswered] = useState(false);
+  const [missed, setMissed] = useState<string[]>([]);
+  const total = rounds.length;
+  const finished = i >= total;
+  const onAnswer = (ok: boolean, label: string) => {
+    setAnswered(true);
+    if (ok) setScore((s) => s + 1); else setMissed((m) => [...m, label]);
+  };
+  const next = () => { setI(i + 1); setAnswered(false); };
+  const restart = () => { setI(0); setScore(0); setAnswered(false); setMissed([]); };
+  const r = rounds[i];
   return (
     <div>
       <section className="mx-auto mb-8 flex max-w-[720px] flex-col items-center text-center">
@@ -264,15 +289,39 @@ function StepPractice() {
           <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none bg-[linear-gradient(135deg,#009246_0%,#009246_38%,#E2E8F0_38%,#E2E8F0_62%,#CE2B37_62%,#CE2B37_100%)] bg-clip-text text-transparent sm:text-[52px]" style={{WebkitTextStroke:"1px rgba(23,50,77,0.35)"}}>3</span>
           Practise
         </h2>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">Two short drills. First put the blocks in the Italian order, then choose the right question word.</p>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">One workout that mixes everything: choose the right question word, then build the question in Italian order. Every answer is spoken back to you.</p>
       </section>
-      <div className="mb-6 grid gap-2 sm:grid-cols-2">
-        {([["build", "1 · Build the question"], ["pick", "2 · Choose the word"]] as const).map(([k, l]) => (
-          <button key={k} onClick={() => setPart(k)}
-            className={`min-h-11 rounded-xl border px-4 text-sm font-semibold ${part === k ? "border-primary bg-primary/5 text-primary" : "bg-card text-muted-foreground"}`}>{l}</button>
-        ))}
-      </div>
-      {part === "build" ? <Builder onDone={() => setPart("pick")} /> : <Picker />}
+      {finished ? (
+        <Panel className="p-7 text-center">
+          <div className="text-3xl font-bold text-foreground">{score} / {total}</div>
+          <p className="mt-2 text-foreground">{score === total ? "Clean sweep. You ask questions the way Italians do." : "Good work. Go over these once more, then run it again:"}</p>
+          {missed.length > 0 && (
+            <ul className="mx-auto mt-4 max-w-md space-y-1 text-left text-[15px] text-foreground">
+              {missed.map((m, k) => <li key={k} className="flex gap-2"><X className="mt-1 h-4 w-4 shrink-0 text-destructive" />{m}</li>)}
+            </ul>
+          )}
+          <button className={`${btn.outline} mt-6`} onClick={restart}><RotateCcw className="h-4 w-4" /> Try again</button>
+        </Panel>
+      ) : (
+        <Panel className="p-5 sm:p-7">
+          <div className="mb-5 flex items-center gap-3 text-sm text-muted-foreground">
+            <span>{i + 1} / {total}</span>
+            <div className="flex-1"><ProgressBar label="Workout progress" value={((i + (answered ? 1 : 0)) / total) * 100} /></div>
+            <span>{score} correct</span>
+          </div>
+          <div className="mb-3 inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
+            {r!.kind === "pick" ? "Pick the question word" : "Word order"}
+          </div>
+          {r!.kind === "order"
+            ? <OrderRound key={i} t={r!.task} onAnswer={onAnswer} />
+            : <PickRound key={i} t={r!.task} onAnswer={onAnswer} />}
+          {answered && (
+            <button className={`${btn.primary} mt-6`} onClick={next}>
+              {i === total - 1 ? "See results" : "Next"} <ArrowRight className="h-4 w-4" />
+            </button>
+          )}
+        </Panel>
+      )}
     </div>
   );
 }
@@ -283,26 +332,18 @@ function shuffle<T>(a: T[], seed: number): T[] {
   return r;
 }
 
-function Builder({ onDone }: { onDone: () => void }) {
-  const [i, setI] = useState(0);
-  const [score, setScore] = useState(0);
-  const t: OrderTask = ORDER_TASKS[i]!;
-  const pool = useMemo(() => shuffle(t.blocks, i + 3), [t, i]);
+function OrderRound({ t, onAnswer }: { t: OrderTask; onAnswer: (ok: boolean, label: string) => void }) {
+  const pool = useMemo(() => shuffle(t.blocks, t.blocks.length + 3), [t]);
   const [picked, setPicked] = useState<number[]>([]);
   const [result, setResult] = useState<null | boolean>(null);
-  const done = i >= ORDER_TASKS.length - 1 && result !== null;
   const attempt = picked.map((k) => pool[k]!);
   const check = () => {
     const ok = isAcceptedQuestion(t, attempt);
-    setResult(ok); if (ok) setScore((s) => s + 1);
+    setResult(ok); onAnswer(ok, `${t.en} → ${t.accept[0]}?`);
     speak(t.accept[0]! + "?");
   };
-  const next = () => { setI(i + 1); setPicked([]); setResult(null); };
   return (
-    <Panel className="p-5 sm:p-7">
-      <div className="mb-5 flex items-center gap-3 text-sm text-muted-foreground">
-        <span>{i + 1} / {ORDER_TASKS.length}</span><div className="flex-1"><ProgressBar label="Lesson progress" value={((i + (result !== null ? 1 : 0)) / ORDER_TASKS.length) * 100} /></div><span>{score} correct</span>
-      </div>
+    <div>
       <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ask this in Italian</div>
       <div className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{t.en}</div>
       <div className="mt-6 flex min-h-14 flex-wrap items-center gap-2 rounded-2xl border border-dashed p-3">
@@ -318,60 +359,39 @@ function Builder({ onDone }: { onDone: () => void }) {
           <button key={k} onClick={() => setPicked([...picked, k])} className="rounded-xl border bg-card px-3 py-2 font-semibold hover:border-primary">{b}</button>
         ))}
       </div>
-      {result !== null && (
+      {result !== null ? (
         <div className={`mt-5 rounded-2xl border p-4 ${result ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
-          <div className="flex items-center gap-2 font-semibold">
+          <div className="flex items-center gap-2 font-semibold text-foreground">
             {result ? <Check className="h-5 w-5 text-success" /> : <X className="h-5 w-5 text-destructive" />}
-            {result ? "Exactly how an Italian asks it." : <>Italian order: <span className="text-foreground">{t.accept[0]}?</span></>}
+            {result ? "Exactly how an Italian asks it." : <>Italian order: {t.accept[0]}?</>}
             <span className="ml-auto"><Listen text={t.accept[0]! + "?"} /></span>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{t.why}</p>
+          <p className="mt-1 text-[15px] text-foreground">{t.why}</p>
+        </div>
+      ) : (
+        <div className="mt-6 flex flex-wrap gap-2">
+          <button className={btn.primary} disabled={picked.length !== pool.length} onClick={check}>Check</button>
+          <button className={btn.outline} onClick={() => setPicked([])}><RotateCcw className="h-4 w-4" /> Clear</button>
         </div>
       )}
-      <div className="mt-6 flex flex-wrap gap-2">
-        {result === null ? (
-          <>
-            <button className={btn.primary} disabled={picked.length !== pool.length} onClick={check}>Check</button>
-            <button className={btn.outline} onClick={() => setPicked([])}><RotateCcw className="h-4 w-4" /> Clear</button>
-          </>
-        ) : done ? (
-          <button className={btn.primary} onClick={onDone}>{score} / {ORDER_TASKS.length} · Next drill <ArrowRight className="h-4 w-4" /></button>
-        ) : (
-          <button className={btn.primary} onClick={next}>Next <ArrowRight className="h-4 w-4" /></button>
-        )}
-      </div>
-    </Panel>
+    </div>
   );
 }
 
-function Picker() {
-  const [i, setI] = useState(0);
-  const [score, setScore] = useState(0);
+function PickRound({ t, onAnswer }: { t: (typeof PICK_TASKS)[number]; onAnswer: (ok: boolean, label: string) => void }) {
   const [choice, setChoice] = useState<string | null>(null);
-  const finished = i >= PICK_TASKS.length;
-  if (finished) {
-    return (
-      <Panel className="p-7 text-center">
-        <div className="text-2xl font-bold">{score} / {PICK_TASKS.length}</div>
-        <p className="mt-2 text-muted-foreground">{score === PICK_TASKS.length ? "Clean sweep. You know which word carries which detail." : "Go back to step 4 for the words you missed, then try again."}</p>
-        <button className={`${btn.outline} mt-5`} onClick={() => { setI(0); setScore(0); setChoice(null); }}><RotateCcw className="h-4 w-4" /> Try again</button>
-      </Panel>
-    );
-  }
-  const t = PICK_TASKS[i]!;
-  const full = (choice ?? "___") + (t.after.startsWith(" è") && choice === "Dov'" ? t.after.slice(1) : t.after);
+  const tail = (w: string) => (w === "Dov'" ? t.after.slice(1) : t.after);
+  const full = choice ? choice + tail(choice) : "___" + t.after;
   const pick = (o: string) => {
     if (choice) return;
-    setChoice(o); if (isCorrectPick(t, o)) setScore((s) => s + 1);
-    speak(t.answer + (t.answer === "Dov'" ? t.after.slice(1) : t.after));
+    setChoice(o);
+    onAnswer(isCorrectPick(t, o), `${t.en} → ${t.answer}${tail(t.answer)}`);
+    speak(t.answer + tail(t.answer));
   };
   return (
-    <Panel className="p-5 sm:p-7">
-      <div className="mb-5 flex items-center gap-3 text-sm text-muted-foreground">
-        <span>{i + 1} / {PICK_TASKS.length}</span><div className="flex-1"><ProgressBar label="Lesson progress" value={((i + (choice ? 1 : 0)) / PICK_TASKS.length) * 100} /></div><span>{score} correct</span>
-      </div>
+    <div>
       <div className="text-2xl font-bold text-foreground sm:text-3xl">{full}</div>
-      <div className="mt-1 text-muted-foreground">{t.en}</div>
+      <div className="mt-1 text-foreground">{t.en}</div>
       <div className="mt-6 grid gap-2 sm:grid-cols-3">
         {t.options.map((o) => {
           const state = !choice ? "" : o === t.answer ? "border-success bg-success/10 text-success" : o === choice ? "border-destructive bg-destructive/10 text-destructive" : "opacity-50";
@@ -379,11 +399,11 @@ function Picker() {
         })}
       </div>
       {choice && (
-        <div className="mt-5 flex items-start gap-2 text-sm text-muted-foreground">
+        <div className="mt-5 flex items-start gap-2 text-[15px] text-foreground">
           <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span>{t.why}</span>
+          <span className="ml-auto"><Listen text={t.answer + tail(t.answer)} /></span>
         </div>
       )}
-      {choice && <button className={`${btn.primary} mt-6`} onClick={() => { setI(i + 1); setChoice(null); }}>Next <ArrowRight className="h-4 w-4" /></button>}
-    </Panel>
+    </div>
   );
 }
