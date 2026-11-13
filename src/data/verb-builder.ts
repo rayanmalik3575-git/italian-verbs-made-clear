@@ -93,7 +93,7 @@ export function blocksOf(it: string): string[] {
     if (!SMALL.has(w.toLowerCase().replace(/,$/, "")) || w.endsWith(",")) { out.push(buf); buf = ""; }
   }
   if (buf) out.push(buf);
-  return out;
+  return out.length < 2 && words.length > 1 ? words.map((w) => w.replace(/,$/, ",")) : out;
 }
 
 export function endMark(it: string) {
