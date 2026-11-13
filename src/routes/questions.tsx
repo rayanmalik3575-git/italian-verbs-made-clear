@@ -188,11 +188,32 @@ function StepWords() {
           The question words
         </h2>
         <p className="mt-2 text-[16px] font-medium text-muted-foreground">The words that open every conversation</p>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, you need a question word: where, when, who, why, what, how, how much. Put it first, and the verb comes straight after it. No "do", no "does".</p>
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-[16px]">
-          <Chunk r="q">question word</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
-          <Chunk r="v">verb</Chunk><ArrowRight className="h-4 w-4 text-muted-foreground" />
-          <Chunk r="x">the rest</Chunk>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground"><b>This is the second rule of asking questions in Italian.</b> When you want more than a yes or no, start with a question word. Here is the secret that makes Italian questions so easy: <b>the question word and the verb are glued together.</b> There is no <i>"do"</i> or <i>"does"</i>, and if there is a person or thing in the question, push them to the very end.</p>
+        <div className="mt-6 w-full max-w-[620px] rounded-2xl border border-border bg-card px-4 py-5 text-left sm:px-6">
+          <div className="text-[14px] font-bold uppercase tracking-wide text-muted-foreground">How English does it</div>
+          <div className="mt-2 flex flex-wrap items-start gap-x-3 gap-y-2 text-[15px] text-muted-foreground">
+            <span className="pt-0.5">When</span>
+            <span className="flex flex-col items-center"><span className="text-destructive/80 line-through">does</span><span className="text-[14px] italic">disappears</span></span>
+            <span className="flex flex-col items-center"><span>the train</span><span className="text-[14px] italic">moves to the end →</span></span>
+            <span className="pt-0.5">leave?</span>
+          </div>
+          <div className="mt-5 border-t border-border pt-4 text-[14px] font-bold uppercase tracking-wide text-primary">How Italian does it (glued together)</div>
+          <div className="mt-3 flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:justify-center sm:gap-3">
+            {([["q","question word","Quando","(When)"],["v","verb","parte","(leaves)"],["x","who / what / the rest","il treno?","(the train?)"]] as const).map(([r,label,it,en],i)=>(
+              <div key={label} className="flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:gap-3">
+                {i>0 && <ArrowRight className="h-4 w-4 rotate-90 text-muted-foreground sm:mt-2 sm:rotate-0" />}
+                <div className="flex flex-col items-center text-center">
+                  <Chunk r={r}>{label}</Chunk>
+                  <span className="mt-2 text-[18px] font-bold text-foreground">{it}</span>
+                  <span className="text-[14px] text-muted-foreground">{en}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-5 flex items-start gap-2 rounded-xl bg-muted px-3.5 py-3 text-[15px] leading-relaxed text-foreground">
+            <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <span><b>Golden rule:</b> Nothing can stand between the question word and the verb. Say <b>Quando parte Marco?</b> — never <i>Quando Marco parte?</i></span>
+          </div>
         </div>
         
         <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-muted-foreground">Learn the words below and you can ask for directions, prices, times and reasons anywhere in Italy. Each one has a small detail worth remembering.</p>
