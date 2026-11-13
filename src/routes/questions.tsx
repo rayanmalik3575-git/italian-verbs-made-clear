@@ -98,7 +98,8 @@ function QuestionsPage() {
           <ol className="relative flex items-center justify-between gap-0">
             {TABS.map((t, i) => {
               const active = step === i, done = isDone(i) && !active;
-              const cls = active ? "border-primary bg-primary text-primary-foreground" : done ? "border-success bg-success text-white" : "border-border bg-card text-muted-foreground hover:text-foreground";
+              const TAB_ON = ["border-[#009246] bg-[#009246] text-white","border-[#17324D] bg-white text-[#17324D]","border-[#CE2B37] bg-[#CE2B37] text-white"];
+              const cls = active ? TAB_ON[i] : done ? "border-success bg-success text-white" : "border-border bg-card text-muted-foreground hover:text-foreground";
               return (
                 <li key={t} className="flex items-center">
                   {i > 0 && <span aria-hidden className="h-px w-1.5 bg-border sm:w-3 lg:w-5" />}
@@ -183,7 +184,7 @@ function StepWords() {
     <div>
       <section className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex max-w-[26ch] items-center gap-3 text-left text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
-          <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none text-white sm:text-[52px]" style={{WebkitTextStroke:"1.5px #17324D"}}>2</span>
+          <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none bg-[linear-gradient(135deg,#009246_0%,#009246_38%,#E2E8F0_38%,#E2E8F0_62%,#CE2B37_62%,#CE2B37_100%)] bg-clip-text text-transparent sm:text-[52px]" style={{WebkitTextStroke:"1px rgba(23,50,77,0.35)"}}>2</span>
           The question words
         </h2>
         <p className="mt-2 text-[16px] font-medium text-foreground">The words that open every conversation</p>
@@ -280,7 +281,7 @@ function StepPractice() {
     <div>
       <section className="mx-auto mb-8 flex max-w-[720px] flex-col items-center text-center">
         <h2 className="flex items-center gap-3 text-2xl font-bold leading-tight text-foreground sm:text-[30px]">
-          <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none text-[#CE2B37] sm:text-[52px]">3</span>
+          <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none bg-[linear-gradient(135deg,#009246_0%,#009246_38%,#E2E8F0_38%,#E2E8F0_62%,#CE2B37_62%,#CE2B37_100%)] bg-clip-text text-transparent sm:text-[52px]" style={{WebkitTextStroke:"1px rgba(23,50,77,0.35)"}}>3</span>
           Practise
         </h2>
         <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">Two short drills. First put the blocks in the Italian order, then choose the right question word.</p>
