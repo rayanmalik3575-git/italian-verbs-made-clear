@@ -23,7 +23,7 @@ const Hear = ({ text }: { text: string }) => (
 function TranslateCard({ item, onDone, last }: { item: Translate; onDone: (ok: boolean) => void; last: boolean }) {
   const [text, setText] = useState("");
   const [result, setResult] = useState<null | boolean>(null);
-  const check = () => { const ok = matches(item, text); setResult(ok); speak(item.answers[0]); };
+  const check = () => { const ok = matches(item, text); setResult(ok); speak(item.answers[0]!); };
   return (
     <div>
       <p className="text-sm font-semibold text-muted-foreground">Say it in Italian</p>
@@ -42,7 +42,7 @@ function TranslateCard({ item, onDone, last }: { item: Translate; onDone: (ok: b
         <div className={`mt-4 rounded-[14px] border p-4 ${result ? "border-success/40 bg-tile-green/50" : "border-destructive/40 bg-destructive/5"}`}>
           <div className="flex items-center gap-2 font-bold">
             {result ? <Check className="h-5 w-5 text-success" /> : <X className="h-5 w-5 text-destructive" />}
-            <span>{item.answers[0]}</span><Hear text={item.answers[0]} />
+            <span>{item.answers[0]!}</span><Hear text={item.answers[0]!} />
           </div>
           {item.answers.length > 1 && <p className="mt-1 text-[15px]">Also right: {item.answers.slice(1).join(" · ")}</p>}
           <p className="mt-2 text-[16px] leading-relaxed">{item.why}</p>
@@ -73,14 +73,14 @@ export function TranslateMode() {
     <Panel>
       <div className="mb-5 flex justify-between text-sm text-muted-foreground"><span>English → Italian</span><span>{i + 1} / {items.length}</span></div>
       <ProgressBar value={(i / items.length) * 100} label="Progress" />
-      <div className="mt-6"><TranslateCard key={`${round}-${i}`} item={items[i]} last={i + 1 === items.length} onDone={(ok) => { if (ok) setScore((s) => s + 1); setI((x) => x + 1); }} /></div>
+      <div className="mt-6"><TranslateCard key={`${round}-${i}`} item={items[i]!} last={i + 1 === items.length} onDone={(ok) => { if (ok) setScore((s) => s + 1); setI((x) => x + 1); }} /></div>
     </Panel>
   );
 }
 
 export function StoryMode() {
   const [s, setS] = useState(0); const [i, setI] = useState(0); const [score, setScore] = useState(0);
-  const story = STORIES[s];
+  const story = STORIES[s]!;
   const done = i >= story.lines.length;
   const reset = (n: number) => { setS(n); setI(0); setScore(0); };
   const full = story.lines.map((l) => l.answers[0].replace(/([^?])$/, "$1.")).join(" ");
@@ -108,7 +108,7 @@ export function StoryMode() {
             <button className={`${btn.outline} mt-4`} onClick={() => speak(full)}><Volume2 className="h-4 w-4" /> Hear the whole story</button>
           </Result>
         ) : (
-          <TranslateCard key={`${s}-${i}`} item={story.lines[i]} last={i + 1 === story.lines.length} onDone={(ok) => { if (ok) setScore((x) => x + 1); setI((x) => x + 1); }} />
+          <TranslateCard key={`${s}-${i}`} item={story.lines[i]!} last={i + 1 === story.lines.length} onDone={(ok) => { if (ok) setScore((x) => x + 1); setI((x) => x + 1); }} />
         )}
       </div>
     </Panel>
@@ -117,7 +117,7 @@ export function StoryMode() {
 
 export function ReadingMode() {
   const [r, setR] = useState(0); const [picked, setPicked] = useState<Record<number, string>>({}); const [showEn, setShowEn] = useState(false);
-  const rd = READINGS[r];
+  const rd = READINGS[r]!;
   const answered = Object.keys(picked).length;
   const score = rd.questions.filter((q, n) => picked[n] === q.answer).length;
   const pick = (n: number) => { setR(n); setPicked({}); setShowEn(false); };
