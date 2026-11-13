@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTr
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
 import { StepVoice } from "@/components/lesson/QuestionSteps";
 import { SayIt } from "@/components/lesson/SayIt";
+import { Q_TRANSLATE, type QTranslate } from "@/content/questions-practice";
+import { matches } from "@/content/review-extras";
 import { recordStep, useStepProgress } from "@/lib/progress";
 import { QWORDS, ORDER_TASKS, PICK_TASKS, isAcceptedQuestion, isCorrectPick, type OrderTask } from "@/data/questions";
 
@@ -255,16 +257,58 @@ function StepWords() {
   );
 }
 
-type Round = { kind: "order"; task: OrderTask } | { kind: "pick"; task: (typeof PICK_TASKS)[number] };
+type Round =
+  | { kind: "order"; task: OrderTask }
+  | { kind: "pick"; task: (typeof PICK_TASKS)[number] }
+  | { kind: "write"; task: QTranslate };
 
 function buildRounds(): Round[] {
+  // Mostly writing; choice and word order mixed in as lighter rounds.
   const out: Round[] = [];
-  const n = Math.max(ORDER_TASKS.length, PICK_TASKS.length);
-  for (let k = 0; k < n; k++) {
-    if (PICK_TASKS[k]) out.push({ kind: "pick", task: PICK_TASKS[k]! });
-    if (ORDER_TASKS[k]) out.push({ kind: "order", task: ORDER_TASKS[k]! });
-  }
+  const picks = PICK_TASKS.slice(0, 5), orders = ORDER_TASKS.slice(0, 5);
+  Q_TRANSLATE.forEach((t, k) => {
+    out.push({ kind: "write", task: t });
+    if (k % 3 === 1 && picks[(k / 3) | 0]) out.push({ kind: "pick", task: picks[(k / 3) | 0]! });
+    if (k % 3 === 2 && orders[(k / 3) | 0]) out.push({ kind: "order", task: orders[(k / 3) | 0]! });
+  });
   return out;
+}
+
+const KEYS = ["à", "è", "é", "ì", "ò", "ù", "'", "?"];
+
+function WriteRound({ t, onAnswer }: { t: QTranslate; onAnswer: (ok: boolean, label: string) => void }) {
+  const [text, setText] = useState("");
+  const [result, setResult] = useState<null | boolean>(null);
+  const best = t.answers[0]!;
+  const check = () => {
+    const ok = matches(t, text);
+    setResult(ok); onAnswer(ok, `${t.english} → ${best}`); speak(best);
+  };
+  return (
+    <div>
+      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Write it in Italian</div>
+      <div className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{t.english}</div>
+      <input value={text} disabled={result !== null} onChange={(e) => setText(e.target.value)} aria-label="Your Italian"
+        onKeyDown={(e) => { if (e.key === "Enter" && result === null && text.trim()) check(); }}
+        placeholder="Scrivi in italiano…" autoFocus
+        className="mt-5 w-full rounded-2xl border bg-card px-4 py-3 text-[18px] text-foreground outline-none focus:border-primary" />
+      {result === null ? (
+        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+          {KEYS.map((a) => <button key={a} type="button" onClick={() => setText((x) => x + a)} className="h-10 min-w-10 rounded-lg border bg-card text-[16px] font-semibold text-foreground hover:bg-muted">{a}</button>)}
+          <button className={`${btn.primary} ml-auto`} disabled={!text.trim()} onClick={check}>Check</button>
+        </div>
+      ) : (
+        <div className={`mt-5 rounded-2xl border p-4 ${result ? "border-success/30 bg-success/5" : "border-destructive/30 bg-destructive/5"}`}>
+          <div className="flex items-center gap-2 font-semibold text-foreground">
+            {result ? <Check className="h-5 w-5 text-success" /> : <X className="h-5 w-5 text-destructive" />}
+            <span>{best}</span><span className="ml-auto"><Listen text={best} /></span>
+          </div>
+          {t.answers.length > 1 && <p className="mt-1 text-[15px] text-foreground">Also right: {t.answers.slice(1).join(" · ")}</p>}
+          <p className="mt-1 text-[15px] text-foreground">{t.why}</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function StepPractice() {
@@ -289,7 +333,7 @@ function StepPractice() {
           <span aria-hidden className="shrink-0 text-[44px] font-extrabold leading-none bg-[linear-gradient(135deg,#009246_0%,#009246_38%,#E2E8F0_38%,#E2E8F0_62%,#CE2B37_62%,#CE2B37_100%)] bg-clip-text text-transparent sm:text-[52px]" style={{WebkitTextStroke:"1px rgba(23,50,77,0.35)"}}>3</span>
           Practise
         </h2>
-        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">One workout that mixes everything: choose the right question word, then build the question in Italian order. Every answer is spoken back to you.</p>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-[1.6] text-foreground">Write real questions in Italian, mixing articles, plurals, negatives and verbs. A few quick choice and word-order rounds keep the traps fresh. Every answer is spoken back to you.</p>
       </section>
       {finished ? (
         <Panel className="p-7 text-center">
@@ -310,11 +354,11 @@ function StepPractice() {
             <span>{score} correct</span>
           </div>
           <div className="mb-3 inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
-            {r!.kind === "pick" ? "Pick the question word" : "Word order"}
+            {r!.kind === "pick" ? "Pick the question word" : r!.kind === "order" ? "Word order" : `Write · ${r!.task.skill}`}
           </div>
-          {r!.kind === "order"
-            ? <OrderRound key={i} t={r!.task} onAnswer={onAnswer} />
-            : <PickRound key={i} t={r!.task} onAnswer={onAnswer} />}
+          {r!.kind === "order" ? <OrderRound key={i} t={r!.task} onAnswer={onAnswer} />
+            : r!.kind === "pick" ? <PickRound key={i} t={r!.task} onAnswer={onAnswer} />
+            : <WriteRound key={i} t={r!.task} onAnswer={onAnswer} />}
           {answered && (
             <button className={`${btn.primary} mt-6`} onClick={next}>
               {i === total - 1 ? "See results" : "Next"} <ArrowRight className="h-4 w-4" />
