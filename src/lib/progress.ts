@@ -83,3 +83,12 @@ export function useStepProgress(): StepProgress {
     () => EMPTY_STEPS,
   );
 }
+
+export type QuestionsPracticeState = { i: number; score: number; missed: string[]; answered: boolean };
+const QP_KEY = "parlami.questions.practice";
+export function loadQuestionsPractice(): QuestionsPracticeState | null {
+  try { const v = JSON.parse(localStorage.getItem(QP_KEY) ?? "null"); return v && typeof v.i === "number" ? v : null; } catch { return null; }
+}
+export function saveQuestionsPractice(s: QuestionsPracticeState) {
+  try { localStorage.setItem(QP_KEY, JSON.stringify(s)); } catch { /* ignore */ }
+}

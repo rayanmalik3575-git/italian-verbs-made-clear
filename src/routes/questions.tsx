@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, X, Volume2, RotateCcw, Lightbulb, AlertTr
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
 import { StepVoice } from "@/components/lesson/QuestionSteps";
 import { SayIt } from "@/components/lesson/SayIt";
+import { loadQuestionsPractice, saveQuestionsPractice } from "@/lib/progress";
 import { Q_TRANSLATE, type QTranslate } from "@/content/questions-practice";
 import { matches } from "@/content/review-extras";
 import { recordStep, useStepProgress } from "@/lib/progress";
@@ -288,6 +289,7 @@ function WriteRound({ t, onAnswer }: { t: QTranslate; onAnswer: (ok: boolean, la
     <div>
       <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Write it in Italian</div>
       <div className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{t.english}</div>
+      {result === null && <Hint text={`Starts with “${best.split(" ")[0]}…” · ${best.replace("?","").split(" ").length} words. Practising: ${t.skill.toLowerCase()}.`} />}
       <input value={text} disabled={result !== null} onChange={(e) => setText(e.target.value)} aria-label="Your Italian"
         onKeyDown={(e) => { if (e.key === "Enter" && result === null && text.trim()) check(); }}
         placeholder="Scrivi in italiano…" autoFocus
@@ -317,7 +319,14 @@ function StepPractice() {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
   const [missed, setMissed] = useState<string[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const total = rounds.length;
+  useEffect(() => {
+    const saved = loadQuestionsPractice();
+    if (saved) { setI(Math.min(saved.i + (saved.answered ? 1 : 0), total)); setScore(saved.score); setMissed(saved.missed); }
+    setLoaded(true);
+  }, [total]);
+  useEffect(() => { if (loaded) saveQuestionsPractice({ i, score, missed, answered }); }, [loaded, i, score, missed, answered]);
   const finished = i >= total;
   const onAnswer = (ok: boolean, label: string) => {
     setAnswered(true);
@@ -352,6 +361,7 @@ function StepPractice() {
             <span>{i + 1} / {total}</span>
             <div className="flex-1"><ProgressBar label="Workout progress" value={((i + (answered ? 1 : 0)) / total) * 100} /></div>
             <span>{score} correct</span>
+            {i > 0 && <button type="button" onClick={restart} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-semibold hover:text-foreground"><RotateCcw className="h-3.5 w-3.5" /> Start over</button>}
           </div>
           <div className="mb-3 inline-flex rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary">
             {r!.kind === "pick" ? "Pick the question word" : r!.kind === "order" ? "Word order" : `Write · ${r!.task.skill}`}
@@ -390,6 +400,7 @@ function OrderRound({ t, onAnswer }: { t: OrderTask; onAnswer: (ok: boolean, lab
     <div>
       <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ask this in Italian</div>
       <div className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{t.en}</div>
+      {result === null && <Hint text={`Question word → verb → the rest. Start with “${t.accept[0]!.split(" ")[0]}”.`} />}
       <div className="mt-6 flex min-h-14 flex-wrap items-center gap-2 rounded-2xl border border-dashed p-3">
         {attempt.length === 0 && <span className="text-sm text-muted-foreground">Tap the blocks in order</span>}
         {picked.map((k) => (
@@ -436,6 +447,7 @@ function PickRound({ t, onAnswer }: { t: (typeof PICK_TASKS)[number]; onAnswer: 
     <div>
       <div className="text-2xl font-bold text-foreground sm:text-3xl">{full}</div>
       <div className="mt-1 text-foreground">{t.en}</div>
+      {!choice && <Hint text={`Look at what comes right after the blank: “${t.after.trim().split(" ")[0]}”. Is it a verb, a noun, a plural, or è?`} />}
       <div className="mt-6 grid gap-2 sm:grid-cols-3">
         {t.options.map((o) => {
           const state = !choice ? "" : o === t.answer ? "border-success bg-success/10 text-success" : o === choice ? "border-destructive bg-destructive/10 text-destructive" : "opacity-50";
@@ -449,5 +461,18 @@ function PickRound({ t, onAnswer }: { t: (typeof PICK_TASKS)[number]; onAnswer: 
         </div>
       )}
     </div>
+  );
+}
+
+function Hint({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  return open ? (
+    <div className="mt-4 flex items-start gap-2 rounded-xl border border-border bg-accent/30 px-3.5 py-2.5 text-[15px] text-foreground">
+      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><span>{text}</span>
+    </div>
+  ) : (
+    <button type="button" onClick={() => setOpen(true)} className="mt-4 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[14px] font-semibold text-primary hover:bg-primary/5">
+      <Lightbulb className="h-4 w-4" /> Need a hint?
+    </button>
   );
 }
