@@ -38,13 +38,28 @@ export const Route = createFileRoute("/verbs")({
   component: VerbsPage,
 });
 
+let itVoice: SpeechSynthesisVoice | undefined;
+function pickVoice() {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  itVoice = window.speechSynthesis.getVoices().find((v) => v.lang.toLowerCase().startsWith("it"));
+}
+if (typeof window !== "undefined" && window.speechSynthesis) {
+  pickVoice();
+  window.speechSynthesis.addEventListener?.("voiceschanged", pickVoice);
+}
+
 function speak(text: string) {
   if (typeof window === "undefined" || !window.speechSynthesis) return false;
-  window.speechSynthesis.cancel();
+  const ss = window.speechSynthesis;
+  if (ss.speaking || ss.pending) ss.cancel();
+  if (!itVoice) pickVoice();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = "it-IT";
-  u.rate = 0.9;
-  window.speechSynthesis.speak(u);
+  if (itVoice) u.voice = itVoice;
+  u.rate = 0.8;
+  if (text.trim().endsWith("?")) u.pitch = 1.15;
+  ss.resume();
+  ss.speak(u);
   return true;
 }
 
@@ -344,7 +359,7 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
   const currentQ = rounds[step]?.q;
   useEffect(() => {
     if (!currentQ) return;
-    const t = setTimeout(() => speak(currentQ), 250);
+    const t = setTimeout(() => speak(currentQ), 60);
     return () => clearTimeout(t);
   }, [currentQ, step]);
 
