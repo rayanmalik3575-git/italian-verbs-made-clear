@@ -609,7 +609,7 @@ function Trigger({ verb }: { verb: Verb }) {
 
       <div className="mt-5 rounded-2xl border-2 border-primary/30 px-4 py-4">
         <p className="text-2xl font-bold sm:text-3xl">
-          {result && result !== "wrong" ? <Combo text={full} form={form} /> : <>{before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? shown : "…"}</span>{after}</>}
+          {result && result !== "incorrect" ? <Combo text={full} form={form} /> : <>{before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? shown : "…"}</span>{after}</>}
         </p>
         <p className="mt-1.5 text-sm text-muted-foreground">{result ? `“${m.en}”` : `missing word: “${m.whisper}”`}</p>
       </div>
@@ -625,7 +625,7 @@ function Trigger({ verb }: { verb: Verb }) {
           </div>
         )}
         {tip && <p className="mt-4 flex items-start gap-2 rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-[15px] text-foreground"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden />{tip}</p>}
-        {result && result !== "wrong" && (
+        {result && result !== "incorrect" && (
           <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-tile-green px-3 py-1 text-sm font-semibold text-foreground"><Zap className="h-4 w-4 text-success" aria-hidden /> Brain-to-mouth combo unlocked!</p>
         )}
         {result && <Feedback result={result} answer={answer} expected={full} meaning={m.en} />}
