@@ -148,16 +148,24 @@ const ROUNDS: Record<string, R[]> = {
 };
 
 
+/** Keep 4 handcrafted rounds: tu→io, voi→noi, lui/lei, plus one more — same rhythm as every verb. */
+function pickFour<T extends unknown[]>(hand: T[]): T[] {
+  const out: T[] = [];
+  for (const i of [0, 3, 2]) { const r = hand.find((h) => h[4] === i && !out.includes(h)); if (r) out.push(r); }
+  for (const h of hand) if (out.length < 4 && !out.includes(h)) out.push(h);
+  return out;
+}
+
 export function roundsFor(v: Verb): Round[] {
   const hand = ROUNDS[v.infinitive];
-  if (hand) return hand.map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
+  if (hand) return pickFour(hand).map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
   const r = REPLY[v.infinitive];
   if (!r) return [];
   return r.map((line, k) => {
-    const [q = "", qEn = "", a = "", aEn = ""] = line.split("|");
-    const idx = REPLY_IDX[k]!;
+    const [q = "", qEn = "", a = "", aEn = "", own] = line.split("|");
+    const idx = own ? Number(own) : REPLY_IDX[k]!;
     const f = v.forms;
-    const why = k === 0 ? `Asked with ${f[1]} (you) → answer ${f[0]} (I).` : k === 1 ? `Asked the group (${f[4]}) → answer for all of you: ${f[3]}.` : `Still about that person → ${f[2]}.`;
+    const why = k === 0 ? `Asked with ${f[1]} (you) → answer ${f[0]} (I).` : k === 1 ? `Asked the group (${f[4]}) → answer for all of you: ${f[3]}.` : k === 2 || idx === 2 ? `About that person or thing → ${f[2]}.` : `Saying no: non goes right before ${f[0]}.`;
     return { q, qEn, a, aEn, idx, why };
   });
 }

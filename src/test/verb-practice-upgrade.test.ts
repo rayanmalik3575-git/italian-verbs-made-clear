@@ -20,10 +20,10 @@ describe("verb practice upgrade", () => {
     expect(roundsFor(v("avere"))[0]!.q).toBe("Hai un minuto?");
     expect(roundsFor(v("dire"))[0]!.q).toBe("Dici davvero?");
   });
-  it("every verb has 4 real-life moments covering io, tu, lui/lei, noi", () => {
+  it("every verb has 6 real-life moments covering all persons", () => {
     for (const x of VERBS) {
       const m = momentsFor(x);
-      expect(m.map((y) => y.idx), x.infinitive).toEqual([0, 1, 2, 3]);
+      expect(m.map((y) => y.idx), x.infinitive).toEqual([0, 1, 2, 3, 4, 5]);
       for (const y of m) { expect(y.it.split("_").length, x.infinitive).toBe(2); expect(y.situation && y.en && y.whisper).toBeTruthy(); }
     }
   });
