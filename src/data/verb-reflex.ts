@@ -1,4 +1,5 @@
 import type { Verb } from "./verbs";
+import { REPLY, REPLY_IDX } from "./verb-replies";
 
 /**
  * Reflex training data for verbs: how the verb is built (blueprint),
@@ -73,7 +74,7 @@ const ROUNDS: Record<string, R[]> = {
     ["Siamo in ritardo?", "Are we late?", "Sì, ragazzi, _ in ritardo!", "Yes, guys, you're late!", 4, "Talking to the group: siete."],
   ],
   avere: [
-    ["Hai fame?", "Are you hungry?", "Sì, _ fame!", "Yes, I'm hungry!", 0, "Hai → ho. Hunger is 'had' in Italian."],
+    ["Hai un minuto?", "Have you got a minute?", "Sì, _ tempo, dimmi!", "Yes, I have time, tell me!", 0, "Hai → ho. The h is silent."],
     ["Quanti anni hai?", "How old are you?", "_ venticinque anni.", "I'm twenty-five.", 0, "Age uses avere: ho … anni."],
     ["Avete una prenotazione?", "Do you have a booking?", "Sì, _ un tavolo per due.", "Yes, we have a table for two.", 3, "Avete → abbiamo."],
     ["Anna ha un cane?", "Does Anna have a dog?", "Sì, _ un cane piccolo.", "Yes, she has a small dog.", 2, "Lei → ha (h is silent)."],
@@ -81,7 +82,7 @@ const ROUNDS: Record<string, R[]> = {
     ["I tuoi amici hanno tempo?", "Do your friends have time?", "No, non _ tempo.", "No, they don't have time.", 5, "Loro → hanno."],
   ],
   fare: [
-    ["Che cosa fai stasera?", "What are you doing tonight?", "_ una pizza a casa.", "I'm making pizza at home.", 0, "Fai → faccio (the fac- stem)."],
+    ["Cosa fai stasera?", "What are you doing tonight?", "Stasera _ una pizza.", "Tonight I'm making pizza.", 0, "Fai → faccio (the fac- stem)."],
     ["Che lavoro fai?", "What do you do for work?", "_ l'insegnante.", "I'm a teacher.", 0, "Jobs use fare: faccio l'insegnante."],
     ["Cosa fate domenica?", "What are you all doing on Sunday?", "_ una gita al lago.", "We're taking a trip to the lake.", 3, "Fate → facciamo."],
     ["Che tempo fa?", "What's the weather like?", "_ freddo oggi.", "It's cold today.", 2, "Weather is always fa: fa freddo, fa caldo."],
@@ -147,66 +148,18 @@ const ROUNDS: Record<string, R[]> = {
 };
 
 
-// Natural everyday object/context for each verb, so generic reply rounds sound like real speech.
-// [Italian phrase after the verb, English phrase after the verb]
-const OBJ: Record<string, [string, string]> = {
-  mangiare: ["la pasta stasera", "pasta tonight"], prendere: ["un caffè", "a coffee"], leggere: ["il giornale", "the paper"],
-  dormire: ["bene qui", "well here"], capire: ["l'italiano", "Italian"], lavorare: ["domani", "tomorrow"],
-  ascoltare: ["la radio", "the radio"], guardare: ["la partita stasera", "the match tonight"], comprare: ["il pane", "bread"],
-  aspettare: ["l'autobus", "the bus"], chiamare: ["un taxi", "a taxi"], cucinare: ["stasera", "tonight"],
-  trovare: ["parcheggio", "parking"], pensare: ["a lui", "about him"], viaggiare: ["in treno", "by train"],
-  arrivare: ["presto", "early"], entrare: ["adesso", "now"], tornare: ["a casa", "home"], amare: ["il mare", "the sea"],
-  cercare: ["lavoro qui", "work here"], pagare: ["con la carta", "by card"], lavare: ["i piatti", "the dishes"],
-  giocare: ["a calcio", "football"], suonare: ["la chitarra", "the guitar"], cantare: ["stasera", "tonight"],
-  ballare: ["sabato", "on Saturday"], imparare: ["l'italiano", "Italian"], cominciare: ["domani", "tomorrow"],
-  mandare: ["un messaggio a Luca", "a message to Luca"], ricordare: ["il suo nome", "his name"],
-  dimenticare: ["sempre le chiavi", "your keys all the time"], camminare: ["molto", "a lot"], incontrare: ["Sara oggi", "Sara today"],
-  portare: ["il vino", "the wine"], passare: ["l'estate al mare", "the summer at the sea"], prenotare: ["un tavolo", "a table"],
-  visitare: ["il museo", "the museum"], preparare: ["la cena", "dinner"], usare: ["questo computer", "this computer"],
-  provare: ["questa giacca", "this jacket"], lasciare: ["la macchina qui", "the car here"], parcheggiare: ["qui", "here"],
-  noleggiare: ["una macchina", "a car"], spiegare: ["la regola", "the rule"], costare: ["molto", "a lot"],
-  sperare: ["di venire", "to come"], continuare: ["domani", "tomorrow"], aiutare: ["Marta", "Marta"],
-  raccontare: ["la storia", "the story"], ordinare: ["una pizza", "a pizza"], telefonare: ["a Paolo", "Paolo"],
-  salutare: ["la nonna", "grandma"], abbracciare: ["la mamma", "mum"], mostrare: ["le foto", "the photos"],
-  cambiare: ["casa", "house"], festeggiare: ["stasera", "tonight"], nuotare: ["in piscina", "in the pool"],
-  guidare: ["stasera", "tonight"], affittare: ["un appartamento", "a flat"], venire: ["alla festa", "to the party"],
-  dovere: ["lavorare oggi", "work today"], sapere: ["nuotare", "how to swim"], dire: ["sul serio", "seriously"],
-  bere: ["un bicchiere di vino", "a glass of wine"], uscire: ["stasera", "tonight"], dare: ["una mano", "a hand"],
-  rimanere: ["a cena", "for dinner"], tenere: ["il posto", "the seat"], scegliere: ["il ristorante", "the restaurant"],
-  salire: ["sul treno", "on the train"], morire: ["di fame", "of hunger"], scrivere: ["una mail", "an email"],
-  vedere: ["il film stasera", "the film tonight"], vivere: ["in città", "in the city"], chiedere: ["il conto", "for the bill"],
-  credere: ["a questa storia", "this story"], partire: ["domani", "tomorrow"], aprire: ["la finestra", "the window"],
-  sentire: ["la musica", "the music"], finire: ["alle sei", "at six"], preferire: ["il tè", "tea"],
-  pulire: ["la cucina", "the kitchen"], conoscere: ["Roma", "Rome"], mettere: ["la giacca", "the jacket"],
-  chiudere: ["la porta", "the door"], rispondere: ["al telefono", "the phone"], offrire: ["il caffè", "the coffee"],
-  decidere: ["domani", "tomorrow"], perdere: ["sempre il treno", "the train all the time"], vendere: ["la bici", "the bike"],
-  correre: ["nel parco", "in the park"], ricevere: ["molte mail", "lots of emails"], vincere: ["la partita", "the match"],
-  servire: ["il pranzo", "lunch"], seguire: ["il corso", "the course"], spedire: ["il pacco", "the parcel"],
-};
-const MODAL = new Set(["must", "can"]);
-const gen = (v: Verb): Round[] => {
-  const f = v.forms;
-  const [o, oEn] = OBJ[v.infinitive] ?? ["oggi", "today"];
-  const base = (v.en[0] ?? "").replace(/^I /, "");
-  const m = MODAL.has(base.split(" ")[0]!);
-  const ask = (who: string) => (m ? `${cap(base)} ${who}` : `${who === "Marco" ? "Does" : "Do"} ${who} ${base}`);
-  const aux = (who: string) => (m ? `${who} ${base}` : `${who} ${base}`);
-  const not = (who: string) => (m ? `${who} ${base}n't` : `${who} don't ${base}`);
-  const ask2 = (who: string) => (m ? `${cap(base)} ${who}` : `Do ${who} ${base}`).replace(/^Must|^Can/, (x) => x);
-  return [
-    { q: `${cap(f[1]!)} ${o}?`, qEn: `${ask2("you")} ${oEn}?`, a: `Sì, _ ${o}.`, aEn: `Yes, ${aux("I")} ${oEn}.`, idx: 0, why: `Asked with ${f[1]} (you) → answer ${f[0]} (I).` },
-    { q: `Ragazzi, ${f[4]} ${o}?`, qEn: `Guys, ${ask2("you").charAt(0).toLowerCase() + ask2("you").slice(1)} ${oEn}?`, a: `Sì, _ ${o}.`, aEn: `Yes, ${aux("we")} ${oEn}.`, idx: 3, why: `Asked the group (${f[4]}) → answer for all of you: ${f[3]}.` },
-    { q: `Marco ${f[2]} ${o}?`, qEn: `${ask("Marco")} ${oEn}?`, a: `Sì, _ ${o}.`, aEn: `Yes, he ${v.en[2]!.replace("he/she ", "")} ${oEn}.`, idx: 2, why: `Still about Marco → ${f[2]}.` },
-    { q: `${cap(f[0]!)} ${o}.`, qEn: `${cap(aux("I"))} ${oEn}.`, a: `Anche tu _ ${o}?`, aEn: `${ask2("you")} ${oEn} too?`, idx: 1, why: `Turn it back to your friend → ${f[1]}.` },
-    { q: `I tuoi amici ${f[5]} ${o}?`, qEn: `${ask2("your friends")} ${oEn}?`, a: `No, non _ ${o}.`, aEn: `No, ${not("they")} ${oEn}.`, idx: 5, why: `About them → ${f[5]}.` },
-    { q: `${cap(f[3]!)} ${o}.`, qEn: `${cap(aux("we"))} ${oEn}.`, a: `Ah, anche voi _ ${o}?`, aEn: `Oh, ${ask2("you").charAt(0).toLowerCase() + ask2("you").slice(1)} ${oEn} too?`, idx: 4, why: `Answering the group → ${f[4]}.` },
-  ];
-};
-
 export function roundsFor(v: Verb): Round[] {
   const hand = ROUNDS[v.infinitive];
   if (hand) return hand.map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
-  return gen(v);
+  const r = REPLY[v.infinitive];
+  if (!r) return [];
+  return r.map((line, k) => {
+    const [q = "", qEn = "", a = "", aEn = ""] = line.split("|");
+    const idx = REPLY_IDX[k]!;
+    const f = v.forms;
+    const why = k === 0 ? `Asked with ${f[1]} (you) → answer ${f[0]} (I).` : k === 1 ? `Asked the group (${f[4]}) → answer for all of you: ${f[3]}.` : `Still about that person → ${f[2]}.`;
+    return { q, qEn, a, aEn, idx, why };
+  });
 }
 
 const CHUNKS: Record<string, Chunk[]> = {
@@ -242,6 +195,13 @@ export function continuousOf(v: Verb, i: number): string | undefined {
   const [head, ...rest] = base.split(" ");
   if (!head || STATIVE.has(head)) return undefined;
   return `${v.en[i]} / ${BE[i]} ${[ing(head), ...rest].join(" ")}`;
+}
+
+/** One-line reminder for -care / -gare verbs, shown in the hint bar. */
+export function hardSoundTip(v: Verb): string | undefined {
+  if (!/[cg]are$/.test(v.infinitive)) return undefined;
+  const k = v.infinitive.slice(-4, -3) === "c" ? "K" : "G";
+  return `Watch out: 'tu ${v.forms[1]}' needs an H to keep the hard ${k} sound, but 'io ${v.forms[0]}' drops the H!`;
 }
 
 /** -care / -gare verbs need an h before -i / -iamo. Returns a note for tu & noi. */
