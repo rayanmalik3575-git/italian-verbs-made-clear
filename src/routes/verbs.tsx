@@ -3,7 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info, Lightbulb, Key, Coffee, Luggage, Smartphone, Utensils, TrainFront, Home, BookOpen, Music, ShoppingBag, Heart, Sun, Car, Mail, Users, Clock, Briefcase, PartyPopper, MapPin, DoorOpen, Zap } from "lucide-react";
 import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verbs";
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
-import { grade, type Grade } from "@/lib/grading";
+import { grade, gradeWithPronoun, type Grade } from "@/lib/grading";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { contextFor, fill } from "@/data/verb-sentences";
 import { momentsFor, trapTip, type MomentIcon } from "@/data/verb-moments";
 
@@ -90,12 +91,15 @@ function VerbsPage() {
 
   return (
     <div>
-      <PageHeader
-        title="Verbs"
-        description={<>Pick a verb, see every form with its English meaning, then practise. <span className="font-semibold text-foreground">Tense: Present (presente)</span></>}
-      />
+      <div className="mb-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-bold sm:text-[28px]">Verbs</h1>
+          <span className="rounded-full border border-primary/25 bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">Presente · Present tense</span>
+        </div>
+        <p className="mt-1 text-muted-foreground">Pick a verb, see every form with its English meaning, then practise.</p>
+      </div>
 
-      <div className="mb-5 space-y-3 rounded-[20px] border bg-card p-4 shadow-card">
+      <div className="mb-5 flex flex-col gap-3 rounded-[20px] border bg-card p-3 shadow-card md:flex-row md:flex-wrap md:items-center md:gap-x-4 md:divide-x md:divide-border md:[&>*:not(:first-child)]:pl-4">
         <FilterRow label="Family">
           {FAMILIES.map((f) => <Chip key={f} active={family === f} onClick={() => setFamily(f)}>{f === "all" ? "All" : f.toUpperCase()} <span className="opacity-75">({famCount(f)})</span></Chip>)}
         </FilterRow>
@@ -104,7 +108,6 @@ function VerbsPage() {
         </FilterRow>
         <FilterRow label="Level">
           {(["all", "A1", "A2"] as const).map((l) => <Chip key={l} active={level === l} onClick={() => setLevel(l)}>{l === "all" ? "All levels" : l}</Chip>)}
-          <span className="text-xs text-muted-foreground">Our curriculum grouping, based on common A1/A2 course lists — not an official CEFR list.</span>
         </FilterRow>
       </div>
 
@@ -151,13 +154,18 @@ function VerbsPage() {
                 <h2 className="flex items-center gap-2 text-3xl font-bold sm:text-4xl">
                   {selected.infinitive}
                   <button onClick={() => speak(selected.infinitive)} aria-label={`Listen to ${selected.infinitive}`} className="grid h-10 w-10 place-items-center rounded-xl border text-muted-foreground hover:bg-muted hover:text-foreground"><Volume2 className="h-5 w-5" /></button>
+                  <span className="flex flex-wrap gap-1.5">
+                    {[familyOf(selected).toUpperCase(), isIrregular(selected) ? "Irregular" : "Regular", LEVEL[selected.infinitive]].map((t) => (
+                      <span key={t} className="rounded-md border bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">{t}</span>
+                    ))}
+                  </span>
                 </h2>
                 <p className="mt-1 text-lg text-muted-foreground">{selected.english}</p>
               </div>
-              <div role="tablist" aria-label="Lesson mode" className="flex rounded-xl bg-muted p-1">
+              <div role="tablist" aria-label="Lesson mode" className="flex rounded-xl border bg-muted p-1">
                 {(["learn", "practice"] as const).map((m) => (
                   <button key={m} role="tab" aria-selected={mode === m} onClick={() => select(selected.infinitive, m)}
-                    className={`min-h-10 rounded-lg px-5 text-sm font-semibold ${mode === m ? "bg-card text-foreground shadow-card" : "text-muted-foreground hover:text-foreground"}`}>
+                    className={`min-h-10 rounded-lg px-5 text-sm font-semibold ${mode === m ? "border border-primary/40 bg-card text-primary shadow-card" : "text-muted-foreground hover:text-foreground"}`}>
                     {m === "learn" ? "Learn" : "Practice"}
                   </button>
                 ))}
@@ -176,7 +184,13 @@ function VerbsPage() {
 function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-2" role="group" aria-label={label}>
-      <span className="w-14 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="flex w-14 items-center gap-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground md:w-auto">{label}
+        {label === "Level" && (
+          <TooltipProvider delayDuration={100}><Tooltip><TooltipTrigger asChild>
+            <button type="button" aria-label="About levels" className="grid h-6 w-6 place-items-center rounded-full hover:bg-muted"><Info className="h-3.5 w-3.5" /></button>
+          </TooltipTrigger><TooltipContent className="max-w-60 normal-case">Our curriculum grouping, based on common A1/A2 course lists — not an official CEFR list.</TooltipContent></Tooltip></TooltipProvider>
+        )}
+      </span>
       {children}
     </div>
   );
@@ -339,7 +353,7 @@ function HowItWorks({ verb }: { verb: Verb }) {
 }
 
 const GUIDE: string[] = [
-  "They're asking about you → answer with io · ends in -o",
+  "They're asking 'tu' (you) → reply in the 'io' (I) form · ends in -o",
   "Turn it back to your friend → use tu · ends in -i",
   "About one other person → use lui / lei",
   "They asked your group → answer with noi · ends in -iamo",
@@ -381,7 +395,7 @@ function Reflex({ verb, onNext, active = true }: { verb: Verb; onNext?: (() => v
   const submit = () => {
     if (result !== null) { setStep(step + 1); setAnswer(""); setResult(null); setTimeout(() => input.current?.focus(), 0); return; }
     if (!answer.trim()) return;
-    const g = grade(answer.trim().toLowerCase(), expected);
+    const g = gradeWithPronoun(answer, expected, PRONOUNS[r.idx]!.it);
     setResult(g); if (g === "correct") setScore((s) => s + 1);
     speak(full);
   };

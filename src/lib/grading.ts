@@ -11,3 +11,11 @@ export function grade(answer: string, expected: string): Grade {
   if (a && stripAccents(a) === stripAccents(e)) return "partial";
   return "incorrect";
 }
+
+/** Grade a reply where the learner may also type the subject pronoun ("io torno"). */
+export function gradeWithPronoun(answer: string, expected: string, pronoun: string): Grade {
+  const a = clean(answer);
+  const prefixes = pronoun.split("/").map((p) => clean(p) + " ");
+  const hit = prefixes.find((p) => a.startsWith(p));
+  return grade(hit ? a.slice(hit.length) : a, expected);
+}
