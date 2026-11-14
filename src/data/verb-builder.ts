@@ -116,3 +116,41 @@ export function builderFor(verb: Verb): BuildItem[] {
 export function hasFullBuilder(infinitive: string) {
   return !!B[infinitive]?.length || hasContext(infinitive);
 }
+
+export type Trap = { tile: string; why: string };
+const BE_IT = ["sono", "sei", "è", "siamo", "siete", "sono"];
+const PRON = ["io", "tu", "lui", "noi", "voi", "loro"];
+const FOR_TRAP: Record<string, [string, string]> = {
+  cercare: ["per", "'Cercare' already means 'to look for' — never add 'per'."],
+  aspettare: ["per", "'Aspettare' already means 'to wait for' — never add 'per'."],
+  pagare: ["per", "'Pagare' already includes 'for': pago la cena = I pay for dinner."],
+  guardare: ["a", "'Guardare' takes the thing directly: guardo la TV — no 'a'."],
+  ascoltare: ["a", "'Ascoltare' already means 'listen to' — no 'a'."],
+  chiedere: ["per", "'Chiedere' already means 'ask for': chiedo il conto."],
+  telefonare: ["chiamare", "Telefonare a… is already 'to phone' — no second verb."],
+};
+const strip = (s: string) => s.toLowerCase().replace(/[.,!?]/g, "");
+
+/** Two tiles the learner must reject: a wrong form of the same verb, and an English-thinking trap. */
+export function trapsFor(verb: Verb, item: BuildItem): Trap[] {
+  const words = new Set(strip(item.it).split(/\s+/));
+  const right = verb.forms[item.idx] ?? "";
+  const out: Trap[] = [];
+  for (const k of [1, 2, 0, 3, 5]) {
+    const f = verb.forms[(item.idx + k) % 6];
+    if (k && f && f !== right && !words.has(f)) { out.push({ tile: f, why: `'${f}' is the ${PRON[(item.idx + k) % 6]} form — this sentence needs '${right}' (${PRON[item.idx]}).` }); break; }
+  }
+  const ft = FOR_TRAP[verb.infinitive];
+  const ing = /\b(am|is|are|'m|'re|'s)\b [a-z]+ing\b/i.test(item.en) && !["essere", "stare"].includes(verb.infinitive);
+  if (ft && !words.has(ft[0])) out.push({ tile: ft[0], why: ft[1] });
+  else if (ing && !words.has(BE_IT[item.idx]!)) out.push({ tile: BE_IT[item.idx]!, why: `No 'to be' here: '${right}' already means '${item.en.match(/\b(am|is|are|'m|'re|'s) [a-z]+ing/i)?.[0] ?? "is doing"}'.` });
+  else if (!words.has(PRON[item.idx]!)) out.push({ tile: PRON[item.idx]!, why: `Italians drop '${PRON[item.idx]}' — the ending of '${right}' already says who.` });
+  return out;
+}
+
+const PROPER = /^(Marco|Anna|Luca|Giulia|Paola|Sara|Marta|Paolo|Roma|Milano|Napoli|Firenze|Ciao|Come)$/;
+/** Lowercase the first block for the tile bank unless it starts with a name. */
+export function tileCase(b: string) {
+  return PROPER.test(b.split(" ")[0]!) ? b : b.charAt(0).toLowerCase() + b.slice(1);
+}
+export const normalizeIt = (s: string) => strip(s).replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
