@@ -112,7 +112,7 @@ function ActionFirst() {
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span className="inline-flex flex-col rounded-xl bg-gradient-to-r from-tile-lavender to-tile-blue px-3 py-2 text-tile-blue-ink">
               <span className="text-[11px] font-semibold uppercase tracking-wide opacity-80">Who + Action</span>
-              <span className="text-base font-bold">Bev<span className="text-accent-pink">o</span></span>
+              <span className="text-base font-bold">Bev<span className="text-pink">o</span></span>
               <span className="text-xs opacity-80">-o = I</span>
             </span>
             <ArrowRight className="h-4 w-4 text-muted-foreground" aria-hidden />
@@ -164,14 +164,13 @@ function Grow() {
       <ol className="mt-5 space-y-3">
         {GROW.slice(0, shown).map((g, i) => {
           const marks = [g.added, "extra" in g ? g.extra : ""].filter(Boolean) as string[];
-          let html = g.sentence.italian;
           return (
             <li key={i} className="rounded-2xl border p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Step {i + 1} · {g.label}</div>
                   <div className="mt-1 text-lg font-bold">
-                    {splitMarks(html, marks).map((p, k) => p.m ? <span key={k} className="rounded bg-tile-green px-1 text-tile-green-ink">{p.t}</span> : <span key={k}>{p.t}</span>)}
+                    {splitMarks(g.sentence.italian, marks).map((p, k) => p.m ? <span key={k} className="rounded bg-tile-green px-1 text-tile-green-ink">{p.t}</span> : <span key={k}>{p.t}</span>)}
                   </div>
                   <div className="text-sm font-semibold text-foreground/80">{g.sentence.english}</div>
                 </div>
@@ -185,7 +184,7 @@ function Grow() {
       {shown < GROW.length && (
         <div className="mt-4 flex flex-wrap gap-2">
           <button className={btn.primary} onClick={() => setShown(shown + 1)}><Plus className="h-4 w-4" />Add the next piece</button>
-          <button className={btn.secondary} onClick={() => setShown(GROW.length)}>Show all</button>
+          <button className={btn.outline} onClick={() => setShown(GROW.length)}>Show all</button>
         </div>
       )}
     </Panel>
@@ -246,7 +245,7 @@ function QuickCheck() {
         </div>
         <div className="mt-4 flex flex-wrap gap-2">
           <button className={btn.primary} disabled={words.length === 0} onClick={check}><Check className="h-4 w-4" />Check</button>
-          <button className={btn.secondary} onClick={() => { setPicked([]); setResult(null); }}><RotateCcw className="h-4 w-4" />Reset</button>
+          <button className={btn.outline} onClick={() => { setPicked([]); setResult(null); }}><RotateCcw className="h-4 w-4" />Reset</button>
         </div>
         {result && (
           <p role="status" className={`mt-3 flex gap-2 rounded-xl p-3 text-sm font-semibold ${result.ok ? "bg-tile-green text-tile-green-ink" : "bg-tile-pink text-tile-pink-ink"}`}>
