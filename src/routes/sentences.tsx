@@ -234,7 +234,7 @@ function QuickCheck() {
           {words.length === 0 && <span className="text-sm text-muted-foreground">Tap the words below</span>}
           {picked.map((bi, i) => (
             <button key={i} onClick={() => { setPicked(picked.filter((_, j) => j !== i)); setResult(null); }} className="rounded-lg bg-tile-blue px-3 py-1.5 font-bold text-tile-blue-ink">
-              {i === 0 ? TILE_TASK.bank[bi][0].toUpperCase() + TILE_TASK.bank[bi].slice(1) : TILE_TASK.bank[bi]}
+              {i === 0 ? (TILE_TASK.bank[bi] ?? "").charAt(0).toUpperCase() + (TILE_TASK.bank[bi] ?? "").slice(1) : TILE_TASK.bank[bi]}
             </button>
           ))}
         </div>
