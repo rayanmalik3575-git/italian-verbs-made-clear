@@ -145,6 +145,10 @@ export function trapsFor(verb: Verb, item: BuildItem): Trap[] {
   if (ft && !words.has(ft[0])) out.push({ tile: ft[0], why: ft[1] });
   else if (ing && !words.has(BE_IT[item.idx]!)) out.push({ tile: BE_IT[item.idx]!, why: `No 'to be' here: '${right}' already means '${item.en.match(/\b(am|is|are|'m|'re|'s) [a-z]+ing/i)?.[0] ?? "is doing"}'.` });
   else if (!words.has(PRON[item.idx]!)) out.push({ tile: PRON[item.idx]!, why: `Italians drop '${PRON[item.idx]}' — the ending of '${right}' already says who.` });
+  if (out.length < 2) {
+    const f = verb.forms.find((x) => x !== right && !words.has(x) && !out.some((o) => o.tile === x));
+    if (f) out.push({ tile: f, why: `'${f}' is a different person — this sentence needs '${right}'.` });
+  }
   return out;
 }
 
