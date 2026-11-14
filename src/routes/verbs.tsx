@@ -341,6 +341,12 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
   const [result, setResult] = useState<Grade | null>(null);
   const [score, setScore] = useState(0);
   const input = useRef<HTMLInputElement>(null);
+  const currentQ = rounds[step]?.q;
+  useEffect(() => {
+    if (!currentQ) return;
+    const t = setTimeout(() => speak(currentQ), 250);
+    return () => clearTimeout(t);
+  }, [currentQ, step]);
 
   if (step >= rounds.length) {
     return (
@@ -376,14 +382,11 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
         <div className="flex items-center gap-3 rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
           <div>
             <p className="text-xl font-bold sm:text-2xl">{r.q}</p>
-            <p className="mt-1 text-sm font-medium text-muted-foreground">“{r.qEn}”</p>
+            <p className="mt-1 text-[15px] font-semibold text-foreground/85">“{r.qEn}”</p>
           </div>
           <button type="button" onClick={() => speak(r.q)} aria-label="Hear the question" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground hover:opacity-90"><Volume2 className="h-4 w-4" /></button>
         </div>
       </div>
-      <p className="mt-5 flex items-center gap-2 truncate whitespace-nowrap rounded-full bg-secondary/60 px-4 py-2 text-sm font-medium text-foreground" title={GUIDE[r.idx]}>
-        <Lightbulb className="h-4 w-4 shrink-0 text-primary" /><span className="truncate">{GUIDE[r.idx]}</span>
-      </p>
       {hardSoundTip(verb) && <p className="mt-2 flex items-start gap-2 px-1 text-sm text-foreground"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden />{hardSoundTip(verb)}</p>}
 
       <div className="mt-4 flex flex-col items-end">
@@ -391,7 +394,7 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
         <div className="rounded-2xl rounded-tr-sm border-2 border-primary/30 px-4 py-3 text-right">
           <p className="text-xl font-bold sm:text-2xl">{before}<span className="mx-1 inline-block min-w-16 border-b-2 border-primary text-center text-primary">{result ? (before ? expected : expected.charAt(0).toUpperCase() + expected.slice(1)) : "…"}</span>{after}</p>
         </div>
-        <p className="mt-1.5 pr-1 text-sm font-medium text-muted-foreground">“{r.aEn}”</p>
+        <p className="mt-1.5 pr-1 text-[15px] font-semibold text-foreground/85">“{r.aEn}”</p>
       </div>
 
       <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
