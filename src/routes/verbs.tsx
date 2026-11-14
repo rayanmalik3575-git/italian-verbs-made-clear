@@ -476,6 +476,8 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
         {!S && <>
         <p className="mt-7 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Say this in Italian</p>
         <p className="mt-1 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">“{verb.en[i]}”</p>
+        {continuousOf(verb, i) && <p className="mt-1.5 text-sm text-muted-foreground">Also means: {continuousOf(verb, i)}</p>}
+        {spellingNote(verb, i) && <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden />{spellingNote(verb, i)}</p>}
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <span className="rounded-full bg-muted px-3 py-1 text-sm font-semibold text-muted-foreground">({p.it})</span>
           <span className="inline-block min-w-28 border-b-2 border-primary text-3xl font-bold text-primary sm:text-4xl">{result ? expected : "…"}</span>

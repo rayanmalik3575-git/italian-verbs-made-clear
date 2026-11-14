@@ -169,7 +169,7 @@ const OBJ: Record<string, [string, string]> = {
   raccontare: ["la storia", "the story"], ordinare: ["una pizza", "a pizza"], telefonare: ["a Paolo", "Paolo"],
   salutare: ["la nonna", "grandma"], abbracciare: ["la mamma", "mum"], mostrare: ["le foto", "the photos"],
   cambiare: ["casa", "house"], festeggiare: ["stasera", "tonight"], nuotare: ["in piscina", "in the pool"],
-  guidare: ["tu stasera", "tonight"], affittare: ["un appartamento", "a flat"], venire: ["alla festa", "to the party"],
+  guidare: ["stasera", "tonight"], affittare: ["un appartamento", "a flat"], venire: ["alla festa", "to the party"],
   dovere: ["lavorare oggi", "work today"], sapere: ["nuotare", "how to swim"], dire: ["sul serio", "seriously"],
   bere: ["un bicchiere di vino", "a glass of wine"], uscire: ["stasera", "tonight"], dare: ["una mano", "a hand"],
   rimanere: ["a cena", "for dinner"], tenere: ["il posto", "the seat"], scegliere: ["il ristorante", "the restaurant"],
@@ -230,3 +230,22 @@ export function chunksFor(v: Verb): Chunk[] {
 
 export const fillBlank = (frame: string, form: string) =>
   frame.startsWith("_") ? frame.replace("_", cap(form)) : frame.replace("_", form);
+
+const STATIVE = new Set(["be", "am", "have", "know", "can", "must", "want", "love", "understand", "remember", "prefer", "believe", "cost", "hope", "stay", "think"]);
+const BE = ["I am", "you are", "he/she is", "we are", "you all are", "they are"];
+const ing = (w: string) =>
+  w === "die" ? "dying" : w.endsWith("ie") ? w.slice(0, -2) + "ying" : /[^aeiou]e$/.test(w) && w !== "be" ? w.slice(0, -1) + "ing" : /^(run|swim|get|win|sit|stop|shop|put|begin|forget)$/.test(w) ? w + w.slice(-1) + "ing" : w + "ing";
+
+/** "you look for / you are looking for" — Italian present covers both. Undefined for stative verbs. */
+export function continuousOf(v: Verb, i: number): string | undefined {
+  const base = (v.en[0] ?? "").replace(/^I /, "");
+  const [head, ...rest] = base.split(" ");
+  if (!head || STATIVE.has(head)) return undefined;
+  return `${v.en[i]} / ${BE[i]} ${[ing(head), ...rest].join(" ")}`;
+}
+
+/** -care / -gare verbs need an h before -i / -iamo. Returns a note for tu & noi. */
+export function spellingNote(v: Verb, i: number): string | undefined {
+  if (!/[cg]are$/.test(v.infinitive) || (i !== 1 && i !== 3)) return undefined;
+  return `Spelling note: add 'h' before -i or -iamo (${v.forms[1]} / ${v.forms[3]}) to keep the hard ${v.infinitive.slice(-4, -3).toUpperCase()} sound — but no 'h' for io ${v.forms[0]}.`;
+}
