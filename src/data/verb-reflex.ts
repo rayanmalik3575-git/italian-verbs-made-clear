@@ -150,14 +150,14 @@ const ROUNDS: Record<string, R[]> = {
 
 export function roundsFor(v: Verb): Round[] {
   const hand = ROUNDS[v.infinitive];
-  if (hand) return hand.map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
+  if (hand) return hand.slice(0, 4).map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
   const r = REPLY[v.infinitive];
   if (!r) return [];
   return r.map((line, k) => {
-    const [q = "", qEn = "", a = "", aEn = ""] = line.split("|");
-    const idx = REPLY_IDX[k]!;
+    const [q = "", qEn = "", a = "", aEn = "", own] = line.split("|");
+    const idx = own ? Number(own) : REPLY_IDX[k]!;
     const f = v.forms;
-    const why = k === 0 ? `Asked with ${f[1]} (you) → answer ${f[0]} (I).` : k === 1 ? `Asked the group (${f[4]}) → answer for all of you: ${f[3]}.` : `Still about that person → ${f[2]}.`;
+    const why = k === 0 ? `Asked with ${f[1]} (you) → answer ${f[0]} (I).` : k === 1 ? `Asked the group (${f[4]}) → answer for all of you: ${f[3]}.` : k === 2 || idx === 2 ? `About that person or thing → ${f[2]}.` : `Saying no: non goes right before ${f[0]}.`;
     return { q, qEn, a, aEn, idx, why };
   });
 }
