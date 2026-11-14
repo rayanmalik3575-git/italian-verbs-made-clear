@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info, Lightbulb } from "lucide-react";
+import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info, Lightbulb, Key, Coffee, Luggage, Smartphone, Utensils, TrainFront, Home, BookOpen, Music, ShoppingBag, Heart, Sun, Car, Mail, Users, Clock, Briefcase, PartyPopper, MapPin, DoorOpen, Zap } from "lucide-react";
 import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verbs";
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
 import { grade, type Grade } from "@/lib/grading";
 import { contextFor, fill } from "@/data/verb-sentences";
-import { blocksOf, builderFor, endMark, normalizeIt, tileCase, trapsFor } from "@/data/verb-builder";
+import { momentsFor, trapTip, type MomentIcon } from "@/data/verb-moments";
 
 const ENDING_CLUE = [
   "Ends in -o (or -go/-sco) → it's me, I.",
@@ -15,7 +15,7 @@ const ENDING_CLUE = [
   "Ends in -te → you all.",
   "Ends in -no → they.",
 ];
-import { blueprintOf, chunksFor, roundsFor, fillBlank, EAR, continuousOf, spellingNote } from "@/data/verb-reflex";
+import { blueprintOf, chunksFor, roundsFor, fillBlank, EAR, continuousOf, spellingNote, hardSoundTip } from "@/data/verb-reflex";
 import { recordAttempt, useProgress, statusOf, STATUS_LABEL } from "@/lib/progress";
 import { Chip, Panel, PageHeader, ProgressBar, btn } from "@/components/app-shell";
 
@@ -257,7 +257,7 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
   const modes = [
     { id: "drill" as const, n: 1, title: "Verb forms", sub: "Lock in the six endings" },
     { id: "reflex" as const, n: 2, title: "Reply reflex", sub: "Hear a question, answer" },
-    { id: "sentence" as const, n: 3, title: "Build sentences", sub: "Say a full thought in Italian" },
+    { id: "sentence" as const, n: 3, title: "Real-life trigger", sub: "React to real moments without translating in your head" },
   ];
   const next: Record<K, K | undefined> = { drill: "reflex", reflex: "sentence", sentence: undefined };
   const go = next[kind] ? () => setKind(next[kind]!) : undefined;
@@ -274,7 +274,7 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
       </div>
       {kind === "reflex" && <Reflex key={verb.infinitive} verb={verb} onNext={go} />}
       {kind === "drill" && <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={go} />}
-      {kind === "sentence" && <Builder key={verb.infinitive} verb={verb} />}
+      {kind === "sentence" && <Trigger key={verb.infinitive} verb={verb} />}
     </div>
   );
 }
@@ -384,6 +384,7 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
       <p className="mt-5 flex items-center gap-2 truncate whitespace-nowrap rounded-full bg-secondary/60 px-4 py-2 text-sm font-medium text-foreground" title={GUIDE[r.idx]}>
         <Lightbulb className="h-4 w-4 shrink-0 text-primary" /><span className="truncate">{GUIDE[r.idx]}</span>
       </p>
+      {hardSoundTip(verb) && <p className="mt-2 flex items-start gap-2 px-1 text-sm text-foreground"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden />{hardSoundTip(verb)}</p>}
 
       <div className="mt-4 flex flex-col items-end">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">You reply</p>
@@ -545,130 +546,96 @@ function Feedback({ result, answer, expected, meaning }: { result: Grade; answer
 }
 
 
-function shuffleBlocks(a: string[]): string[] {
-  const r = [...a];
-  for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j]!, r[i]!]; }
-  if (r.length > 1 && r.every((b, k) => b === a[k])) r.push(r.shift()!);
-  return r;
+const MOMENT_ICON: Record<MomentIcon, typeof Key> = {
+  key: Key, coffee: Coffee, bag: Luggage, phone: Smartphone, food: Utensils, train: TrainFront, home: Home, book: BookOpen,
+  music: Music, shop: ShoppingBag, heart: Heart, sun: Sun, car: Car, mail: Mail, users: Users, clock: Clock, work: Briefcase,
+  party: PartyPopper, map: MapPin, door: DoorOpen,
+};
+
+/** Sentence with the verb + the word after it highlighted in green. */
+function Combo({ text, form }: { text: string; form: string }) {
+  const words = text.split(" ");
+  const k = words.findIndex((w) => w.toLowerCase().replace(/[^\p{L}']/gu, "") === form.toLowerCase());
+  if (k < 0) return <>{text}</>;
+  const end = Math.min(words.length, k + 2);
+  return <>{words.slice(0, k).join(" ")}{k > 0 ? " " : ""}<span className="text-success">{words.slice(k, end).join(" ")}</span>{end < words.length ? " " : ""}{words.slice(end).join(" ")}</>;
 }
 
-function Builder({ verb }: { verb: Verb }) {
-  const items = useMemo(() => builderFor(verb), [verb]);
-  const [mode, setMode] = useState<"tap" | "type">("tap");
+function Trigger({ verb }: { verb: Verb }) {
+  const items = useMemo(() => momentsFor(verb), [verb]);
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
-  const [picked, setPicked] = useState<number[]>([]);
-  const [typed, setTyped] = useState("");
-  const [result, setResult] = useState<null | boolean>(null);
-  const [hint, setHint] = useState(false);
-  const typeRef = useRef<HTMLInputElement>(null);
-  const item = items[step];
-  const target = useMemo(() => (item ? blocksOf(item.it) : []), [item]);
-  const traps = useMemo(() => (item ? trapsFor(verb, item) : []), [verb, item]);
-  const [pool, setPool] = useState<string[]>([]);
-  useEffect(() => { setPool(shuffleBlocks([...target.map((b, k) => (k === 0 ? tileCase(b) : b)), ...traps.map((x) => x.tile)])); }, [target, traps]);
-  const reset = () => { setPicked([]); setTyped(""); setResult(null); setHint(false); };
+  const [answer, setAnswer] = useState("");
+  const [result, setResult] = useState<Grade | null>(null);
+  const [tip, setTip] = useState<string | undefined>();
+  const input = useRef<HTMLInputElement>(null);
+  const m = items[step];
 
-  if (!item) {
+  if (!m) {
     return (
       <div className="mt-8 rounded-[18px] border bg-gradient-feature p-6 text-center sm:p-10">
-        <p className="text-sm font-semibold text-muted-foreground">Build sentences · {verb.infinitive}</p>
+        <p className="text-sm font-semibold text-muted-foreground">Real-life trigger · {verb.infinitive}</p>
         <p className="mt-1 text-5xl font-bold">{score}<span className="text-muted-foreground">/{items.length}</span></p>
-        <p className="mt-2 text-muted-foreground">{score === items.length ? "Every sentence in native order. Now say each one out loud." : "Go again — aim to build each one without the hint."}</p>
-        <button onClick={() => { setStep(0); setScore(0); reset(); }} className={`${btn.primary} mt-6`}><RotateCcw className="h-4 w-4" /> Again</button>
+        <p className="mt-2 text-muted-foreground">{score === items.length ? "Every moment answered in Italian. Now say each one out loud." : "Go again — react before you translate."}</p>
+        <button onClick={() => { setStep(0); setScore(0); setAnswer(""); setResult(null); setTip(undefined); }} className={`${btn.primary} mt-6`}><RotateCcw className="h-4 w-4" /> Again</button>
       </div>
     );
   }
-  const mark = endMark(item.it);
-  const attempt = picked.map((k) => pool[k]!);
-  const shown = attempt.map((b, k) => (k === 0 ? b.charAt(0).toUpperCase() + b.slice(1) : b));
-  const form = verb.forms[item.idx] ?? "";
-  const hitTrap = mode === "tap" && result === false ? traps.find((x) => attempt.includes(x.tile)) : undefined;
-  const check = () => {
-    const ok = mode === "tap"
-      ? attempt.join(" ").toLowerCase() === target.join(" ").toLowerCase()
-      : normalizeIt(typed) === normalizeIt(item.it);
-    setResult(ok); if (ok) setScore((s) => s + 1);
-    speak(item.it);
+  const form = verb.forms[m.idx] ?? "";
+  const full = fillBlank(m.it, form);
+  const [before = "", after = ""] = m.it.split("_");
+  const Icon = MOMENT_ICON[m.icon] ?? Users;
+  const submit = () => {
+    if (result !== null) { setStep(step + 1); setAnswer(""); setResult(null); setTip(undefined); setTimeout(() => input.current?.focus(), 0); return; }
+    if (!answer.trim()) return;
+    const t = trapTip(verb, m, answer);
+    if (t) { setTip(t); return; }
+    const g = grade(answer.trim().toLowerCase(), form);
+    setResult(g); if (g === "correct") setScore((s) => s + 1);
+    speak(full);
   };
-  const next = () => { setStep(step + 1); reset(); };
-  const insert = (ch: string) => {
-    const el = typeRef.current;
-    const s = el?.selectionStart ?? typed.length, e = el?.selectionEnd ?? typed.length;
-    setTyped(typed.slice(0, s) + ch + typed.slice(e));
-    setTimeout(() => { el?.focus(); el?.setSelectionRange(s + 1, s + 1); }, 0);
-  };
-  const canCheck = mode === "tap" ? picked.length > 0 : typed.trim().length > 0;
+  const insert = (ch: string) => { setAnswer((a) => a + ch); input.current?.focus(); };
+  const shown = before ? form : form.charAt(0).toUpperCase() + form.slice(1);
 
   return (
     <div className="mt-5 rounded-[20px] border bg-card p-5 sm:p-7">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-        <span>Sentence {step + 1} of {items.length} · Score {score}</span>
-        <div role="radiogroup" aria-label="Answer mode" className="inline-flex rounded-full border bg-muted p-1">
-          {([["tap", "Tap words"], ["type", "Type reflex"]] as const).map(([id, label]) => (
-            <button key={id} type="button" role="radio" aria-checked={mode === id} onClick={() => { setMode(id); reset(); }}
-              className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${mode === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{label}</button>
-          ))}
-        </div>
+      <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Moment {step + 1} of {items.length}</span><span>Score {score}</span></div>
+      <div className="mt-2"><ProgressBar value={(step / items.length) * 100} label="Real-life trigger progress" /></div>
+
+      <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <Icon className="h-4 w-4 text-primary" aria-hidden /> Imagine this moment
+      </p>
+      <p className="mt-3 text-lg font-semibold leading-snug text-foreground sm:text-xl">{m.situation}</p>
+
+      <div className="mt-5 rounded-2xl border-2 border-primary/30 px-4 py-4">
+        <p className="text-2xl font-bold sm:text-3xl">
+          {result && result !== "wrong" ? <Combo text={full} form={form} /> : <>{before}<span className="mx-1 inline-block min-w-20 border-b-2 border-primary text-center text-primary">{result ? shown : "…"}</span>{after}</>}
+        </p>
+        <p className="mt-1.5 text-sm text-muted-foreground">{result ? `“${m.en}”` : `missing word: “${m.whisper}”`}</p>
       </div>
-      <div className="mt-3"><ProgressBar value={(step / items.length) * 100} label="Builder progress" /></div>
 
-      <p className="mt-7 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Say this in Italian</p>
-      <p className="mt-1 text-2xl font-bold leading-snug text-foreground sm:text-3xl">“{item.en}”</p>
-
-      {mode === "tap" ? <>
-        <div className="mt-6 flex min-h-16 flex-wrap items-center gap-2 rounded-2xl border border-dashed p-3">
-          {attempt.length === 0 && <span className="text-sm text-muted-foreground">Tap the pieces in Italian order — two of them don't belong</span>}
-          {picked.map((k, n) => (
-            <button key={k} type="button" disabled={result !== null} onClick={() => setPicked(picked.filter((x) => x !== k))}
-              className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-lg font-semibold text-primary">{shown[n]}</button>
-          ))}
-          {attempt.length > 0 && <span className="text-lg font-bold text-primary">{mark}</span>}
-        </div>
+      <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="mt-5">
+        <label htmlFor="trigger-answer" className="sr-only">Form of {verb.infinitive}</label>
+        <input id="trigger-answer" ref={input} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
+          placeholder={`form of ${verb.infinitive}`} value={answer} onChange={(e) => { setAnswer(e.target.value); setTip(undefined); }} readOnly={result !== null}
+          className="min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none placeholder:text-muted-foreground/50 focus:ring-2 focus:ring-ring read-only:bg-muted" />
         {result === null && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {pool.map((b, k) => !picked.includes(k) && (
-              <button key={k} type="button" onClick={() => setPicked([...picked, k])} className="rounded-xl border bg-card px-3 py-2 text-lg font-semibold hover:border-primary">{b}</button>
-            ))}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {ACCENTS.map((c) => <button key={c} type="button" onClick={() => insert(c)} className="h-9 w-9 rounded-lg border bg-card text-base font-semibold hover:bg-muted">{c}</button>)}
           </div>
         )}
-      </> : (
-        <form onSubmit={(e) => { e.preventDefault(); if (result === null && canCheck) check(); else if (result !== null) next(); }} className="mt-6">
-          <label htmlFor="type-reflex" className="sr-only">Type the full Italian sentence</label>
-          <input id="type-reflex" ref={typeRef} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
-            value={typed} onChange={(e) => setTyped(e.target.value)} readOnly={result !== null}
-            placeholder="Type the whole sentence in Italian"
-            className="min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none focus:ring-2 focus:ring-ring read-only:bg-muted" />
-          <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Insert accented letter">
-            {ACCENTS.map((a) => <button type="button" key={a} disabled={result !== null} onClick={() => insert(a)} aria-label={`Insert ${a}`} className="h-10 w-10 rounded-lg border bg-card text-lg font-semibold hover:bg-muted disabled:opacity-40">{a}</button>)}
-          </div>
-        </form>
-      )}
-
-      {hint && result === null && <p className="mt-4 rounded-xl bg-muted px-4 py-2.5 text-sm text-foreground">The verb you need is <span className="font-bold">{form}</span> ({PRONOUNS[item.idx]!.en}).</p>}
-
-      {result !== null && (
-        <div className={`mt-5 rounded-2xl border p-4 ${result ? "border-success/30 bg-tile-green" : "border-destructive/30 bg-tile-pink"}`}>
-          <div className="flex items-center gap-2 font-semibold text-foreground">
-            {result ? <Check className="h-5 w-5 text-success" /> : <X className="h-5 w-5 text-destructive" />}
-            <span>{result ? "Exactly how an Italian says it." : "Native order:"}</span>
-          </div>
-          {hitTrap && <p className="mt-2 text-[15px] font-semibold text-destructive">“{hitTrap.tile}” — {hitTrap.why}</p>}
-          {!result && mode === "type" && <p className="mt-2 text-[15px] text-muted-foreground line-through">{typed}</p>}
-          <p className="mt-2 flex items-center gap-2 text-xl font-bold text-foreground">{item.it}
-            <button type="button" onClick={() => speak(item.it)} aria-label="Hear it again" className="grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-foreground"><Volume2 className="h-4 w-4" /></button>
-          </p>
-          {item.tip && <p className="mt-2 text-[15px] text-foreground">{item.tip}</p>}
+        {tip && <p className="mt-4 flex items-start gap-2 rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-[15px] text-foreground"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden />{tip}</p>}
+        {result && result !== "wrong" && (
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-tile-green px-3 py-1 text-sm font-semibold text-foreground"><Zap className="h-4 w-4 text-success" aria-hidden /> Brain-to-mouth combo unlocked!</p>
+        )}
+        {result && <Feedback result={result} answer={answer} expected={full} meaning={m.en} />}
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <button className={`${btn.primary} w-full sm:w-auto`} disabled={result === null && !answer.trim()}>
+            {result === null ? "Check" : step === items.length - 1 ? "See result" : "Next moment"} {result !== null && <ArrowRight className="h-4 w-4" />}
+          </button>
+          {result !== null && <button type="button" onClick={() => speak(full)} className={btn.outline}><Volume2 className="h-4 w-4" /> Hear it again</button>}
         </div>
-      )}
-
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        {result === null ? <>
-          <button type="button" className={btn.primary} disabled={!canCheck} onClick={check}>Check</button>
-          <button type="button" className={btn.outline} onClick={() => { setPicked([]); setTyped(""); }}><RotateCcw className="h-4 w-4" /> Clear</button>
-          {!hint && <button type="button" onClick={() => setHint(true)} className="text-sm font-semibold text-accent-foreground underline">Show a hint</button>}
-        </> : <button type="button" className={btn.primary} onClick={next}>{step === items.length - 1 ? "See result" : "Next sentence"} <ArrowRight className="h-4 w-4" /></button>}
-      </div>
+      </form>
     </div>
   );
 }
