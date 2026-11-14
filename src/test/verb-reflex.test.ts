@@ -17,7 +17,7 @@ describe("verb reflex", () => {
     const fare = VERBS.find((v) => v.infinitive === "fare")!;
     const r = roundsFor(fare)[0]!;
     expect(fare.forms[r.idx]).toBe("faccio");
-    expect(fillBlank(r.a, "faccio")).toBe("Faccio una pizza a casa.");
+    expect(fillBlank(r.a, "faccio")).toBe("Stasera faccio una pizza.");
     expect(blueprintOf(fare).stem).toContain("fac-");
   });
 });
