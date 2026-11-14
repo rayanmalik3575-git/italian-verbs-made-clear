@@ -148,7 +148,7 @@ export function trapsFor(verb: Verb, item: BuildItem): Trap[] {
   return out;
 }
 
-const PROPER = /^(Marco|Anna|Luca|Giulia|Paola|Sara|Marta|Paolo|Roma|Milano|Napoli|Firenze|Ciao|Come)$/;
+const PROPER = /^(Marco|Anna|Luca|Giulia|Paola|Sara|Marta|Paolo|Roma|Milano|Napoli|Firenze)$/;
 /** Lowercase the first block for the tile bank unless it starts with a name. */
 export function tileCase(b: string) {
   return PROPER.test(b.split(" ")[0]!) ? b : b.charAt(0).toLowerCase() + b.slice(1);
