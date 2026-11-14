@@ -170,7 +170,7 @@ function Grow() {
                 <div>
                   <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Step {i + 1} · {g.label}</div>
                   <div className="mt-1 text-lg font-bold">
-                    {splitMarks(g.sentence.italian, marks).map((p, k) => p.m ? <span key={k} className="rounded bg-tile-green px-1 text-tile-green-ink">{p.t}</span> : <span key={k}>{p.t}</span>)}
+                    {splitMarks(g.sentence.italian, marks).map((p, k) => p.m ? <span key={k} className="rounded bg-tile-green px-0.5 text-tile-green-ink">{p.t}</span> : <span key={k}>{p.t}</span>)}
                   </div>
                   <div className="text-sm font-semibold text-foreground/80">{g.sentence.english}</div>
                 </div>
