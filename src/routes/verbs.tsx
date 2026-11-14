@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info, Lightbulb } from "lucide-react";
 import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verbs";
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
 import { grade, type Grade } from "@/lib/grading";
 import { contextFor, fill } from "@/data/verb-sentences";
-import { blocksOf, builderFor, endMark } from "@/data/verb-builder";
+import { blocksOf, builderFor, endMark, normalizeIt, tileCase, trapsFor } from "@/data/verb-builder";
 
 const ENDING_CLUE = [
   "Ends in -o (or -go/-sco) → it's me, I.",
@@ -15,7 +15,7 @@ const ENDING_CLUE = [
   "Ends in -te → you all.",
   "Ends in -no → they.",
 ];
-import { blueprintOf, chunksFor, roundsFor, fillBlank, EAR } from "@/data/verb-reflex";
+import { blueprintOf, chunksFor, roundsFor, fillBlank, EAR, continuousOf, spellingNote } from "@/data/verb-reflex";
 import { recordAttempt, useProgress, statusOf, STATUS_LABEL } from "@/lib/progress";
 import { Chip, Panel, PageHeader, ProgressBar, btn } from "@/components/app-shell";
 
@@ -476,6 +476,8 @@ function Practice({ verb, onLearn, kind, onNext }: { verb: Verb; onLearn: () => 
         {!S && <>
         <p className="mt-7 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Say this in Italian</p>
         <p className="mt-1 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">“{verb.en[i]}”</p>
+        {continuousOf(verb, i) && <p className="mt-1.5 text-sm text-muted-foreground">Also means: {continuousOf(verb, i)}</p>}
+        {spellingNote(verb, i) && <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground"><Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden />{spellingNote(verb, i)}</p>}
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <span className="rounded-full bg-muted px-3 py-1 text-sm font-semibold text-muted-foreground">({p.it})</span>
           <span className="inline-block min-w-28 border-b-2 border-primary text-3xl font-bold text-primary sm:text-4xl">{result ? expected : "…"}</span>
@@ -552,14 +554,20 @@ function shuffleBlocks(a: string[]): string[] {
 
 function Builder({ verb }: { verb: Verb }) {
   const items = useMemo(() => builderFor(verb), [verb]);
+  const [mode, setMode] = useState<"tap" | "type">("tap");
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
   const [picked, setPicked] = useState<number[]>([]);
+  const [typed, setTyped] = useState("");
   const [result, setResult] = useState<null | boolean>(null);
   const [hint, setHint] = useState(false);
+  const typeRef = useRef<HTMLInputElement>(null);
   const item = items[step];
   const target = useMemo(() => (item ? blocksOf(item.it) : []), [item]);
-  const pool = useMemo(() => shuffleBlocks(target), [target]);
+  const traps = useMemo(() => (item ? trapsFor(verb, item) : []), [verb, item]);
+  const [pool, setPool] = useState<string[]>([]);
+  useEffect(() => { setPool(shuffleBlocks([...target.map((b, k) => (k === 0 ? tileCase(b) : b)), ...traps.map((x) => x.tile)])); }, [target, traps]);
+  const reset = () => { setPicked([]); setTyped(""); setResult(null); setHint(false); };
 
   if (!item) {
     return (
@@ -567,42 +575,74 @@ function Builder({ verb }: { verb: Verb }) {
         <p className="text-sm font-semibold text-muted-foreground">Build sentences · {verb.infinitive}</p>
         <p className="mt-1 text-5xl font-bold">{score}<span className="text-muted-foreground">/{items.length}</span></p>
         <p className="mt-2 text-muted-foreground">{score === items.length ? "Every sentence in native order. Now say each one out loud." : "Go again — aim to build each one without the hint."}</p>
-        <button onClick={() => { setStep(0); setScore(0); setPicked([]); setResult(null); setHint(false); }} className={`${btn.primary} mt-6`}><RotateCcw className="h-4 w-4" /> Again</button>
+        <button onClick={() => { setStep(0); setScore(0); reset(); }} className={`${btn.primary} mt-6`}><RotateCcw className="h-4 w-4" /> Again</button>
       </div>
     );
   }
   const mark = endMark(item.it);
   const attempt = picked.map((k) => pool[k]!);
+  const shown = attempt.map((b, k) => (k === 0 ? b.charAt(0).toUpperCase() + b.slice(1) : b));
   const form = verb.forms[item.idx] ?? "";
+  const hitTrap = mode === "tap" && result === false ? traps.find((x) => attempt.includes(x.tile)) : undefined;
   const check = () => {
-    const ok = attempt.join(" ").toLowerCase() === target.join(" ").toLowerCase();
+    const ok = mode === "tap"
+      ? attempt.join(" ").toLowerCase() === target.join(" ").toLowerCase()
+      : normalizeIt(typed) === normalizeIt(item.it);
     setResult(ok); if (ok) setScore((s) => s + 1);
     speak(item.it);
   };
-  const next = () => { setStep(step + 1); setPicked([]); setResult(null); setHint(false); };
+  const next = () => { setStep(step + 1); reset(); };
+  const insert = (ch: string) => {
+    const el = typeRef.current;
+    const s = el?.selectionStart ?? typed.length, e = el?.selectionEnd ?? typed.length;
+    setTyped(typed.slice(0, s) + ch + typed.slice(e));
+    setTimeout(() => { el?.focus(); el?.setSelectionRange(s + 1, s + 1); }, 0);
+  };
+  const canCheck = mode === "tap" ? picked.length > 0 : typed.trim().length > 0;
 
   return (
     <div className="mt-5 rounded-[20px] border bg-card p-5 sm:p-7">
-      <div className="flex items-center justify-between text-sm text-muted-foreground"><span>Sentence {step + 1} of {items.length}</span><span>Score {score}</span></div>
-      <div className="mt-2"><ProgressBar value={(step / items.length) * 100} label="Builder progress" /></div>
+      <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
+        <span>Sentence {step + 1} of {items.length} · Score {score}</span>
+        <div role="radiogroup" aria-label="Answer mode" className="inline-flex rounded-full border bg-muted p-1">
+          {([["tap", "Tap words"], ["type", "Type reflex"]] as const).map(([id, label]) => (
+            <button key={id} type="button" role="radio" aria-checked={mode === id} onClick={() => { setMode(id); reset(); }}
+              className={`rounded-full px-3 py-1 text-sm font-semibold transition-colors ${mode === id ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}>{label}</button>
+          ))}
+        </div>
+      </div>
+      <div className="mt-3"><ProgressBar value={(step / items.length) * 100} label="Builder progress" /></div>
 
       <p className="mt-7 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Say this in Italian</p>
       <p className="mt-1 text-2xl font-bold leading-snug text-foreground sm:text-3xl">“{item.en}”</p>
 
-      <div className="mt-6 flex min-h-16 flex-wrap items-center gap-2 rounded-2xl border border-dashed p-3">
-        {attempt.length === 0 && <span className="text-sm text-muted-foreground">Tap the pieces in Italian order</span>}
-        {picked.map((k) => (
-          <button key={k} type="button" disabled={result !== null} onClick={() => setPicked(picked.filter((x) => x !== k))}
-            className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-lg font-semibold text-primary">{pool[k]}</button>
-        ))}
-        {attempt.length > 0 && <span className="text-lg font-bold text-primary">{mark}</span>}
-      </div>
-      {result === null && (
-        <div className="mt-3 flex flex-wrap gap-2">
-          {pool.map((b, k) => !picked.includes(k) && (
-            <button key={k} type="button" onClick={() => setPicked([...picked, k])} className="rounded-xl border bg-card px-3 py-2 text-lg font-semibold hover:border-primary">{b}</button>
+      {mode === "tap" ? <>
+        <div className="mt-6 flex min-h-16 flex-wrap items-center gap-2 rounded-2xl border border-dashed p-3">
+          {attempt.length === 0 && <span className="text-sm text-muted-foreground">Tap the pieces in Italian order — two of them don't belong</span>}
+          {picked.map((k, n) => (
+            <button key={k} type="button" disabled={result !== null} onClick={() => setPicked(picked.filter((x) => x !== k))}
+              className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-lg font-semibold text-primary">{shown[n]}</button>
           ))}
+          {attempt.length > 0 && <span className="text-lg font-bold text-primary">{mark}</span>}
         </div>
+        {result === null && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {pool.map((b, k) => !picked.includes(k) && (
+              <button key={k} type="button" onClick={() => setPicked([...picked, k])} className="rounded-xl border bg-card px-3 py-2 text-lg font-semibold hover:border-primary">{b}</button>
+            ))}
+          </div>
+        )}
+      </> : (
+        <form onSubmit={(e) => { e.preventDefault(); if (result === null && canCheck) check(); else if (result !== null) next(); }} className="mt-6">
+          <label htmlFor="type-reflex" className="sr-only">Type the full Italian sentence</label>
+          <input id="type-reflex" ref={typeRef} autoFocus autoComplete="off" autoCapitalize="off" spellCheck={false}
+            value={typed} onChange={(e) => setTyped(e.target.value)} readOnly={result !== null}
+            placeholder="Type the whole sentence in Italian"
+            className="min-h-13 w-full rounded-xl border border-input bg-card px-4 py-3 text-lg outline-none focus:ring-2 focus:ring-ring read-only:bg-muted" />
+          <div className="mt-2 flex flex-wrap gap-1.5" aria-label="Insert accented letter">
+            {ACCENTS.map((a) => <button type="button" key={a} disabled={result !== null} onClick={() => insert(a)} aria-label={`Insert ${a}`} className="h-10 w-10 rounded-lg border bg-card text-lg font-semibold hover:bg-muted disabled:opacity-40">{a}</button>)}
+          </div>
+        </form>
       )}
 
       {hint && result === null && <p className="mt-4 rounded-xl bg-muted px-4 py-2.5 text-sm text-foreground">The verb you need is <span className="font-bold">{form}</span> ({PRONOUNS[item.idx]!.en}).</p>}
@@ -613,6 +653,8 @@ function Builder({ verb }: { verb: Verb }) {
             {result ? <Check className="h-5 w-5 text-success" /> : <X className="h-5 w-5 text-destructive" />}
             <span>{result ? "Exactly how an Italian says it." : "Native order:"}</span>
           </div>
+          {hitTrap && <p className="mt-2 text-[15px] font-semibold text-destructive">“{hitTrap.tile}” — {hitTrap.why}</p>}
+          {!result && mode === "type" && <p className="mt-2 text-[15px] text-muted-foreground line-through">{typed}</p>}
           <p className="mt-2 flex items-center gap-2 text-xl font-bold text-foreground">{item.it}
             <button type="button" onClick={() => speak(item.it)} aria-label="Hear it again" className="grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-foreground"><Volume2 className="h-4 w-4" /></button>
           </p>
@@ -622,8 +664,8 @@ function Builder({ verb }: { verb: Verb }) {
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         {result === null ? <>
-          <button type="button" className={btn.primary} disabled={picked.length !== pool.length} onClick={check}>Check</button>
-          <button type="button" className={btn.outline} onClick={() => setPicked([])}><RotateCcw className="h-4 w-4" /> Clear</button>
+          <button type="button" className={btn.primary} disabled={!canCheck} onClick={check}>Check</button>
+          <button type="button" className={btn.outline} onClick={() => { setPicked([]); setTyped(""); }}><RotateCcw className="h-4 w-4" /> Clear</button>
           {!hint && <button type="button" onClick={() => setHint(true)} className="text-sm font-semibold text-accent-foreground underline">Show a hint</button>}
         </> : <button type="button" className={btn.primary} onClick={next}>{step === items.length - 1 ? "See result" : "Next sentence"} <ArrowRight className="h-4 w-4" /></button>}
       </div>
