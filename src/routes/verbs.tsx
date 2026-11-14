@@ -557,7 +557,8 @@ function Combo({ text, form }: { text: string; form: string }) {
   const words = text.split(" ");
   const k = words.findIndex((w) => w.toLowerCase().replace(/[^\p{L}']/gu, "") === form.toLowerCase());
   if (k < 0) return <>{text}</>;
-  const end = Math.min(words.length, k + 2);
+  const art = /^(il|lo|la|le|i|gli|un|una|uno|del|della|dei|delle|l'.*|un'.*)$/i.test(words[k + 1] ?? "");
+  const end = Math.min(words.length, k + (art ? 3 : 2));
   return <>{words.slice(0, k).join(" ")}{k > 0 ? " " : ""}<span className="text-success">{words.slice(k, end).join(" ")}</span>{end < words.length ? " " : ""}{words.slice(end).join(" ")}</>;
 }
 
