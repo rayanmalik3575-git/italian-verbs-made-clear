@@ -274,8 +274,6 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
     { id: "reflex" as const, n: 2, title: "Reply reflex", sub: "Hear a question, answer" },
     { id: "sentence" as const, n: 3, title: "Real-life trigger", sub: "React to real moments without translating in your head" },
   ];
-  const next: Record<K, K | undefined> = { drill: "reflex", reflex: "sentence", sentence: undefined };
-  const go = next[kind] ? () => setKind(next[kind]!) : undefined;
   return (
     <div className="mt-6">
       <div role="tablist" aria-label="Practice type" className="grid gap-2 sm:grid-cols-3">
@@ -287,9 +285,9 @@ function PracticeModes({ verb, onLearn }: { verb: Verb; onLearn: () => void }) {
           </button>
         ))}
       </div>
-      {kind === "reflex" && <Reflex key={verb.infinitive} verb={verb} onNext={go} />}
-      {kind === "drill" && <Practice key={verb.infinitive + kind} kind={kind} verb={verb} onLearn={onLearn} onNext={go} />}
-      {kind === "sentence" && <Trigger key={verb.infinitive} verb={verb} />}
+      <div hidden={kind !== "drill"}><Practice key={verb.infinitive + "drill"} kind="drill" verb={verb} onLearn={onLearn} onNext={() => setKind("reflex")} /></div>
+      <div hidden={kind !== "reflex"}><Reflex key={verb.infinitive} verb={verb} active={kind === "reflex"} onNext={() => setKind("sentence")} /></div>
+      <div hidden={kind !== "sentence"}><Trigger key={verb.infinitive} verb={verb} /></div>
     </div>
   );
 }
@@ -349,7 +347,7 @@ const GUIDE: string[] = [
   "About other people → use loro · -ano / -ono",
 ];
 
-function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefined }) {
+function Reflex({ verb, onNext, active = true }: { verb: Verb; onNext?: (() => void) | undefined; active?: boolean }) {
   const rounds = useMemo(() => roundsFor(verb), [verb]);
   const [step, setStep] = useState(0);
   const [answer, setAnswer] = useState("");
@@ -358,10 +356,10 @@ function Reflex({ verb, onNext }: { verb: Verb; onNext?: (() => void) | undefine
   const input = useRef<HTMLInputElement>(null);
   const currentQ = rounds[step]?.q;
   useEffect(() => {
-    if (!currentQ) return;
+    if (!currentQ || !active) return;
     const t = setTimeout(() => speak(currentQ), 60);
     return () => clearTimeout(t);
-  }, [currentQ, step]);
+  }, [currentQ, step, active]);
 
   if (step >= rounds.length) {
     return (
