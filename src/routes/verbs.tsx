@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, X, AlertTriangle, Volume2, Search, ArrowRight, RotateCcw, Info, Lightbulb } from "lucide-react";
 import { PRONOUNS, VERBS, LEVEL, RANK, type Verb, type Level } from "@/data/verbs";
 import { familyOf, isIrregular, isIsc, patternLabel, type Family } from "@/lib/verb-meta";
