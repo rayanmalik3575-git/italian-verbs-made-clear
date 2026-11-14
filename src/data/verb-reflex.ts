@@ -148,9 +148,17 @@ const ROUNDS: Record<string, R[]> = {
 };
 
 
+/** Keep 4 handcrafted rounds: tu→io, voi→noi, lui/lei, plus one more — same rhythm as every verb. */
+function pickFour<T extends unknown[]>(hand: T[]): T[] {
+  const out: T[] = [];
+  for (const i of [0, 3, 2]) { const r = hand.find((h) => h[4] === i && !out.includes(h)); if (r) out.push(r); }
+  for (const h of hand) if (out.length < 4 && !out.includes(h)) out.push(h);
+  return out;
+}
+
 export function roundsFor(v: Verb): Round[] {
   const hand = ROUNDS[v.infinitive];
-  if (hand) return hand.slice(0, 4).map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
+  if (hand) return pickFour(hand).map(([q, qEn, a, aEn, idx, why]) => ({ q, qEn, a, aEn, idx, why }));
   const r = REPLY[v.infinitive];
   if (!r) return [];
   return r.map((line, k) => {
