@@ -209,7 +209,7 @@ function QuickCheck() {
   const [shape, setShape] = useState<keyof typeof TRANSFORM>("statement");
   const [picked, setPicked] = useState<number[]>([]);
   const [result, setResult] = useState<ReturnType<typeof checkTiles> | null>(null);
-  const words = picked.map((i) => TILE_TASK.bank[i]);
+  const words = picked.map((i) => TILE_TASK.bank[i] ?? "");
   const cur = TRANSFORM[shape];
   const choose = (k: keyof typeof TRANSFORM) => { setShape(k); play(TRANSFORM[k]); };
   const check = () => { const r = checkTiles(words); setResult(r); if (r.ok) play(TILE_TASK.sentence); };
