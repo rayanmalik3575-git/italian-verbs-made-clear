@@ -39,7 +39,7 @@ function MaestroPage() {
   const [day, setDay] = useState(1);
   const [shuffled, setShuffled] = useState<DailyNoun[] | null>(null);
   const nouns = shuffled ?? nounsForDay(day);
-  const verbDay = shuffled ? 1 + (shuffled[0].dayIndex % 6) : day;
+  const verbDay = shuffled ? 1 + (shuffled[0]!.dayIndex % 6) : day;
   const verbs = (DAILY_VERBS[verbDay] ?? []).map((v) => VERBS.find((x) => x.infinitive === v)).filter(Boolean) as typeof VERBS;
   const shuffle = () => setShuffled([...DAILY_NOUNS].sort(() => Math.random() - 0.5).slice(0, 10));
   const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
@@ -53,7 +53,7 @@ function MaestroPage() {
       <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Day">
         {NOUN_DAYS.map((d) => <Chip key={d.day} active={!shuffled && day === d.day} onClick={() => { setShuffled(null); setDay(d.day); }} label={`Day ${d.day}: ${d.en}`}>Day {d.day}</Chip>)}
         <Chip active={!!shuffled} onClick={shuffle}><span className="inline-flex items-center gap-1.5"><Shuffle className="h-3.5 w-3.5" />Shuffle 10</span></Chip>
-        <span className="ml-1 text-sm font-semibold text-muted-foreground">{shuffled ? "Mixed from all days" : `${NOUN_DAYS[day - 1].it} · ${NOUN_DAYS[day - 1].en}`}</span>
+        <span className="ml-1 text-sm font-semibold text-muted-foreground">{shuffled ? "Mixed from all days" : `${NOUN_DAYS[day - 1]!.it} · ${NOUN_DAYS[day - 1]!.en}`}</span>
       </div>
       <div role="tablist" className="mb-5 grid grid-cols-3 gap-1 rounded-2xl border bg-card p-1">
         {tabs.map((t) => (
@@ -118,12 +118,12 @@ function Drill({ nouns, matchDay }: { nouns: DailyNoun[]; matchDay: number }) {
   const [pick, setPick] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [done, setDone] = useState<null | boolean | Feedback>(null);
-  const items = mode === "article" ? nouns.filter((n) => n.article !== "i") : mode === "plural" ? nouns : MATCHES[matchDay];
+  const items: (DailyNoun | (typeof MATCHES)[number][number])[] = mode === "article" ? nouns.filter((n) => n.article !== "i") : mode === "plural" ? nouns : (MATCHES[matchDay] ?? []);
   const idx = i % items.length;
   const reset = (m?: DrillMode) => { if (m) { setMode(m); setI(0); } setPick(null); setText(""); setDone(null); };
   const next = () => { setI((x) => x + 1); reset(); };
   const n = mode !== "match" ? (items[idx] as DailyNoun) : null;
-  const m = mode === "match" ? MATCHES[matchDay][idx] : null;
+  const m = mode === "match" ? (MATCHES[matchDay] ?? [])[idx] : null;
   return (
     <Panel>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -211,11 +211,11 @@ function MicButton({ onText }: { onText: (t: string) => void }) {
 }
 
 function TranslateTab({ day }: { day: number }) {
-  const list = CHALLENGES[day];
+  const list = CHALLENGES[day] ?? CHALLENGES[1]!;
   const [i, setI] = useState(0);
   const [text, setText] = useState("");
   const [fb, setFb] = useState<Feedback | null>(null);
-  const c = list[i];
+  const c = list[i]!;
   const submit = () => { const f = gradeSentence(text, c.it); setFb(f); speakIt(f.native); };
   return (
     <Panel>
@@ -242,18 +242,18 @@ const ICONS: Record<string, typeof Coffee> = { bar: Coffee, stazione: Train, pia
 function MissionsTab({ nouns }: { nouns: DailyNoun[] }) {
   const [id, setId] = useState<string | null>(null);
   const base = MISSIONS.find((m) => m.id === id);
-  const mission = useMemo<Mission | undefined>(() => {
+  const mission = useMemo<Mission | undefined>((): Mission | undefined => {
     if (!base || base.id !== "free") return base;
     const p = freeCoachPrompts(nouns);
     const hints = nouns.slice(0, 3).map((n) => n.fullSingular);
-    return { ...base, steps: [{ ...p[0], goal: "n1", hints }, { ...p[1], goal: "n2", hints: nouns.slice(3, 6).map((n) => n.indefinite) }, { ...p[2], goal: "neg", hints: ["Non bevo…", "Non prendo mai…", "Non ho…"] }] };
+    return { ...base, steps: [{ ...p[0]!, goal: "n1", hints }, { ...p[1]!, goal: "n2", hints: nouns.slice(3, 6).map((n) => n.indefinite) }, { ...p[2]!, goal: "neg", hints: ["Non bevo…", "Non prendo mai…", "Non ho…"] }] };
   }, [base, nouns]);
   if (!mission) {
     return (
       <ul className="grid gap-3 sm:grid-cols-2">
         {MISSIONS.map((m) => (
           <li key={m.id}><button onClick={() => setId(m.id)} className="flex w-full items-start gap-3 rounded-[20px] border bg-card p-5 text-left shadow-card hover:border-primary/40">
-            <IconTile icon={ICONS[m.id]} color={m.id === "free" ? "lavender" : "blue"} />
+            <IconTile icon={ICONS[m.id] ?? Coffee} color={m.id === "free" ? "lavender" : "blue"} />
             <span><span className="block text-lg font-bold">{m.title}</span><span className="text-sm text-muted-foreground">{m.place}</span>
               <span className="mt-2 block text-sm">{m.goals.map((g) => g.label).join(" · ")}</span></span>
           </button></li>
@@ -267,9 +267,9 @@ function MissionsTab({ nouns }: { nouns: DailyNoun[] }) {
 function Chat({ mission, nouns, onExit }: { mission: Mission; nouns: DailyNoun[]; onExit: () => void }) {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState<string[]>([]);
-  const [msgs, setMsgs] = useState<Msg[]>([{ from: "tutor", it: mission.steps[0].it, en: mission.steps[0].en }]);
+  const [msgs, setMsgs] = useState<Msg[]>([{ from: "tutor", it: mission.steps[0]!.it, en: mission.steps[0]!.en }]);
   const [text, setText] = useState("");
-  useEffect(() => { speakIt(mission.steps[0].it); }, [mission]);
+  useEffect(() => { speakIt(mission.steps[0]!.it); }, [mission]);
   const finished = step >= mission.steps.length;
   const cur = mission.steps[Math.min(step, mission.steps.length - 1)]!;
   const meets = (t: string) => {

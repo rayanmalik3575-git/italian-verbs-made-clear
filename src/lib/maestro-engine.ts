@@ -57,7 +57,7 @@ function articleFor(s: string) { const n = DAILY_NOUNS.find((x) => x.singular ==
 
 export function gradeSentence(answer: string, accepted: string[]): Feedback {
   const a = words(answer);
-  const best = accepted.map((t) => ({ t, w: words(t), ...lcs(a, words(t)) })).sort((x, y) => y.score - x.score)[0];
+  const best = accepted.map((t) => ({ t, w: words(t), ...lcs(a, words(t)) })).sort((x, y) => y.score - x.score)[0]!;
   const tokens = a.map((word, i) => ({ word, ok: best.hit.has(i) }));
   const exact = accepted.some((t) => norm(t) === norm(answer));
   const accentOnly = !exact && accepted.some((t) => deacc(norm(t)) === deacc(norm(answer)));
@@ -101,7 +101,7 @@ function ruleFor(kind?: string): string {
 export type Whisper = { tone: "praise" | "fix"; text: string };
 export function whisper(msg: string): Whisper {
   const traps = detectTraps(msg);
-  if (traps.length) return { tone: "fix", text: traps[0].text };
+  if (traps.length) return { tone: "fix", text: traps[0]!.text };
   const w = words(msg);
   const verbs = w.filter(isVerb); const nouns = w.filter((x) => NOUN_SET.has(x));
   if (verbs.length && nouns.length) return { tone: "praise", text: `Nice: '${verbs[0]}' with '${nouns[0]}' is exactly how a native says it.` };
@@ -112,7 +112,7 @@ export function whisper(msg: string): Whisper {
 
 /** Questions the free coach asks, built from today's nouns. */
 export function freeCoachPrompts(nouns: DailyNoun[]) {
-  const pick = (i: number) => nouns[i % nouns.length];
+  const pick = (i: number) => nouns[i % nouns.length]!;
   return [
     { it: `Parliamo di oggi. Cosa usi di più: ${pick(0).fullSingular} o ${pick(1).fullSingular}?`, en: `Let's talk about today. What do you use more: ${pick(0).english} or ${pick(1).english}?` },
     { it: `E ${pick(2).fullSingular}? Dimmi una frase con questa parola.`, en: `And ${pick(2).english}? Give me a sentence with this word.` },

@@ -15,7 +15,7 @@ export function recognitionSupported() {
 }
 export function listenIt(onText: (t: string) => void, onEnd: () => void) {
   const W = window as unknown as Record<string, new () => Rec>;
-  const C = W.SpeechRecognition ?? W.webkitSpeechRecognition; if (!C) return onEnd();
+  const C = W["SpeechRecognition"] ?? W["webkitSpeechRecognition"]; if (!C) return onEnd();
   const r = new C(); r.lang = "it-IT"; r.interimResults = false;
-  r.onresult = (e) => onText(e.results[0][0].transcript); r.onend = onEnd; r.onerror = onEnd; r.start();
+  r.onresult = (e) => onText(e.results[0]?.[0]?.transcript ?? ""); r.onend = onEnd; r.onerror = onEnd; r.start();
 }

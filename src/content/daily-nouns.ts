@@ -112,7 +112,7 @@ const indef = (s: string, a: Article, g: Gender) => {
 
 export const DAILY_NOUNS: DailyNoun[] = D.flatMap((rows, i) =>
   rows.map(([s, a, g, pl, en, hint, eit, een]) => ({
-    id: s.replace(/\s+/g, "-"), category: NOUN_DAYS[i].en, dayIndex: i + 1,
+    id: s.replace(/\s+/g, "-"), category: NOUN_DAYS[i]!.en, dayIndex: i + 1,
     singular: s, article: a, fullSingular: a === "l'" ? "l'" + s : `${a} ${s}`,
     indefinite: indef(s, a, g), plural: pl, gender: g, english: en, endingHint: hint,
     pairedVerbExample: { it: eit, en: een },
