@@ -271,7 +271,7 @@ function Chat({ mission, nouns, onExit }: { mission: Mission; nouns: DailyNoun[]
   const [text, setText] = useState("");
   useEffect(() => { speakIt(mission.steps[0].it); }, [mission]);
   const finished = step >= mission.steps.length;
-  const cur = mission.steps[Math.min(step, mission.steps.length - 1)];
+  const cur = mission.steps[Math.min(step, mission.steps.length - 1)]!;
   const meets = (t: string) => {
     if (mission.id === "free") return cur.goal === "neg" ? hasNegative(t) : usesNoun(t, nouns, cur.goal === "n2");
     return cur.expect ? cur.expect.test(t.trim()) : true;
