@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, Check, Eye, RotateCcw, Volume2, X } from "lucide-react";
 import { Panel, ProgressBar, btn } from "@/components/app-shell";
-import { READINGS, STORIES, TRANSLATE, matches, type Translate } from "@/content/review-extras";
+import { READINGS, STORIES, TRANSLATE, matches, trapTip, type Translate } from "@/content/review-extras";
 
 export function speak(text: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -26,7 +26,10 @@ function TranslateCard({ item, onDone, last }: { item: Translate; onDone: (ok: b
   const check = () => { const ok = matches(item, text); setResult(ok); speak(item.answers[0]!); };
   return (
     <div>
-      <p className="text-sm font-semibold text-muted-foreground">Say it in Italian</p>
+      <div className="flex flex-wrap items-center gap-1.5">
+        <p className="mr-auto text-sm font-semibold text-muted-foreground">Say it in Italian</p>
+        {item.rules?.map((r) => <span key={r} className="rounded-full bg-muted px-2.5 py-0.5 text-[13px] font-semibold text-foreground/80">{r}</span>)}
+      </div>
       <p className="mt-1 text-2xl font-bold">{item.english}</p>
       <textarea value={text} disabled={result !== null} onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (result === null && text.trim()) check(); } }}
@@ -45,6 +48,7 @@ function TranslateCard({ item, onDone, last }: { item: Translate; onDone: (ok: b
             <span>{item.answers[0]!}</span><Hear text={item.answers[0]!} />
           </div>
           {item.answers.length > 1 && <p className="mt-1 text-[15px]">Also right: {item.answers.slice(1).join(" · ")}</p>}
+          {!result && trapTip(text) && <p className="mt-2 text-[16px] font-semibold text-destructive">{trapTip(text)}</p>}
           <p className="mt-2 text-[16px] leading-relaxed">{item.why}</p>
           <button className={`${btn.cta} mt-4`} onClick={() => onDone(result)}>{last ? "See result" : "Next"} <ArrowRight className="h-4 w-4" /></button>
         </div>
@@ -90,7 +94,7 @@ export function StoryMode() {
         {STORIES.map((st, n) => <button key={st.id} onClick={() => reset(n)} className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${n === s ? "border-primary bg-tile-blue text-tile-blue-ink" : "hover:bg-muted"}`}>{st.title}</button>)}
       </div>
       <div className="mt-5 rounded-[14px] border bg-muted/40 p-4">
-        <p className="text-sm font-semibold text-muted-foreground">The paragraph</p>
+        <p className="text-sm font-semibold text-muted-foreground">{story.scene}</p>
         <p className="mt-1 text-[17px] leading-relaxed">
           {story.lines.map((l, n) => <span key={l.id} className={n === i ? "rounded bg-tile-blue px-1 font-semibold text-tile-blue-ink" : n < i ? "opacity-60" : ""}>{l.english} </span>)}
         </p>
