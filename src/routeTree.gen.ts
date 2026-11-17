@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as GreetingsRouteImport } from './routes/greetings'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as MaestroRouteImport } from './routes/maestro'
 import { Route as NationalitiesRouteImport } from './routes/nationalities'
 import { Route as NegativesRouteImport } from './routes/negatives'
 import { Route as PathRouteImport } from './routes/path'
@@ -43,6 +44,11 @@ const GreetingsRoute = GreetingsRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaestroRoute = MaestroRouteImport.update({
+  id: '/maestro',
+  path: '/maestro',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NationalitiesRoute = NationalitiesRouteImport.update({
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/articles': typeof ArticlesRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
+  '/maestro': typeof MaestroRoute
   '/nationalities': typeof NationalitiesRoute
   '/negatives': typeof NegativesRoute
   '/path': typeof PathRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/articles': typeof ArticlesRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
+  '/maestro': typeof MaestroRoute
   '/nationalities': typeof NationalitiesRoute
   '/negatives': typeof NegativesRoute
   '/path': typeof PathRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/articles': typeof ArticlesRoute
   '/greetings': typeof GreetingsRoute
   '/help': typeof HelpRoute
+  '/maestro': typeof MaestroRoute
   '/nationalities': typeof NationalitiesRoute
   '/negatives': typeof NegativesRoute
   '/path': typeof PathRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/greetings'
     | '/help'
+    | '/maestro'
     | '/nationalities'
     | '/negatives'
     | '/path'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/greetings'
     | '/help'
+    | '/maestro'
     | '/nationalities'
     | '/negatives'
     | '/path'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/greetings'
     | '/help'
+    | '/maestro'
     | '/nationalities'
     | '/negatives'
     | '/path'
@@ -212,6 +224,7 @@ export interface RootRouteChildren {
   ArticlesRoute: typeof ArticlesRoute
   GreetingsRoute: typeof GreetingsRoute
   HelpRoute: typeof HelpRoute
+  MaestroRoute: typeof MaestroRoute
   NationalitiesRoute: typeof NationalitiesRoute
   NegativesRoute: typeof NegativesRoute
   PathRoute: typeof PathRoute
@@ -253,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maestro': {
+      id: '/maestro'
+      path: '/maestro'
+      fullPath: '/maestro'
+      preLoaderRoute: typeof MaestroRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/nationalities': {
@@ -340,6 +360,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesRoute: ArticlesRoute,
   GreetingsRoute: GreetingsRoute,
   HelpRoute: HelpRoute,
+  MaestroRoute: MaestroRoute,
   NationalitiesRoute: NationalitiesRoute,
   NegativesRoute: NegativesRoute,
   PathRoute: PathRoute,
