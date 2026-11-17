@@ -21,35 +21,35 @@ const NOUN_SET = new Set(DAILY_NOUNS.map((n) => n.singular));
 function lcs(a: string[], b: string[]) {
   const dp = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
   for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
-    dp[i][j] = deacc(a[i]) === deacc(b[j]) ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    dp[i]![j] = deacc(a[i]!) === deacc(b[j]!) ? dp[i + 1]![j + 1] + 1 : Math.max(dp[i + 1]![j], dp[i]![j + 1]);
   const hit = new Set<number>(); let i = 0, j = 0;
   while (i < a.length && j < b.length) {
-    if (deacc(a[i]) === deacc(b[j])) { hit.add(i); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++;
+    if (deacc(a[i]!) === deacc(b[j]!)) { hit.add(i); i++; j++; } else if (dp[i + 1]![j] >= dp[i]![j + 1]) i++; else j++;
   }
-  return { score: dp[0][0], hit };
+  return { score: dp[0]![0], hit };
 }
 
 /** English-speaker traps that are wrong regardless of the target sentence. */
 export function detectTraps(answer: string): Issue[] {
   const w = words(answer); const out: Issue[] = [];
   const raw = norm(answer);
-  for (let i = 0; i < w.length - 1; i++) if (["fai", "fa", "fate"].includes(w[i]) && isVerb(w[i + 1]) && w[i + 1] !== "fare")
+  for (let i = 0; i < w.length - 1; i++) if (["fai", "fa", "fate"].includes(w[i]!) && isVerb(w[i + 1]!) && w[i + 1]! !== "fare")
     { out.push({ kind: "do", text: "Italian has no 'do/does' helper. Drop fai/fa and use the verb itself: 'Parli inglese?'" }); break; }
   for (let i = 0; i < w.length - 1; i++) {
-    if (["sono", "sei", "è", "siamo", "siete"].includes(w[i]) && isVerb(w[i + 1]) && !["sono", "è"].includes(w[i + 1]))
-      out.push({ kind: "continuous", text: `'${w[i]} ${w[i + 1]}' copies English 'I am …ing'. Italian uses the verb alone: '${w[i + 1]}'.` });
-    if (ALL_FORMS.get(w[i]) === "cercare" && w[i + 1] === "per")
+    if (["sono", "sei", "è", "siamo", "siete"].includes(w[i]!) && isVerb(w[i + 1]!) && !["sono", "è"].includes(w[i + 1]!))
+      out.push({ kind: "continuous", text: `'${w[i]!} ${w[i + 1]!}' copies English 'I am …ing'. Italian uses the verb alone: '${w[i + 1]!}'.` });
+    if (ALL_FORMS.get(w[i]!) === "cercare" && w[i + 1]! === "per")
       out.push({ kind: "per", text: "Cercare already means 'look for'. No 'per': 'Cerco la stazione'." });
-    if (isVerb(w[i]) && w[i + 1] === "non")
+    if (isVerb(w[i]!) && w[i + 1]! === "non")
       out.push({ kind: "non", text: "'Non' goes right before the verb, never after it." });
   }
-  if (w.length > 1 && PRON.has(w[0]) && isVerb(w[1]))
-    out.push({ kind: "pronoun", text: `The verb ending already says who. Natives drop '${w[0]}' unless they're contrasting.` });
+  if (w.length > 1 && PRON.has(w[0]!) && isVerb(w[1]!))
+    out.push({ kind: "pronoun", text: `The verb ending already says who. Natives drop '${w[0]!}' unless they're contrasting.` });
   if (/qual'\s?è/.test(raw)) out.push({ kind: "qual", text: "Write 'qual è' with no apostrophe." });
   // bare noun after a verb ("prendo caffè")
   for (let i = 0; i < w.length - 1; i++) {
-    if (isVerb(w[i]) && NOUN_SET.has(w[i + 1]) && !["lavoro", "tempo"].includes(w[i + 1]))
-      out.push({ kind: "article", text: `You wrote '${w[i]} ${w[i + 1]}'. Italian nouns need their article: '${w[i]} ${articleFor(w[i + 1])}'.` });
+    if (isVerb(w[i]!) && NOUN_SET.has(w[i + 1]!) && !["lavoro", "tempo"].includes(w[i + 1]!))
+      out.push({ kind: "article", text: `You wrote '${w[i]!} ${w[i + 1]!}'. Italian nouns need their article: '${w[i]!} ${articleFor(w[i + 1]!)}'.` });
   }
   return out;
 }
@@ -64,7 +64,7 @@ export function gradeSentence(answer: string, accepted: string[]): Feedback {
   const issues: Issue[] = [];
   if (accentOnly) issues.push({ kind: "accent", text: "Right words — check the accent (è, perché, caffè)." });
   if (!exact && !accentOnly) {
-    issues.push(...detectTraps(answer).filter((i) => i.kind !== "pronoun" || !best.w.includes(a[0])));
+    issues.push(...detectTraps(answer).filter((i) => i.kind !== "pronoun" || !best.w.includes(a[0]!)));
     const tw = best.w;
     // wrong verb ending
     for (const x of a) for (const y of tw) if (x !== y && sameStem(x, y)) issues.push({ kind: "ending", text: `'${x}' is the wrong person. Here the verb is '${y}'.` });
