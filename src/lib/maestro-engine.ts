@@ -70,7 +70,7 @@ export function gradeSentence(answer: string, accepted: string[]): Feedback {
     for (const x of a) for (const y of tw) if (x !== y && sameStem(x, y)) issues.push({ kind: "ending", text: `'${x}' is the wrong person. Here the verb is '${y}'.` });
     // article
     const ta = tw.filter((x) => ARTS.has(x)); const aa = a.filter((x) => ARTS.has(x));
-    if (ta.length > aa.length) issues.push({ kind: "article", text: `Missing article: Italian says '${ta.filter((x) => !aa.includes(x))[0] ?? ta[0]}' before the noun.` });
+    if (ta.length > aa.length && !issues.some((x) => x.kind === "article")) issues.push({ kind: "article", text: `Missing article: Italian says '${ta.filter((x) => !aa.includes(x))[0] ?? ta[0]}' before the noun.` });
     else if (ta.length && aa.length && ta.join() !== aa.join()) {
       const bad = aa.find((x) => !ta.includes(x)); const good = ta.find((x) => !aa.includes(x));
       if (bad && good) issues.push({ kind: "gender", text: `'${bad}' doesn't match this noun — it takes '${good}'.` });
