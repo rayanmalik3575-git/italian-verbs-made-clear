@@ -34,3 +34,4 @@ use the editor.
 - Learner progress lives in src/lib/progress.ts (browser localStorage) until accounts exist — keep all status logic there so it can move to a backend later.
 - Verb family/regularity is derived in src/lib/verb-meta.ts from data, not stored — keeps verb data simple.
 - Lesson content that the learner reads lives as typed data in src/content/*.ts, and the reusable lesson widgets live in src/components/lesson/. This keeps lesson wording editable without touching the page layout.
+- AI Maestro (/maestro) grades and roleplays with the deterministic engine in src/lib/maestro-engine.ts; any future AI backend must return the same Feedback/Whisper shapes so the UI and offline fallback stay interchangeable.
