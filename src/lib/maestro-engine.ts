@@ -33,8 +33,8 @@ function lcs(a: string[], b: string[]) {
 export function detectTraps(answer: string): Issue[] {
   const w = words(answer); const out: Issue[] = [];
   const raw = norm(answer);
-  if (/\b(fai|fa|fate|faccio)\s+\w+(i|a|o|ate|ete|ite)\b/.test(raw) && w.length > 1 && isVerb(w[w.indexOf(w.find((x) => /^fa/.test(x))!) + 1] ?? ""))
-    out.push({ kind: "do", text: "Italian has no 'do/does' helper. Drop fai/fa and use the verb itself: 'Parli inglese?'" });
+  for (let i = 0; i < w.length - 1; i++) if (["fai", "fa", "fate"].includes(w[i]) && isVerb(w[i + 1]) && w[i + 1] !== "fare")
+    { out.push({ kind: "do", text: "Italian has no 'do/does' helper. Drop fai/fa and use the verb itself: 'Parli inglese?'" }); break; }
   for (let i = 0; i < w.length - 1; i++) {
     if (["sono", "sei", "è", "siamo", "siete"].includes(w[i]) && isVerb(w[i + 1]) && !["sono", "è"].includes(w[i + 1]))
       out.push({ kind: "continuous", text: `'${w[i]} ${w[i + 1]}' copies English 'I am …ing'. Italian uses the verb alone: '${w[i + 1]}'.` });
